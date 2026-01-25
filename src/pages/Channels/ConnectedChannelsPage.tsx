@@ -1,0 +1,144 @@
+import { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Avatar,
+  IconButton,
+  CircularProgress,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+} from '@mui/material';
+import { ResponsiveGrid } from '@/components/common/ResponsiveGrid';
+import {
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  YouTube as YouTubeIcon,
+} from '@mui/icons-material';
+import { useConnectedChannels } from '@/hooks/useConnectedChannels';
+import { format } from 'date-fns';
+
+export function ConnectedChannelsPage() {
+  const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false);
+  const [channelToDisconnect, setChannelToDisconnect] = useState<number | null>(null);
+
+  const { channels, isLoading, disconnectChannel, connectChannel, isConnecting, isDisconnecting } =
+    useConnectedChannels();
+
+  const handleDisconnectClick = (id: number) => {
+    setChannelToDisconnect(id);
+    setDisconnectDialogOpen(true);
+  };
+
+  const handleDisconnectConfirm = () => {
+    if (channelToDisconnect) {
+      disconnectChannel(channelToDisconnect);
+      setDisconnectDialogOpen(false);
+      setChannelToDisconnect(null);
+    }
+  };
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h4" gutterBottom>
+            Connected YouTube Channels
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Manage your connected YouTube channels for uploading clips
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={isConnecting ? <CircularProgress size={20} /> : <AddIcon />}
+          onClick={() => connectChannel()}
+          disabled={isConnecting}
+        >
+          {isConnecting ? 'Connecting...' : 'Connect Channel'}
+        </Button>
+      </Box>
+
+      {isLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <CircularProgress />
+        </Box>
+      ) : channels.length === 0 ? (
+        <Paper sx={{ p: 6, textAlign: 'center', bgcolor: 'background.paper' }}>
+          <YouTubeIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+          <Typography variant="h6" gutterBottom>
+            No Connected Channels
+          </Typography>
+          <Typography variant="body2" color="text.secondary" paragraph>
+            Connect a YouTube channel to start uploading clips
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={isConnecting ? <CircularProgress size={20} /> : <AddIcon />}
+            onClick={() => connectChannel()}
+            disabled={isConnecting}
+          >
+            {isConnecting ? 'Connecting...' : 'Connect Channel'}
+          </Button>
+        </Paper>
+      ) : (
+        <ResponsiveGrid columns={{ xs: 1, sm: 2, md: 3 }}>
+          {channels.map((channel) => (
+            <Card key={channel.id}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <Avatar
+                      src={channel.channel_thumbnail_url || undefined}
+                      alt={channel.channel_name}
+                      sx={{ width: 56, height: 56 }}
+                    >
+                      <YouTubeIcon />
+                    </Avatar>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="h6" noWrap>
+                        {channel.channel_name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Connected {format(new Date(channel.connected_at), 'MMM d, yyyy')}
+                      </Typography>
+                    </Box>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => handleDisconnectClick(channel.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+          ))}
+        </ResponsiveGrid>
+      )}
+
+      <Dialog open={disconnectDialogOpen} onClose={() => setDisconnectDialogOpen(false)}>
+        <DialogTitle>Disconnect Channel</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to disconnect this YouTube channel? This will remove all
+            associated linkages.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDisconnectDialogOpen(false)} disabled={isDisconnecting}>
+            Cancel
+          </Button>
+          <Button onClick={handleDisconnectConfirm} color="error" disabled={isDisconnecting}>
+            {isDisconnecting ? <CircularProgress size={20} /> : 'Disconnect'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+}
