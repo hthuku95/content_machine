@@ -106,7 +106,7 @@ export function SourceChannelsPage() {
         </Box>
 
         {/* Search and Filter Bar */}
-        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 3 }}>
           <TextField
             placeholder="Search channels..."
             size="small"
@@ -127,7 +127,7 @@ export function SourceChannelsPage() {
             size="small"
             value={activeFilter}
             onChange={(e) => setActiveFilter(e.target.value as 'all' | 'active' | 'inactive')}
-            sx={{ minWidth: 150 }}
+            sx={{ minWidth: { xs: '100%', sm: 150 } }}
           >
             <MenuItem value="all">All</MenuItem>
             <MenuItem value="active">Active</MenuItem>

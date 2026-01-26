@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
 import { useUIStore } from '@/stores/uiStore';
+import { DynamicBackground } from '@/components/common/DynamicBackground';
 
 export function AppLayout() {
   const theme = useTheme();
@@ -24,8 +25,10 @@ export function AppLayout() {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <TopBar onMenuClick={handleDrawerToggle} />
+    <>
+      <DynamicBackground opacity={0.1} updateInterval={5} />
+      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+        <TopBar onMenuClick={handleDrawerToggle} />
 
       {isMobile ? (
         <Sidebar
@@ -51,5 +54,6 @@ export function AppLayout() {
         <Outlet />
       </Box>
     </Box>
+    </>
   );
 }

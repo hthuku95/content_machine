@@ -179,7 +179,7 @@ export function LinkagesPageEnterprise() {
               Connect source channels to destination channels for automated clipping
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
             <FormControlLabel
               control={
                 <Checkbox

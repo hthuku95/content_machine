@@ -18,7 +18,13 @@ const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   username: z.string().min(3, 'Username must be at least 3 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
+
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
   const { register: registerUser, isRegisterLoading } = useAuth();
@@ -27,12 +33,13 @@ export function RegisterForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterRequest>({
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data: RegisterRequest) => {
-    registerUser(data);
+  const onSubmit = (data: RegisterFormData) => {
+    const { confirmPassword, ...registerData } = data;
+    registerUser(registerData as RegisterRequest);
   };
 
   return (
@@ -77,6 +84,17 @@ export function RegisterForm() {
         margin="normal"
         error={!!errors.password}
         helperText={errors.password?.message}
+        disabled={isRegisterLoading}
+      />
+
+      <TextField
+        {...register('confirmPassword')}
+        label="Confirm Password"
+        type="password"
+        fullWidth
+        margin="normal"
+        error={!!errors.confirmPassword}
+        helperText={errors.confirmPassword?.message}
         disabled={isRegisterLoading}
       />
 

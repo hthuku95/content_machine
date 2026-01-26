@@ -68,7 +68,7 @@ export function CaptionsPage() {
 
           {/* Upload Caption Button */}
           {selectedVideoId && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' } }}>
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}

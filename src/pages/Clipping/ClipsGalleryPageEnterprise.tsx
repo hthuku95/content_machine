@@ -157,7 +157,7 @@ export function ClipsGalleryPageEnterprise() {
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
             <FormControlLabel
               control={
                 <Checkbox

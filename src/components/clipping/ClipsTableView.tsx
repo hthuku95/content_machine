@@ -13,13 +13,13 @@ import {
   Checkbox,
   Link as MuiLink,
   Avatar,
+  Typography,
 } from '@mui/material';
 import {
   Visibility as ViewIcon,
   OpenInNew as OpenInNewIcon,
   Replay as ReplayIcon,
   ThumbUp as LikesIcon,
-  Comment as CommentsIcon,
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import type { ExtractedClip, UploadStatus } from '@/types/clipping.types';

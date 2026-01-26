@@ -65,7 +65,7 @@ export function AnalyticsDashboard() {
         <Grid container spacing={3}>
           {/* Channel Selector */}
           <Grid item xs={12}>
-            <Paper sx={{ p: 2 }}>
+            <Paper sx={{ p: { xs: 1, sm: 2 } }}>
               <FormControl fullWidth disabled={channelsLoading}>
                 <InputLabel>Select Channel</InputLabel>
                 <Select

@@ -291,7 +291,7 @@ export function DashboardPage() {
         </Alert>
 
         {/* Quick Links */}
-        <Paper sx={{ p: 4 }}>
+        <Paper sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
             Quick Links
           </Typography>

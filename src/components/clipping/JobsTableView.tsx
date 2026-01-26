@@ -13,6 +13,7 @@ import {
   Box,
   Checkbox,
   Link,
+  Typography,
 } from '@mui/material';
 import {
   Cancel as CancelIcon,
@@ -20,6 +21,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
   HourglassEmpty as PendingIcon,
+  HourglassEmpty,
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import type { ClippingJob, JobStatus } from '@/types/clipping.types';
