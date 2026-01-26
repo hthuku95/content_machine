@@ -5,6 +5,7 @@ import type {
   AuthResponse,
   VerifyResponse,
 } from '@/types/auth.types';
+import { PATHS } from '@/routes/paths';
 
 export const authService = {
   /**
@@ -37,9 +38,11 @@ export const authService = {
    */
   initiateGoogleOAuth(redirectTo?: string): void {
     const url = new URL('/api/auth/google', api.defaults.baseURL);
-    if (redirectTo) {
-      url.searchParams.set('redirect_to', redirectTo);
-    }
+
+    // Build full callback URL for content_machine
+    const callbackUrl = redirectTo || `${window.location.origin}${PATHS.OAUTH_CALLBACK}`;
+    url.searchParams.set('redirect_to', callbackUrl);
+
     window.location.href = url.toString();
   },
 

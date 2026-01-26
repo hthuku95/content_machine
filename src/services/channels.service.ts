@@ -1,5 +1,6 @@
 import { api } from './api';
 import type { ConnectedYouTubeChannel } from '@/types/channel.types';
+import { PATHS } from '@/routes/paths';
 
 export const channelsService = {
   /**
@@ -23,11 +24,12 @@ export const channelsService = {
    */
   async initiateConnection(redirectTo?: string): Promise<void> {
     try {
-      // Build query parameters
+      // Build query parameters with full callback URL
       const params = new URLSearchParams();
-      if (redirectTo) {
-        params.set('redirect_to', redirectTo);
-      }
+
+      // Build full callback URL for content_machine
+      const callbackUrl = redirectTo || `${window.location.origin}${PATHS.CHANNELS.CONNECTED}`;
+      params.set('redirect_to', callbackUrl);
 
       // Make API call to get Google OAuth URL (uses Authorization header from interceptor)
       const response = await api.get<{ success: boolean; auth_url: string; message: string }>(
