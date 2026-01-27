@@ -38,8 +38,12 @@ export function RegisterForm() {
   });
 
   const onSubmit = (data: RegisterFormData) => {
-    const { confirmPassword, ...registerData } = data;
-    registerUser(registerData as RegisterRequest);
+    const { confirmPassword, ...rest } = data;
+    const registerData: RegisterRequest = {
+      ...rest,
+      confirm_password: confirmPassword,
+    };
+    registerUser(registerData);
   };
 
   return (
