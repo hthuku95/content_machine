@@ -10,16 +10,26 @@ export function OAuthCallbackPage() {
   const { setLoading } = useAuthStore();
 
   useEffect(() => {
-    // After OAuth, the backend sets the token in localStorage
-    const token = localStorage.getItem('auth_token');
-    const userStr = localStorage.getItem('auth_user');
+    // Read token and user from URL hash (passed by backend after OAuth)
+    const hash = window.location.hash.substring(1); // Remove the '#'
+    const params = new URLSearchParams(hash);
+    const token = params.get('token');
+    const userStr = params.get('user');
 
     if (token && userStr) {
       try {
-        const user = JSON.parse(userStr);
+        const user = JSON.parse(decodeURIComponent(userStr));
         const { setAuth } = useAuthStore.getState();
+
+        // Store in localStorage for persistence
+        localStorage.setItem('auth_token', token);
+        localStorage.setItem('auth_user', JSON.stringify(user));
+
         setAuth(token, user);
         toast.success('Successfully signed in with Google!');
+
+        // Clear the hash from URL before navigating
+        window.location.hash = '';
         navigate(PATHS.DASHBOARD);
       } catch (error) {
         console.error('Error parsing user data:', error);
