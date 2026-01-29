@@ -31,7 +31,9 @@ export const clippingService = {
     const response = await api.get<{ success: boolean; channels: SourceChannel[] }>(
       '/api/clipping/source-channels'
     );
-    return response.data.channels ?? [];
+    // Ensure we always return an array, even if the API response is malformed
+    const channels = response.data?.channels;
+    return Array.isArray(channels) ? channels : [];
   },
 
   /**
@@ -72,7 +74,9 @@ export const clippingService = {
     const response = await api.get<{ success: boolean; linkages: ChannelLinkage[] }>(
       '/api/clipping/linkages'
     );
-    return response.data.linkages ?? [];
+    // Ensure we always return an array, even if the API response is malformed
+    const linkages = response.data?.linkages;
+    return Array.isArray(linkages) ? linkages : [];
   },
 
   /**
@@ -115,7 +119,9 @@ export const clippingService = {
     const response = await api.get<{ success: boolean; jobs: ClippingJob[] }>(
       `/api/clipping/jobs?${params.toString()}`
     );
-    return response.data.jobs ?? [];
+    // Ensure we always return an array, even if the API response is malformed
+    const jobs = response.data?.jobs;
+    return Array.isArray(jobs) ? jobs : [];
   },
 
   /**
@@ -127,9 +133,10 @@ export const clippingService = {
       job: ClippingJob;
       clips: ExtractedClip[];
     }>(`/api/clipping/jobs/${id}`);
+    const clips = response.data?.clips;
     return {
       job: response.data.job,
-      clips: response.data.clips ?? [],
+      clips: Array.isArray(clips) ? clips : [],
     };
   },
 
@@ -165,7 +172,9 @@ export const clippingService = {
     const response = await api.get<{ success: boolean; clips: ExtractedClip[] }>(
       `/api/clipping/clips?${params.toString()}`
     );
-    return response.data.clips ?? [];
+    // Ensure we always return an array, even if the API response is malformed
+    const clips = response.data?.clips;
+    return Array.isArray(clips) ? clips : [];
   },
 
   /**
