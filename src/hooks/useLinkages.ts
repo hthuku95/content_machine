@@ -7,11 +7,14 @@ export function useLinkages() {
   const queryClient = useQueryClient();
 
   // Query for listing linkages
-  const { data: linkages = [], isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['clipping', 'linkages'],
     queryFn: clippingService.listLinkages,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // Ensure linkages is always an array, even if the query fails
+  const linkages = Array.isArray(data) ? data : [];
 
   // Mutation for creating a linkage
   const createMutation = useMutation({
