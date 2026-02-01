@@ -13,6 +13,8 @@ export function useSourceChannels() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  console.log('[useSourceChannels] Hook state:', { channels, count: channels?.length || 0, isLoading, error });
+
   // Mutation for adding a source channel
   const addMutation = useMutation({
     mutationFn: (data: CreateSourceChannelRequest) =>

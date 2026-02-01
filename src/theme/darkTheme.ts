@@ -87,5 +87,66 @@ export const darkTheme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputBase-root': {
+            color: '#ffffff',
+          },
+          '& .MuiInputLabel-root': {
+            color: '#b0b0b0',
+          },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.23)',
+            },
+            '&:hover fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.4)',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#90caf9',
+            },
+          },
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          color: '#ffffff',
+          backgroundColor: '#1e1e1e',
+          '&:hover': {
+            backgroundColor: '#2a2a2a',
+          },
+          '&.Mui-selected': {
+            backgroundColor: '#2a2a2a',
+            '&:hover': {
+              backgroundColor: '#333333',
+            },
+          },
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#1e1e1e',
+          color: '#ffffff',
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          color: '#ffffff',
+          '&:focus': {
+            backgroundColor: 'transparent',
+          },
+        },
+        icon: {
+          color: '#b0b0b0',
+        },
+      },
+    },
   },
 });

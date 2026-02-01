@@ -11,10 +11,25 @@ export function useLinkages() {
     queryKey: ['clipping', 'linkages'],
     queryFn: clippingService.listLinkages,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: false, // Don't retry on error to avoid confusion
   });
 
-  // Ensure linkages is always an array, even if the query fails
-  const linkages = Array.isArray(data) ? data : [];
+  // Ensure linkages is always an array, even if the query fails or returns unexpected data
+  // Add extensive logging to debug the issue
+  console.log('[useLinkages] Query result:', { data, isLoading, error, dataType: typeof data, isArray: Array.isArray(data) });
+
+  // Triple-check to handle any edge cases where data might not be what we expect
+  let linkages: typeof data = [];
+  if (data !== undefined && data !== null) {
+    if (Array.isArray(data)) {
+      linkages = data;
+    } else {
+      console.error('[useLinkages] Data is not an array:', data);
+      linkages = [];
+    }
+  }
+
+  console.log('[useLinkages] Final linkages:', { linkages, length: linkages.length });
 
   // Mutation for creating a linkage
   const createMutation = useMutation({

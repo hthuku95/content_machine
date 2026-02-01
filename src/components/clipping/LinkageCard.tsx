@@ -69,7 +69,7 @@ export function LinkageCard({ linkage, onToggleActive, onEdit, onDelete }: Linka
               Source
             </Typography>
             <Typography variant="body2" fontWeight={500}>
-              {linkage.source_channel?.channel_title || 'Unknown'}
+              {linkage.source_channel_name || 'Unknown'}
             </Typography>
           </Box>
           <ArrowForwardIcon color="action" />
@@ -78,7 +78,7 @@ export function LinkageCard({ linkage, onToggleActive, onEdit, onDelete }: Linka
               Destination
             </Typography>
             <Typography variant="body2" fontWeight={500}>
-              {linkage.destination_channel_title || 'Unknown'}
+              {linkage.destination_channel_name || 'Unknown'}
             </Typography>
           </Box>
         </Box>

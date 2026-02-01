@@ -20,8 +20,8 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services';
 
 const linkageSchema = z.object({
-  source_channel_id: z.string().min(1, 'Source channel is required'),
-  destination_channel_id: z.string().min(1, 'Destination channel is required'),
+  source_channel_id: z.number().int().positive('Source channel is required'),
+  destination_channel_id: z.number().int().positive('Destination channel is required'),
   min_clip_duration_seconds: z.number().min(10).max(300),
   max_clip_duration_seconds: z.number().min(10).max(300),
   clips_per_video: z.number().min(1).max(10),
@@ -43,12 +43,23 @@ export function CreateLinkageDialog({
   const { channels: sourceChannels } = useSourceChannels();
 
   // Fetch connected YouTube channels for destination
-  const { data: destinationChannels = [] } = useQuery({
+  const { data: destinationChannelsData } = useQuery({
     queryKey: ['youtube', 'channels'],
     queryFn: async () => {
-      const response = await api.get('/api/youtube/channels');
-      return response.data;
+      const response = await api.get<{ success: boolean; channels: any[] }>('/api/youtube/channels');
+      console.log('[CreateLinkageDialog] YouTube channels API response:', response.data);
+      return response.data.channels || [];
     },
+  });
+
+  const destinationChannels = Array.isArray(destinationChannelsData) ? destinationChannelsData : [];
+
+  console.log('[CreateLinkageDialog] Data state:', {
+    sourceChannels,
+    sourceChannelsCount: sourceChannels?.length || 0,
+    destinationChannels,
+    destinationChannelsCount: destinationChannels?.length || 0,
+    destinationChannelsData
   });
 
   const {
@@ -98,14 +109,24 @@ export function CreateLinkageDialog({
             fullWidth
             margin="normal"
             error={!!errors.source_channel_id}
-            helperText={errors.source_channel_id?.message}
-            disabled={isLoading}
+            helperText={
+              sourceChannels.length === 0
+                ? 'No source channels available. Add a source channel first.'
+                : errors.source_channel_id?.message
+            }
+            disabled={isLoading || sourceChannels.length === 0}
           >
-            {sourceChannels.map((channel) => (
-              <MenuItem key={channel.id} value={channel.id}>
-                {channel.channel_title}
+            {sourceChannels.length === 0 ? (
+              <MenuItem disabled value="">
+                No source channels available
               </MenuItem>
-            ))}
+            ) : (
+              sourceChannels.map((channel) => (
+                <MenuItem key={channel.id} value={channel.id}>
+                  {channel.channel_name}
+                </MenuItem>
+              ))
+            )}
           </TextField>
 
           <TextField
@@ -115,14 +136,24 @@ export function CreateLinkageDialog({
             fullWidth
             margin="normal"
             error={!!errors.destination_channel_id}
-            helperText={errors.destination_channel_id?.message}
-            disabled={isLoading}
+            helperText={
+              destinationChannels.length === 0
+                ? 'No connected YouTube channels. Connect a YouTube channel first.'
+                : errors.destination_channel_id?.message
+            }
+            disabled={isLoading || destinationChannels.length === 0}
           >
-            {destinationChannels.map((channel: any) => (
-              <MenuItem key={channel.id} value={channel.id}>
-                {channel.channel_title}
+            {destinationChannels.length === 0 ? (
+              <MenuItem disabled value="">
+                No connected YouTube channels
               </MenuItem>
-            ))}
+            ) : (
+              destinationChannels.map((channel: any) => (
+                <MenuItem key={channel.id} value={channel.id}>
+                  {channel.channel_name}
+                </MenuItem>
+              ))
+            )}
           </TextField>
 
           <Box sx={{ mt: 3 }}>

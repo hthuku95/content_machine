@@ -30,9 +30,9 @@ export interface ChannelLinkage {
   is_active: boolean;
   created_at: string;
   updated_at: string;
-  // Populated fields (when fetched from API)
-  source_channel?: SourceChannel;
-  destination_channel_title?: string;
+  // Populated fields (when fetched from API with JOINs)
+  source_channel_name?: string;
+  destination_channel_name?: string;
   stats?: {
     clips_generated: number;
     clips_posted: number;

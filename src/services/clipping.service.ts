@@ -71,12 +71,23 @@ export const clippingService = {
    * Get all linkages for the user
    */
   async listLinkages(): Promise<ChannelLinkage[]> {
-    const response = await api.get<{ success: boolean; linkages: ChannelLinkage[] }>(
-      '/api/clipping/linkages'
-    );
-    // Ensure we always return an array, even if the API response is malformed
-    const linkages = response.data?.linkages;
-    return Array.isArray(linkages) ? linkages : [];
+    try {
+      const response = await api.get<{ success: boolean; linkages: ChannelLinkage[] }>(
+        '/api/clipping/linkages'
+      );
+      console.log('[clippingService.listLinkages] Response:', response.data);
+      // Ensure we always return an array, even if the API response is malformed
+      const linkages = response.data?.linkages;
+      if (!Array.isArray(linkages)) {
+        console.error('[clippingService.listLinkages] Invalid linkages data:', linkages);
+        return [];
+      }
+      return linkages;
+    } catch (error) {
+      console.error('[clippingService.listLinkages] Error fetching linkages:', error);
+      // Return empty array on error instead of throwing
+      return [];
+    }
   },
 
   /**

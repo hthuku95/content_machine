@@ -39,6 +39,8 @@ export function LinkagesPage() {
     isDeleting,
   } = useLinkages();
 
+  console.log('[LinkagesPage] Rendering with linkages:', { linkages, isArray: Array.isArray(linkages), length: linkages?.length, type: typeof linkages });
+
   const handleCreateSuccess = () => {
     setCreateDialogOpen(false);
   };
@@ -96,7 +98,7 @@ export function LinkagesPage() {
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
             <CircularProgress />
           </Box>
-        ) : linkages.length === 0 ? (
+        ) : !Array.isArray(linkages) || linkages.length === 0 ? (
           <Paper sx={{ p: 6, textAlign: 'center', bgcolor: 'background.paper' }}>
             <LinkIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
             <Typography variant="h6" gutterBottom>
@@ -115,7 +117,7 @@ export function LinkagesPage() {
           </Paper>
         ) : (
           <ResponsiveGrid columns={{ xs: 1, md: 2 }}>
-            {linkages.map((linkage) => (
+            {Array.isArray(linkages) && linkages.map((linkage) => (
               <LinkageCard
                 key={linkage.id}
                 linkage={linkage}
