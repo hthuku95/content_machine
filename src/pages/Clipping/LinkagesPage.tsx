@@ -21,6 +21,8 @@ import { useLinkages } from '@/hooks/useLinkages';
 import type { ChannelLinkage } from '@/types/clipping.types';
 
 export function LinkagesPage() {
+  console.log('[LinkagesPage] Component mounted');
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -39,38 +41,50 @@ export function LinkagesPage() {
     isDeleting,
   } = useLinkages();
 
-  console.log('[LinkagesPage] Rendering with linkages:', { linkages, isArray: Array.isArray(linkages), length: linkages?.length, type: typeof linkages });
+  console.log('[LinkagesPage] Linkages loaded:', { linkagesCount: linkages.length, isLoading });
 
   const handleCreateSuccess = () => {
+    console.log('[LinkagesPage] Action: Create linkage success');
     setCreateDialogOpen(false);
+    console.log('[LinkagesPage] State updated: Create dialog closed');
   };
 
   const handleEditClick = (linkage: ChannelLinkage) => {
+    console.log('[LinkagesPage] Action: Edit linkage', linkage.id);
     setLinkageToEdit(linkage);
     setEditDialogOpen(true);
+    console.log('[LinkagesPage] State updated: Edit dialog opened');
   };
 
   const handleEditClose = () => {
+    console.log('[LinkagesPage] Action: Close edit dialog');
     setEditDialogOpen(false);
     setLinkageToEdit(null);
+    console.log('[LinkagesPage] State updated: Edit dialog closed');
   };
 
   const handleDeleteClick = (id: string) => {
+    console.log('[LinkagesPage] Action: Delete linkage', id);
     setLinkageToDelete(id);
     setDeleteDialogOpen(true);
+    console.log('[LinkagesPage] State updated: Delete dialog opened');
   };
 
   const handleDeleteConfirm = () => {
     if (linkageToDelete) {
+      console.log('[LinkagesPage] Action: Confirm delete', linkageToDelete);
       deleteLinkage(linkageToDelete);
       setDeleteDialogOpen(false);
       setLinkageToDelete(null);
+      console.log('[LinkagesPage] State updated: Delete dialog closed');
     }
   };
 
   const handleDeleteCancel = () => {
+    console.log('[LinkagesPage] Action: Cancel delete');
     setDeleteDialogOpen(false);
     setLinkageToDelete(null);
+    console.log('[LinkagesPage] State updated: Delete dialog closed');
   };
 
   return (

@@ -37,7 +37,10 @@ import { PATHS } from '@/routes/paths';
 import { useAuth } from '@/hooks/useAuth';
 
 export function DashboardPage() {
+  console.log('[DashboardPage] Component mounted');
+
   const { user } = useAuth();
+  console.log('[DashboardPage] User loaded:', user);
 
   const features = [
     {

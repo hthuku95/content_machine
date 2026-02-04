@@ -20,6 +20,8 @@ import { useLinkages } from '@/hooks/useLinkages';
 import type { JobStatus } from '@/types/clipping.types';
 
 export function JobsPage() {
+  console.log('[JobsPage] Component mounted');
+
   const [filters, setFilters] = useState<JobFilters>({});
 
   // Fetch linkages for filter dropdown
@@ -27,6 +29,12 @@ export function JobsPage() {
 
   // Use polling hook for real-time updates
   const { jobs: pollingJobs, isLoading: isPollingLoading, isPolling } = useJobPolling();
+
+  console.log('[JobsPage] Jobs loaded:', {
+    pollingJobsCount: pollingJobs.length,
+    isPolling,
+    filters
+  });
 
   // Use regular hook with API filters
   const apiFilters = {
@@ -45,11 +53,14 @@ export function JobsPage() {
 
   // Apply client-side search filter
   const displayedJobs = useMemo(() => {
+    console.log('[JobsPage] Filtering jobs:', { search: filters.search, totalJobs: jobs.length });
     if (!filters.search) return jobs;
     const searchLower = filters.search.toLowerCase();
-    return jobs.filter(job =>
+    const filtered = jobs.filter(job =>
       job.source_video_title.toLowerCase().includes(searchLower)
     );
+    console.log('[JobsPage] Filtered jobs:', filtered.length);
+    return filtered;
   }, [jobs, filters.search]);
 
   return (

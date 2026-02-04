@@ -19,11 +19,19 @@ import { AnalyticsExportDialog } from '@/components/clipping/AnalyticsExportDial
 import { ClipRecommendations } from '@/components/clipping/analytics/ClipRecommendations';
 
 export function ClippingDashboard() {
+  console.log('[ClippingDashboard] Component mounted');
+
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
   const { linkages } = useLinkages();
   const { jobs } = useJobPolling();
   const { clips } = useClips({ limit: 10 });
+
+  console.log('[ClippingDashboard] Data loaded:', {
+    linkagesCount: linkages.length,
+    jobsCount: jobs.length,
+    clipsCount: clips.length
+  });
 
   const activeLinkages = linkages.filter((l) => l.is_active).length;
   const activeJobs = jobs.filter((j) => j.status === 'processing' || j.status === 'pending').length;
@@ -49,7 +57,11 @@ export function ClippingDashboard() {
               variant="outlined"
               size="small"
               startIcon={<DownloadIcon />}
-              onClick={() => setExportDialogOpen(true)}
+              onClick={() => {
+                console.log('[ClippingDashboard] Action: Open export dialog');
+                setExportDialogOpen(true);
+                console.log('[ClippingDashboard] State updated: Export dialog opened');
+              }}
             >
               Export Data
             </Button>
@@ -57,7 +69,10 @@ export function ClippingDashboard() {
               variant="outlined"
               size="small"
               startIcon={<RefreshIcon />}
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                console.log('[ClippingDashboard] Action: Refresh page');
+                window.location.reload();
+              }}
             >
               Refresh
             </Button>

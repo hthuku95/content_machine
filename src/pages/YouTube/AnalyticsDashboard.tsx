@@ -11,7 +11,10 @@ import { DateRangePicker } from '@/components/youtube/analytics/DateRangePicker'
 import type { AnalyticsDateRange } from '@/types/analytics.types';
 
 export function AnalyticsDashboard() {
+  console.log('[AnalyticsDashboard] Component mounted');
+
   const { channels, isLoading: channelsLoading } = useConnectedChannels();
+  console.log('[AnalyticsDashboard] Channels loaded:', { count: channels.length, isLoading: channelsLoading });
 
   const [selectedChannelId, setSelectedChannelId] = useState<number>(0);
   const [dateRange, setDateRange] = useState<AnalyticsDateRange>({
@@ -20,6 +23,14 @@ export function AnalyticsDashboard() {
   });
 
   const { data: analytics, isLoading, error } = useChannelAnalytics(selectedChannelId, dateRange);
+
+  if (error) {
+    console.error('[AnalyticsDashboard] Error loading analytics:', error);
+  }
+
+  if (analytics) {
+    console.log('[AnalyticsDashboard] Analytics loaded:', analytics);
+  }
 
   // Generate mock chart data from analytics
   const generateChartData = () => {
@@ -70,7 +81,12 @@ export function AnalyticsDashboard() {
                 <InputLabel>Select Channel</InputLabel>
                 <Select
                   value={selectedChannelId}
-                  onChange={(e) => setSelectedChannelId(Number(e.target.value))}
+                  onChange={(e) => {
+                    const newChannelId = Number(e.target.value);
+                    console.log('[AnalyticsDashboard] Action: Channel selected', newChannelId);
+                    setSelectedChannelId(newChannelId);
+                    console.log('[AnalyticsDashboard] State updated: selectedChannelId', newChannelId);
+                  }}
                   label="Select Channel"
                 >
                   <MenuItem value={0}>Select a channel...</MenuItem>

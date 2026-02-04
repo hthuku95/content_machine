@@ -17,6 +17,8 @@ import { useLinkages } from '@/hooks/useLinkages';
 import type { UploadStatus } from '@/types/clipping.types';
 
 export function ClipsGalleryPage() {
+  console.log('[ClipsGalleryPage] Component mounted');
+
   const [filters, setFilters] = useState<ClipFilters>({});
 
   // Fetch linkages for filter dropdown
@@ -41,8 +43,11 @@ export function ClipsGalleryPage() {
     Object.values(apiFilters).some(v => v !== undefined) ? apiFilters : undefined
   );
 
+  console.log('[ClipsGalleryPage] Clips loaded:', { count: clips.length, isLoading, hasNextPage });
+
   // Apply client-side search and sort
   const displayedClips = useMemo(() => {
+    console.log('[ClipsGalleryPage] Filtering and sorting clips:', filters);
     let result = [...clips];
 
     // Search filter
@@ -62,6 +67,7 @@ export function ClipsGalleryPage() {
     }
     // Default 'latest' is already sorted by creation time from API
 
+    console.log('[ClipsGalleryPage] Displayed clips count:', result.length);
     return result;
   }, [clips, filters.search, filters.sortBy]);
 
@@ -109,7 +115,10 @@ export function ClipsGalleryPage() {
               <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                 <Button
                   variant="outlined"
-                  onClick={() => fetchNextPage()}
+                  onClick={() => {
+                    console.log('[ClipsGalleryPage] Action: Load more clips');
+                    fetchNextPage();
+                  }}
                   disabled={isFetchingNextPage}
                 >
                   {isFetchingNextPage ? <CircularProgress size={24} /> : 'Load More'}

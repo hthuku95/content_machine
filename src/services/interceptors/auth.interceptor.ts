@@ -1,4 +1,5 @@
 import { api } from '../api';
+import toast from 'react-hot-toast';
 
 // Add JWT token to all requests
 api.interceptors.request.use(
@@ -19,13 +20,33 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear auth data on 401
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_user');
+      const requestUrl = error.config?.url || '';
+      const errorMessage = error.response?.data?.message || '';
 
-      // Redirect to login if not already there
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
+      // Check if this is a YouTube-specific token error (channel token, not app session)
+      if (requestUrl.includes('/api/youtube/') || errorMessage.includes('Token expired')) {
+        // YouTube channel token expired, not the app session
+        const msg = errorMessage || 'YouTube channel authentication failed';
+
+        toast.error(`${msg}. Please reconnect your YouTube channel.`);
+
+        // DON'T clear auth or redirect - user's app session is still valid
+        return Promise.reject(error);
+      } else {
+        // General app auth error - session expired
+        toast('Your session has expired. Logging you out...', {
+          icon: '⚠️',
+        });
+
+        // Wait briefly so user sees the message
+        setTimeout(() => {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login';
+          }
+        }, 2000);
       }
     }
     return Promise.reject(error);

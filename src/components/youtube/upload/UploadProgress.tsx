@@ -1,10 +1,12 @@
-import { Card, CardContent, Typography, LinearProgress, Box, Alert, Link } from '@mui/material';
+import { Card, CardContent, Typography, LinearProgress, Box, Alert, Link, Button } from '@mui/material';
 import {
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
   CloudQueue as CloudQueueIcon,
 } from '@mui/icons-material';
 import type { UploadProgress as UploadProgressType } from '@/types/upload.types';
+import { useNavigate } from 'react-router-dom';
+import { PATHS } from '@/routes/paths';
 
 export interface UploadProgressProps {
   progress: UploadProgressType;
@@ -20,6 +22,7 @@ function formatBytes(bytes: number): string {
 
 export function UploadProgress({ progress }: UploadProgressProps) {
   const percentage = Math.round(progress.percentage);
+  const navigate = useNavigate();
 
   const getStatusIcon = () => {
     switch (progress.status) {
@@ -91,7 +94,23 @@ export function UploadProgress({ progress }: UploadProgressProps) {
 
         {progress.status === 'error' && (
           <Alert severity="error" sx={{ mt: 2 }}>
-            Upload failed. Please try again.
+            <Typography variant="body2" gutterBottom>
+              <strong>Upload failed:</strong>{' '}
+              {progress.error_message || 'Please try again.'}
+            </Typography>
+
+            {progress.error_code === 401 && (
+              <Box sx={{ mt: 2 }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="error"
+                  onClick={() => navigate(PATHS.YOUTUBE.CHANNELS)}
+                >
+                  Reconnect YouTube Channel
+                </Button>
+              </Box>
+            )}
           </Alert>
         )}
       </CardContent>

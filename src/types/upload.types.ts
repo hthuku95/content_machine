@@ -27,4 +27,6 @@ export interface UploadProgress {
   percentage: number;
   status: 'uploading' | 'processing' | 'completed' | 'error';
   video_id?: string;
+  error_message?: string;
+  error_code?: number;
 }

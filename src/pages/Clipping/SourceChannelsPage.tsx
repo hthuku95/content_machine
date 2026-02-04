@@ -23,6 +23,8 @@ import { AddSourceChannelDialog } from '@/components/clipping/AddSourceChannelDi
 import { useSourceChannels } from '@/hooks/useSourceChannels';
 
 export function SourceChannelsPage() {
+  console.log('[SourceChannelsPage] Component mounted');
+
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [channelToDelete, setChannelToDelete] = useState<string | null>(null);
@@ -39,8 +41,11 @@ export function SourceChannelsPage() {
     isRemoving,
   } = useSourceChannels();
 
+  console.log('[SourceChannelsPage] Channels loaded:', { count: channels.length, isLoading });
+
   // Apply search and filter
   const filteredChannels = useMemo(() => {
+    console.log('[SourceChannelsPage] Filtering channels:', { searchQuery, activeFilter });
     let result = channels;
 
     // Search filter
@@ -59,29 +64,38 @@ export function SourceChannelsPage() {
       result = result.filter(channel => !channel.is_active);
     }
 
+    console.log('[SourceChannelsPage] Filtered channels count:', result.length);
     return result;
   }, [channels, searchQuery, activeFilter]);
 
   const handleAddSuccess = () => {
+    console.log('[SourceChannelsPage] Action: Add channel success');
     setAddDialogOpen(false);
+    console.log('[SourceChannelsPage] State updated: Add dialog closed');
   };
 
   const handleDeleteClick = (id: string) => {
+    console.log('[SourceChannelsPage] Action: Delete channel', id);
     setChannelToDelete(id);
     setDeleteDialogOpen(true);
+    console.log('[SourceChannelsPage] State updated: Delete dialog opened');
   };
 
   const handleDeleteConfirm = () => {
     if (channelToDelete) {
+      console.log('[SourceChannelsPage] Action: Confirm delete', channelToDelete);
       removeChannel(channelToDelete);
       setDeleteDialogOpen(false);
       setChannelToDelete(null);
+      console.log('[SourceChannelsPage] State updated: Delete dialog closed');
     }
   };
 
   const handleDeleteCancel = () => {
+    console.log('[SourceChannelsPage] Action: Cancel delete');
     setDeleteDialogOpen(false);
     setChannelToDelete(null);
+    console.log('[SourceChannelsPage] State updated: Delete dialog closed');
   };
 
   return (

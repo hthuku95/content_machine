@@ -26,11 +26,15 @@ import { PATHS } from '@/routes/paths';
 import type { YouTubeVideo } from '@/types/video.types';
 
 export function UploadHistoryPage() {
+  console.log('[UploadHistoryPage] Component mounted');
+
   const { data: videos = [], isLoading } = useQuery({
     queryKey: ['youtube', 'uploads'],
     queryFn: () => videoService.listUploads(),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  console.log('[UploadHistoryPage] Videos loaded:', { count: videos.length, isLoading });
 
   const { deleteVideo, isDeleting } = useVideos();
 
@@ -40,29 +44,41 @@ export function UploadHistoryPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleEdit = (video: YouTubeVideo) => {
+    console.log('[UploadHistoryPage] Action: Edit video', video.id);
     setSelectedVideo(video);
     setEditDialogOpen(true);
+    console.log('[UploadHistoryPage] State updated: Edit dialog opened');
   };
 
   const handleDelete = (videoId: string) => {
+    console.log('[UploadHistoryPage] Action: Delete video', videoId);
     const video = videos.find((v) => v.id === videoId);
     if (video) {
       setSelectedVideo(video);
       setDeleteDialogOpen(true);
+      console.log('[UploadHistoryPage] State updated: Delete dialog opened');
     }
   };
 
   const handleSchedule = (video: YouTubeVideo) => {
+    console.log('[UploadHistoryPage] Action: Schedule video', video.id);
     setSelectedVideo(video);
     setScheduleDialogOpen(true);
+    console.log('[UploadHistoryPage] State updated: Schedule dialog opened');
   };
 
   const confirmDelete = () => {
     if (selectedVideo) {
+      console.log('[UploadHistoryPage] Action: Confirm delete', selectedVideo.id);
       deleteVideo(selectedVideo.id, {
         onSuccess: () => {
+          console.log('[UploadHistoryPage] Delete successful');
           setDeleteDialogOpen(false);
           setSelectedVideo(null);
+          console.log('[UploadHistoryPage] State updated: Delete dialog closed');
+        },
+        onError: (error) => {
+          console.error('[UploadHistoryPage] Error: Delete failed', error);
         },
       });
     }

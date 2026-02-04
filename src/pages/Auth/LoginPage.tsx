@@ -4,6 +4,7 @@ import { GoogleOAuthButton } from '@/components/auth/GoogleOAuthButton';
 import { DynamicBackground } from '@/components/common/DynamicBackground';
 
 export function LoginPage() {
+  console.log('[LoginPage] Component mounted');
   return (
     <>
       <DynamicBackground opacity={0.15} updateInterval={5} />
