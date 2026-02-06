@@ -102,18 +102,29 @@ export function UploadForm({ onSubmit, isUploading }: UploadFormProps) {
               setChannelId(Number(e.target.value));
               setErrors({ ...errors, channel_id: '' });
             }}
-            disabled={isUploading || channels.length === 0}
+            disabled={isUploading}
           >
             <MenuItem value={0}>Select a channel...</MenuItem>
             {channels.map((ch) => (
-              <MenuItem key={ch.id} value={ch.id}>
+              <MenuItem
+                key={ch.id}
+                value={ch.id}
+                disabled={!ch.is_active || ch.requires_reauth}
+              >
                 {ch.channel_name}
+                {ch.requires_reauth && ' ⚠️ (Reconnection Required)'}
+                {!ch.is_active && !ch.requires_reauth && ' (Inactive)'}
               </MenuItem>
             ))}
           </Select>
           {errors.channel_id && <FormHelperText>{errors.channel_id}</FormHelperText>}
           {channels.length === 0 && (
             <FormHelperText>No channels connected. Please connect a YouTube channel first.</FormHelperText>
+          )}
+          {channels.some(ch => ch.requires_reauth) && (
+            <Alert severity="warning" sx={{ mt: 2 }}>
+              Some channels require reconnection. Please go to Channels page to reconnect.
+            </Alert>
           )}
         </FormControl>
 
@@ -187,7 +198,7 @@ export function UploadForm({ onSubmit, isUploading }: UploadFormProps) {
           type="submit"
           variant="contained"
           size="large"
-          disabled={isUploading || !videoFile || channels.length === 0}
+          disabled={isUploading || !videoFile || channels.filter(ch => ch.is_active && !ch.requires_reauth).length === 0}
           startIcon={<CloudUploadIcon />}
         >
           Start Upload

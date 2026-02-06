@@ -9,6 +9,7 @@ export interface ConnectedYouTubeChannel {
   subscriber_count: number | null;      // Backend sends i64
   video_count: number | null;           // Backend sends i64
   is_active: boolean;
+  requires_reauth: boolean;             // Whether channel needs reconnection
   connected_at: string;                 // Backend sends DateTime as ISO string
 }
 
