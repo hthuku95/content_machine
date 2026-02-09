@@ -20,6 +20,9 @@ import {
   Add as AddIcon,
   Delete as DeleteIcon,
   YouTube as YouTubeIcon,
+  Refresh as RefreshIcon,
+  CheckCircle as CheckCircleIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useConnectedChannels } from '@/hooks/useConnectedChannels';
 import { format } from 'date-fns';
@@ -100,8 +103,18 @@ export function ConnectedChannelsPage() {
         </Paper>
       ) : (
         <ResponsiveGrid columns={{ xs: 1, sm: 2, md: 3 }}>
-          {channels.map((channel) => (
-            <Card key={channel.id}>
+          {channels.map((channel) => {
+            const needsReauth = channel.requires_reauth || false;
+            const isActive = channel.is_active !== false;
+
+            return (
+              <Card
+                key={channel.id}
+                sx={{
+                  borderLeft: needsReauth ? '4px solid' : undefined,
+                  borderColor: needsReauth ? 'error.main' : undefined,
+                }}
+              >
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                     <Avatar
@@ -112,24 +125,99 @@ export function ConnectedChannelsPage() {
                       <YouTubeIcon />
                     </Avatar>
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant="h6" noWrap>
-                        {channel.channel_name}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                        <Typography variant="h6" noWrap sx={{ flex: 1 }}>
+                          {channel.channel_name}
+                        </Typography>
+                        {needsReauth ? (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 0.5,
+                              bgcolor: 'error.main',
+                              color: 'error.contrastText',
+                              px: 1,
+                              py: 0.25,
+                              borderRadius: 1,
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                            }}
+                          >
+                            <WarningIcon sx={{ fontSize: 14 }} />
+                            Expired
+                          </Box>
+                        ) : isActive ? (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 0.5,
+                              bgcolor: 'success.main',
+                              color: 'success.contrastText',
+                              px: 1,
+                              py: 0.25,
+                              borderRadius: 1,
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                            }}
+                          >
+                            <CheckCircleIcon sx={{ fontSize: 14 }} />
+                            Connected
+                          </Box>
+                        ) : (
+                          <Box
+                            sx={{
+                              bgcolor: 'grey.600',
+                              color: 'white',
+                              px: 1,
+                              py: 0.25,
+                              borderRadius: 1,
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                            }}
+                          >
+                            Inactive
+                          </Box>
+                        )}
+                      </Box>
+                      <Typography variant="caption" color="text.secondary" display="block">
                         Connected {format(new Date(channel.connected_at), 'MMM d, yyyy')}
                       </Typography>
+                      {needsReauth && channel.reauth_reason && (
+                        <Typography variant="caption" color="error" display="block" sx={{ mt: 0.5 }}>
+                          ⚠️ {channel.reauth_reason}
+                        </Typography>
+                      )}
                     </Box>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDisconnectClick(channel.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    {needsReauth ? (
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="success"
+                        startIcon={<RefreshIcon />}
+                        onClick={() => {
+                          console.log('[ConnectedChannelsPage] Action: Reconnect channel');
+                          connectChannel();
+                        }}
+                        sx={{ minWidth: 'auto' }}
+                      >
+                        Reconnect
+                      </Button>
+                    ) : (
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDisconnectClick(channel.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </Box>
                 </CardContent>
               </Card>
-          ))}
+            );
+          })}
         </ResponsiveGrid>
       )}
 
@@ -137,8 +225,13 @@ export function ConnectedChannelsPage() {
         <DialogTitle>Disconnect Channel</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to disconnect this YouTube channel? This will remove all
-            associated linkages.
+            Are you sure you want to disconnect this YouTube channel?
+          </DialogContentText>
+          <DialogContentText sx={{ mt: 2, color: 'warning.main', fontWeight: 'bold' }}>
+            ⚠️ Warning: This will also delete all clipping linkages for this channel.
+          </DialogContentText>
+          <DialogContentText sx={{ mt: 1, fontSize: '0.875rem' }}>
+            Note: If you just need to refresh the connection, use the "Reconnect" button instead, which preserves all linkages.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
