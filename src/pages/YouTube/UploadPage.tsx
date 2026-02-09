@@ -49,7 +49,9 @@ export function UploadPage() {
       });
 
       // Upload file in chunks
-      const chunkSize = 5 * 1024 * 1024; // 5MB chunks
+      // YouTube API requires chunks to be multiples of 256KB (except last chunk)
+      // Using 8MB chunks for optimal performance as recommended by YouTube
+      const chunkSize = 8 * 1024 * 1024; // 8MB chunks (8192KB = 32 * 256KB)
       const totalChunks = Math.ceil(data.video_file.size / chunkSize);
 
       console.log('[UploadPage] Starting chunked upload:', {
