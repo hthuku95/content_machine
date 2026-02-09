@@ -166,6 +166,13 @@ export const clippingService = {
     await api.post(`/api/clipping/jobs/${id}/cancel`);
   },
 
+  /**
+   * Retry a failed clipping job
+   */
+  async retryJob(id: string): Promise<void> {
+    await api.post(`/api/clipping/jobs/${id}/retry`);
+  },
+
   // ===== Clips =====
 
   /**

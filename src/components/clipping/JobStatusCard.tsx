@@ -16,6 +16,7 @@ import {
   Error as ErrorIcon,
   HourglassEmpty as PendingIcon,
   HourglassEmpty,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import type { ClippingJob, JobStatus } from '@/types/clipping.types';
 import { PATHS } from '@/routes/paths';
@@ -24,6 +25,7 @@ import { formatDistanceToNow } from 'date-fns';
 interface JobStatusCardProps {
   job: ClippingJob;
   onCancel?: (id: string) => void;
+  onRetry?: (id: string) => void;
 }
 
 const STATUS_CONFIG: Record<
@@ -48,15 +50,24 @@ const STATUS_CONFIG: Record<
   },
 };
 
-export function JobStatusCard({ job, onCancel }: JobStatusCardProps) {
+export function JobStatusCard({ job, onCancel, onRetry }: JobStatusCardProps) {
   const statusConfig = STATUS_CONFIG[job.status];
   const canCancel = job.status === 'pending' || job.status === 'processing';
+  const canRetry = job.status === 'failed';
 
   const handleCancelClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (onCancel) {
       onCancel(job.id);
+    }
+  };
+
+  const handleRetryClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onRetry) {
+      onRetry(job.id);
     }
   };
 
@@ -81,6 +92,13 @@ export function JobStatusCard({ job, onCancel }: JobStatusCardProps) {
               color={statusConfig.color}
               size="small"
             />
+            {canRetry && onRetry && (
+              <Tooltip title="Retry failed job">
+                <IconButton size="small" color="primary" onClick={handleRetryClick}>
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
+            )}
             {canCancel && onCancel && (
               <Tooltip title="Cancel job">
                 <IconButton size="small" color="error" onClick={handleCancelClick}>

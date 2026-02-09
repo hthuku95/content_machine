@@ -43,7 +43,7 @@ export function JobsPage() {
     start_date: filters.startDate,
     end_date: filters.endDate,
   };
-  const { jobs: filteredJobs, isLoading: isFilteredLoading, cancelJob } = useJobs(
+  const { jobs: filteredJobs, isLoading: isFilteredLoading, cancelJob, retryJob } = useJobs(
     Object.values(apiFilters).some(v => v !== undefined) ? apiFilters : undefined
   );
 
@@ -116,7 +116,7 @@ export function JobsPage() {
         ) : (
           <ResponsiveGrid columns={{ xs: 1, md: 2 }}>
             {displayedJobs.map((job) => (
-              <JobStatusCard key={job.id} job={job} onCancel={cancelJob} />
+              <JobStatusCard key={job.id} job={job} onCancel={cancelJob} onRetry={retryJob} />
             ))}
           </ResponsiveGrid>
         )}

@@ -27,11 +27,27 @@ export function useJobs(filters?: JobFilters) {
     },
   });
 
+  // Mutation for retrying a failed job
+  const retryMutation = useMutation({
+    mutationFn: (id: string) => clippingService.retryJob(id),
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clipping', 'jobs'] });
+      toast.success('Job queued for retry');
+    },
+    onError: () => {
+      // Error handled by interceptor
+    },
+  });
+
   return {
     jobs,
     isLoading,
     error,
     cancelJob: cancelMutation.mutate,
     isCancelling: cancelMutation.isPending,
+    retryJob: retryMutation.mutate,
+    isRetrying: retryMutation.isPending,
   };
 }

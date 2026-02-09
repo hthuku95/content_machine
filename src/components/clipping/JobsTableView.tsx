@@ -22,6 +22,7 @@ import {
   Error as ErrorIcon,
   HourglassEmpty as PendingIcon,
   HourglassEmpty,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import type { ClippingJob, JobStatus } from '@/types/clipping.types';
@@ -31,6 +32,7 @@ import { formatDistanceToNow } from 'date-fns';
 interface JobsTableViewProps {
   jobs: ClippingJob[];
   onCancel?: (id: string) => void;
+  onRetry?: (id: string) => void;
   selectionMode?: boolean;
   selectedIds?: Set<string>;
   onSelect?: (id: string) => void;
@@ -62,6 +64,7 @@ const STATUS_CONFIG: Record<
 export function JobsTableView({
   jobs,
   onCancel,
+  onRetry,
   selectionMode = false,
   selectedIds = new Set(),
   onSelect,
@@ -102,6 +105,7 @@ export function JobsTableView({
           {jobs.map((job) => {
             const statusConfig = STATUS_CONFIG[job.status];
             const canCancel = job.status === 'pending' || job.status === 'processing';
+            const canRetry = job.status === 'failed';
             const isSelected = selectedIds.has(job.id);
 
             return (
@@ -186,6 +190,20 @@ export function JobsTableView({
                         <ViewIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
+                    {canRetry && onRetry && (
+                      <Tooltip title="Retry failed job">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRetry(job.id);
+                          }}
+                        >
+                          <RefreshIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     {canCancel && onCancel && (
                       <Tooltip title="Cancel job">
                         <IconButton
