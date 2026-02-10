@@ -14,6 +14,8 @@ import {
   DialogContent,
   DialogActions,
   DialogContentText,
+  Alert,
+  AlertTitle,
 } from '@mui/material';
 import { ResponsiveGrid } from '@/components/common/ResponsiveGrid';
 import {
@@ -32,11 +34,16 @@ export function ConnectedChannelsPage() {
 
   const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false);
   const [channelToDisconnect, setChannelToDisconnect] = useState<number | null>(null);
+  const [bulkReconnectDialogOpen, setBulkReconnectDialogOpen] = useState(false);
 
   const { channels, isLoading, disconnectChannel, connectChannel, isConnecting, isDisconnecting } =
     useConnectedChannels();
 
   console.log('[ConnectedChannelsPage] Channels loaded:', { count: channels.length, isLoading });
+
+  // Calculate channels needing reauth
+  const channelsNeedingReauth = channels.filter((ch) => ch.is_active && ch.requires_reauth);
+  const hasReauthIssues = channelsNeedingReauth.length > 0;
 
   const handleDisconnectClick = (id: number) => {
     console.log('[ConnectedChannelsPage] Action: Disconnect channel', id);
@@ -66,18 +73,41 @@ export function ConnectedChannelsPage() {
             Manage your connected YouTube channels for uploading clips
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={isConnecting ? <CircularProgress size={20} /> : <AddIcon />}
-          onClick={() => {
-            console.log('[ConnectedChannelsPage] Action: Connect new channel');
-            connectChannel();
-          }}
-          disabled={isConnecting}
-        >
-          {isConnecting ? 'Connecting...' : 'Connect Channel'}
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {hasReauthIssues && (
+            <Button
+              variant="contained"
+              color="warning"
+              startIcon={<RefreshIcon />}
+              onClick={() => setBulkReconnectDialogOpen(true)}
+            >
+              Reconnect All ({channelsNeedingReauth.length})
+            </Button>
+          )}
+          <Button
+            variant="contained"
+            startIcon={isConnecting ? <CircularProgress size={20} /> : <AddIcon />}
+            onClick={() => {
+              console.log('[ConnectedChannelsPage] Action: Connect new channel');
+              connectChannel();
+            }}
+            disabled={isConnecting}
+          >
+            {isConnecting ? 'Connecting...' : 'Connect Channel'}
+          </Button>
+        </Box>
       </Box>
+
+      {hasReauthIssues && (
+        <Alert severity="warning" sx={{ mb: 3 }}>
+          <AlertTitle>
+            {channelsNeedingReauth.length} Channel{channelsNeedingReauth.length !== 1 ? 's' : ''} Need
+            Reconnection
+          </AlertTitle>
+          These channels cannot upload videos until reconnected. Click "Reconnect All" to fix all channels at
+          once, or use the individual "Reconnect" buttons below.
+        </Alert>
+      )}
 
       {isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -240,6 +270,51 @@ export function ConnectedChannelsPage() {
           </Button>
           <Button onClick={handleDisconnectConfirm} color="error" disabled={isDisconnecting}>
             {isDisconnecting ? <CircularProgress size={20} /> : 'Disconnect'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={bulkReconnectDialogOpen} onClose={() => setBulkReconnectDialogOpen(false)}>
+        <DialogTitle>Reconnect All Channels</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            You're about to reconnect {channelsNeedingReauth.length} channel
+            {channelsNeedingReauth.length !== 1 ? 's' : ''} that need authorization.
+          </DialogContentText>
+          <DialogContentText sx={{ mt: 2 }}>
+            This will open Google's OAuth flow. You'll need to grant permissions for each channel individually.
+          </DialogContentText>
+          <DialogContentText sx={{ mt: 2, fontWeight: 'bold' }}>
+            Channels to reconnect:
+          </DialogContentText>
+          <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+            {channelsNeedingReauth.slice(0, 5).map((ch) => (
+              <Box component="li" key={ch.id} sx={{ mb: 0.5 }}>
+                <Typography variant="body2">{ch.channel_name}</Typography>
+              </Box>
+            ))}
+            {channelsNeedingReauth.length > 5 && (
+              <Box component="li" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                <Typography variant="body2">
+                  ...and {channelsNeedingReauth.length - 5} more
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBulkReconnectDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={() => {
+              console.log('[ConnectedChannelsPage] Action: Bulk reconnect');
+              connectChannel();
+              setBulkReconnectDialogOpen(false);
+            }}
+            variant="contained"
+            color="warning"
+            startIcon={<RefreshIcon />}
+          >
+            Start Reconnection
           </Button>
         </DialogActions>
       </Dialog>

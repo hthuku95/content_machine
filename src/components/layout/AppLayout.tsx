@@ -5,11 +5,15 @@ import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
 import { useUIStore } from '@/stores/uiStore';
 import { DynamicBackground } from '@/components/common/DynamicBackground';
+import { useChannelHealthMonitor } from '@/hooks/useChannelHealthMonitor';
 
 export function AppLayout() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { sidebarOpen, setSidebarOpen } = useUIStore();
+
+  // Monitor channel health and show notifications
+  useChannelHealthMonitor();
 
   // Close sidebar on mobile by default
   useEffect(() => {

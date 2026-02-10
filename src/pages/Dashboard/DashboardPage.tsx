@@ -35,6 +35,7 @@ import {
 import { Link as RouterLink } from 'react-router-dom';
 import { PATHS } from '@/routes/paths';
 import { useAuth } from '@/hooks/useAuth';
+import { ChannelHealthWidget } from '@/components/dashboard/ChannelHealthWidget';
 
 export function DashboardPage() {
   console.log('[DashboardPage] Component mounted');
@@ -156,6 +157,11 @@ export function DashboardPage() {
             <Chip icon={<SecurityIcon />} label="Secure OAuth" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
           </Box>
         </Paper>
+
+        {/* Channel Health Widget */}
+        <Box sx={{ mb: 4 }}>
+          <ChannelHealthWidget />
+        </Box>
 
         {/* Main Features */}
         <Box sx={{ mb: 6 }}>
