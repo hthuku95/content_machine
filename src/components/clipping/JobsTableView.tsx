@@ -103,7 +103,7 @@ export function JobsTableView({
         </TableHead>
         <TableBody>
           {jobs.map((job) => {
-            const statusConfig = STATUS_CONFIG[job.status];
+            const statusConfig = STATUS_CONFIG[job.status] || STATUS_CONFIG.pending; // Fallback to pending if invalid
             const canCancel = job.status === 'pending' || job.status === 'processing';
             const canRetry = job.status === 'failed';
             const isSelected = selectedIds.has(job.id);
