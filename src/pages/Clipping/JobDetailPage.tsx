@@ -23,6 +23,7 @@ import {
   HourglassEmpty,
   Work as WorkIcon,
   VideoLibrary as VideoIcon,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { AccessGate } from '@/components/clipping/AccessGate';
 import { JobTimeline } from '@/components/clipping/JobTimeline';
@@ -62,7 +63,7 @@ export function JobDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: job, isLoading, error } = useJobDetail(id!);
-  const { cancelJob, isCancelling } = useJobs();
+  const { cancelJob, isCancelling, retryJob, isRetrying } = useJobs();
 
   // Fetch clips for this job (filter by job_id isn't in the API, so we'll filter client-side)
   const { clips: allClips } = useClips();
@@ -126,10 +127,17 @@ export function JobDetailPage() {
 
   const statusConfig = STATUS_CONFIG[job.status] || STATUS_CONFIG.pending; // Fallback to pending if invalid
   const canCancel = job.status === 'pending' || job.status === 'processing';
+  const canRetry = job.status === 'failed';
 
   const handleCancel = () => {
     if (window.confirm('Are you sure you want to cancel this job?')) {
       cancelJob(job.id);
+    }
+  };
+
+  const handleRetry = () => {
+    if (window.confirm('Retry this failed job? It will be queued for processing again.')) {
+      retryJob(job.id);
     }
   };
 
@@ -169,6 +177,17 @@ export function JobDetailPage() {
             >
               Back
             </Button>
+            {canRetry && (
+              <Button
+                variant="contained"
+                color="warning"
+                startIcon={isRetrying ? <CircularProgress size={20} /> : <RefreshIcon />}
+                onClick={handleRetry}
+                disabled={isRetrying}
+              >
+                {isRetrying ? 'Retrying...' : 'Retry Job'}
+              </Button>
+            )}
             {canCancel && (
               <Button
                 variant="outlined"
