@@ -29,11 +29,22 @@ function getActiveStep(status: JobStatus, currentStep: string | null): number {
 
   if (!currentStep) return 0; // Queued
 
-  const stepLower = currentStep.toLowerCase();
-  if (stepLower.includes('download')) return 1;
-  if (stepLower.includes('analyz')) return 2;
-  if (stepLower.includes('extract') || stepLower.includes('clip')) return 3;
-  if (stepLower.includes('post') || stepLower.includes('publish') || stepLower.includes('upload')) return 4;
+  const step = currentStep.toLowerCase();
+
+  // Agent tool names (GeminiClippingAgent)
+  if (step === 'get_job_context') return 0;
+  if (step === 'download_video') return 1;
+  if (step === 'analyze_video_for_clips') return 2;
+  if (step === 'extract_clips_from_video') return 3;
+  if (step === 'vectorize_clips') return 3;
+  if (step === 'upload_clips_to_youtube') return 4;
+  if (step === 'mark_job_complete' || step === 'mark_job_failed') return 5;
+
+  // Fallback: keyword matching (backward compat with old pipeline)
+  if (step.includes('download')) return 1;
+  if (step.includes('analyz')) return 2;
+  if (step.includes('extract') || step.includes('clip')) return 3;
+  if (step.includes('post') || step.includes('publish') || step.includes('upload')) return 4;
 
   return 0;
 }

@@ -48,6 +48,14 @@ const STATUS_CONFIG: Record<
     color: 'error',
     icon: <ErrorIcon fontSize="small" />,
   },
+  cancelled: {
+    color: 'default',
+    icon: <CancelIcon fontSize="small" />,
+  },
+  no_clips_found: {
+    color: 'default',
+    icon: <CheckCircleIcon fontSize="small" />,
+  },
 };
 
 export function JobStatusCard({ job, onCancel, onRetry }: JobStatusCardProps) {
@@ -116,7 +124,9 @@ export function JobStatusCard({ job, onCancel, onRetry }: JobStatusCardProps) {
                 Progress
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {job.progress}%
+                {job.steps_completed != null && job.total_steps != null
+                  ? `Step ${job.steps_completed}/${job.total_steps}`
+                  : `${job.progress}%`}
               </Typography>
             </Box>
             <LinearProgress

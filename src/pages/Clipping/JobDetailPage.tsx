@@ -31,6 +31,7 @@ import { JobErrorDisplay } from '@/components/clipping/JobErrorDisplay';
 import { ClipCard } from '@/components/clipping/ClipCard';
 import { ResponsiveGrid } from '@/components/common/ResponsiveGrid';
 import { useJobDetail } from '@/hooks/useJobDetail';
+import { useJobWebSocket } from '@/hooks/useJobWebSocket';
 import { useJobs } from '@/hooks/useJobs';
 import { useClips } from '@/hooks/useClips';
 import { PATHS } from '@/routes/paths';
@@ -57,12 +58,23 @@ const STATUS_CONFIG: Record<
     color: 'error',
     icon: <ErrorIcon fontSize="small" />,
   },
+  cancelled: {
+    color: 'default',
+    icon: <CancelIcon fontSize="small" />,
+  },
+  no_clips_found: {
+    color: 'default',
+    icon: <CheckCircleIcon fontSize="small" />,
+  },
 };
 
 export function JobDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: job, isLoading, error } = useJobDetail(id!);
+  const isActive = job?.status === 'pending' || job?.status === 'processing';
+  const { liveJob, isConnected } = useJobWebSocket(id!, isActive);
+  const displayJob = job ? { ...job, ...liveJob } : job;
   const { cancelJob, isCancelling, retryJob, isRetrying } = useJobs();
 
   // Fetch clips for this job (filter by job_id isn't in the API, so we'll filter client-side)
@@ -125,19 +137,19 @@ export function JobDetailPage() {
     );
   }
 
-  const statusConfig = STATUS_CONFIG[job.status] || STATUS_CONFIG.pending; // Fallback to pending if invalid
-  const canCancel = job.status === 'pending' || job.status === 'processing';
-  const canRetry = job.status === 'failed';
+  const statusConfig = STATUS_CONFIG[displayJob!.status] || STATUS_CONFIG.pending; // Fallback to pending if invalid
+  const canCancel = displayJob!.status === 'pending' || displayJob!.status === 'processing';
+  const canRetry = displayJob!.status === 'failed';
 
   const handleCancel = () => {
     if (window.confirm('Are you sure you want to cancel this job?')) {
-      cancelJob(job.id);
+      cancelJob(job!.id);
     }
   };
 
   const handleRetry = () => {
     if (window.confirm('Retry this failed job? It will be queued for processing again.')) {
-      retryJob(job.id);
+      retryJob(job!.id);
     }
   };
 
@@ -156,16 +168,19 @@ export function JobDetailPage() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
           <Box sx={{ flex: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-              <Typography variant="h4">{job.source_video_title}</Typography>
+              <Typography variant="h4">{displayJob!.source_video_title}</Typography>
               <Chip
-                label={job.status.toUpperCase()}
+                label={displayJob!.status.toUpperCase()}
                 color={statusConfig.color}
                 size="medium"
                 icon={statusConfig.icon}
               />
+              {isConnected && (
+                <Chip label="Live" color="success" size="small" variant="outlined" />
+              )}
             </Box>
             <Typography variant="body2" color="text.secondary">
-              Created {format(new Date(job.created_at), 'PPpp')}
+              Created {format(new Date(job!.created_at), 'PPpp')}
             </Typography>
           </Box>
 
@@ -203,37 +218,44 @@ export function JobDetailPage() {
         </Box>
 
         {/* Error Display */}
-        <JobErrorDisplay job={job} />
+        <JobErrorDisplay job={displayJob!} />
 
         {/* Main Content */}
         <Grid container spacing={3}>
           {/* Left Column - Details */}
           <Grid item xs={12} md={8}>
             {/* Progress Card */}
-            {job.status === 'processing' && (
+            {displayJob!.status === 'processing' && (
               <Paper sx={{ p: 3, mb: 3 }}>
                 <Typography variant="h6" gutterBottom>
                   Processing Progress
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2" color="text.secondary">
-                    {job.current_step || 'Processing...'}
+                    {displayJob!.current_step || 'Processing...'}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {job.progress}%
+                    {displayJob!.steps_completed != null && displayJob!.total_steps != null
+                      ? `Step ${displayJob!.steps_completed}/${displayJob!.total_steps}`
+                      : `${displayJob!.progress}%`}
                   </Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
-                  value={job.progress}
+                  value={displayJob!.progress}
                   sx={{ height: 10, borderRadius: 1 }}
                 />
+                {displayJob!.current_action_detail && (
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                    {displayJob!.current_action_detail}
+                  </Typography>
+                )}
               </Paper>
             )}
 
             {/* Timeline */}
             <Paper sx={{ p: 3, mb: 3 }}>
-              <JobTimeline job={job} />
+              <JobTimeline job={displayJob!} />
             </Paper>
 
             {/* Generated Clips */}
@@ -276,7 +298,7 @@ export function JobDetailPage() {
                     Job ID
                   </Typography>
                   <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
-                    {job.id}
+                    {displayJob!.id}
                   </Typography>
                 </Box>
 
@@ -285,7 +307,7 @@ export function JobDetailPage() {
                     Source Video ID
                   </Typography>
                   <Typography variant="body2">
-                    {job.source_video_id}
+                    {displayJob!.source_video_id}
                   </Typography>
                 </Box>
 
@@ -295,31 +317,31 @@ export function JobDetailPage() {
                   </Typography>
                   <Box sx={{ mt: 0.5 }}>
                     <Chip
-                      label={job.status.toUpperCase()}
+                      label={displayJob!.status.toUpperCase()}
                       color={statusConfig.color}
                       size="small"
                     />
                   </Box>
                 </Box>
 
-                {job.started_at && (
+                {displayJob!.started_at && (
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="caption" color="text.secondary">
                       Started
                     </Typography>
                     <Typography variant="body2">
-                      {formatDistanceToNow(new Date(job.started_at), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(displayJob!.started_at!), { addSuffix: true })}
                     </Typography>
                   </Box>
                 )}
 
-                {job.completed_at && (
+                {displayJob!.completed_at && (
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="caption" color="text.secondary">
                       Completed
                     </Typography>
                     <Typography variant="body2">
-                      {formatDistanceToNow(new Date(job.completed_at), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(displayJob!.completed_at!), { addSuffix: true })}
                     </Typography>
                   </Box>
                 )}
@@ -327,7 +349,7 @@ export function JobDetailPage() {
             </Card>
 
             {/* Linkage Info Card */}
-            {job.linkage && (
+            {displayJob!.linkage && (
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -335,24 +357,24 @@ export function JobDetailPage() {
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
 
-                  {job.linkage.source_channel && (
+                  {displayJob!.linkage.source_channel && (
                     <Box sx={{ mb: 2 }}>
                       <Typography variant="caption" color="text.secondary">
                         Source Channel
                       </Typography>
                       <Typography variant="body2">
-                        {job.linkage.source_channel.channel_title}
+                        {displayJob!.linkage.source_channel.channel_title}
                       </Typography>
                     </Box>
                   )}
 
-                  {job.linkage.destination_channel_title && (
+                  {displayJob!.linkage.destination_channel_title && (
                     <Box sx={{ mb: 2 }}>
                       <Typography variant="caption" color="text.secondary">
                         Destination Channel
                       </Typography>
                       <Typography variant="body2">
-                        {job.linkage.destination_channel_title}
+                        {displayJob!.linkage.destination_channel_title}
                       </Typography>
                     </Box>
                   )}
@@ -362,7 +384,7 @@ export function JobDetailPage() {
                       Clip Duration Range
                     </Typography>
                     <Typography variant="body2">
-                      {job.linkage.min_clip_duration_seconds}s - {job.linkage.max_clip_duration_seconds}s
+                      {displayJob!.linkage.min_clip_duration_seconds}s - {displayJob!.linkage.max_clip_duration_seconds}s
                     </Typography>
                   </Box>
 
@@ -371,7 +393,7 @@ export function JobDetailPage() {
                       Clips Per Video
                     </Typography>
                     <Typography variant="body2">
-                      {job.linkage.clips_per_video}
+                      {displayJob!.linkage.clips_per_video}
                     </Typography>
                   </Box>
                 </CardContent>

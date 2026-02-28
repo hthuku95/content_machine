@@ -54,7 +54,7 @@ export interface UpdateLinkageRequest {
   is_active?: boolean;
 }
 
-export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed';
+export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled' | 'no_clips_found';
 
 export interface ClippingJob {
   id: string;
@@ -70,8 +70,28 @@ export interface ClippingJob {
   completed_at: string | null;
   created_at: string;
   updated_at: string;
+  // Real-time progress fields (populated from WebSocket ProgressUpdate)
+  steps_completed?: number;
+  total_steps?: number;
+  current_action_detail?: string | null;
   // Populated fields
   linkage?: ChannelLinkage;
+}
+
+export interface ClippingProgressUpdate {
+  job_id: string;
+  timestamp: string;
+  message: string;
+  status: {
+    status: 'running' | 'completed' | 'failed' | 'queued';
+    current_step?: string;
+    progress_percent?: number;
+    steps_completed?: number;
+    total_steps?: number;
+    current_action_detail?: string | null;
+    result?: string;
+    error?: string;
+  };
 }
 
 export interface JobFilters {
