@@ -47,6 +47,9 @@ export const PATHS = {
     ACCOUNT: '/settings/account',
   },
 
+  // Video Tools
+  VIDEO_TOOLS: '/video-tools',
+
   // Other
   NOT_FOUND: '/404',
 };

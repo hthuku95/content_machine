@@ -27,6 +27,7 @@ import {
   Comment as CommentIcon,
   ClosedCaption as CaptionIcon,
   AccountCircle as ChannelIcon,
+  BuildCircle as VideoToolsIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -273,6 +274,20 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             </ListItemButton>
           </List>
         </Collapse>
+
+        <Divider sx={{ my: 1 }} />
+
+        <ListItem disablePadding>
+          <ListItemButton
+            selected={isActive(PATHS.VIDEO_TOOLS)}
+            onClick={() => handleNavigation(PATHS.VIDEO_TOOLS)}
+          >
+            <ListItemIcon>
+              <VideoToolsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Video Tools" />
+          </ListItemButton>
+        </ListItem>
 
         <Divider sx={{ my: 1 }} />
 

@@ -25,6 +25,7 @@ import { AnalyticsDashboard } from '@/pages/YouTube/AnalyticsDashboard';
 import { SearchPage } from '@/pages/YouTube/SearchPage';
 import { CommentModerationPage } from '@/pages/YouTube/CommentModerationPage';
 import { CaptionsPage } from '@/pages/YouTube/CaptionsPage';
+import { VideoToolsPage } from '@/pages/VideoTools/VideoToolsPage';
 
 export const router = createBrowserRouter([
   // Auth routes (no sidebar/topbar)
@@ -146,6 +147,15 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <CaptionsPage />
+          </ErrorBoundary>
+        ),
+      },
+      // Video Tools route
+      {
+        path: PATHS.VIDEO_TOOLS,
+        element: (
+          <ErrorBoundary>
+            <VideoToolsPage />
           </ErrorBoundary>
         ),
       },
