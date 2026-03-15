@@ -28,6 +28,7 @@ import {
   ClosedCaption as CaptionIcon,
   AccountCircle as ChannelIcon,
   BuildCircle as VideoToolsIcon,
+  SmartToy as AgentIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -91,6 +92,20 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
+          </ListItemButton>
+        </ListItem>
+
+        <Divider sx={{ my: 1 }} />
+
+        <ListItem disablePadding>
+          <ListItemButton
+            selected={isActive(PATHS.AGENT_CHAT)}
+            onClick={() => handleNavigation(PATHS.AGENT_CHAT)}
+          >
+            <ListItemIcon>
+              <AgentIcon />
+            </ListItemIcon>
+            <ListItemText primary="AI Agent" />
           </ListItemButton>
         </ListItem>
 

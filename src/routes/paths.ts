@@ -50,6 +50,9 @@ export const PATHS = {
   // Video Tools
   VIDEO_TOOLS: '/video-tools',
 
+  // AI Agent Chat
+  AGENT_CHAT: '/agent',
+
   // Other
   NOT_FOUND: '/404',
 };

@@ -26,6 +26,7 @@ import { SearchPage } from '@/pages/YouTube/SearchPage';
 import { CommentModerationPage } from '@/pages/YouTube/CommentModerationPage';
 import { CaptionsPage } from '@/pages/YouTube/CaptionsPage';
 import { VideoToolsPage } from '@/pages/VideoTools/VideoToolsPage';
+import { AgentChatPage } from '@/pages/AgentChat/AgentChatPage';
 
 export const router = createBrowserRouter([
   // Auth routes (no sidebar/topbar)
@@ -156,6 +157,15 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <VideoToolsPage />
+          </ErrorBoundary>
+        ),
+      },
+      // AI Agent Chat route
+      {
+        path: PATHS.AGENT_CHAT,
+        element: (
+          <ErrorBoundary>
+            <AgentChatPage />
           </ErrorBoundary>
         ),
       },
