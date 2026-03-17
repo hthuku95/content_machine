@@ -8,6 +8,7 @@ import {
   Toolbar,
   Collapse,
   Divider,
+  Typography,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -33,6 +34,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { PATHS } from '@/routes/paths';
 
 const DRAWER_WIDTH = 240;
@@ -41,6 +43,62 @@ interface SidebarProps {
   open: boolean;
   onClose?: () => void;
   variant?: 'permanent' | 'temporary';
+}
+
+interface NavItemProps {
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  indent?: boolean;
+}
+
+function NavItem({ icon, label, active, onClick, indent = false }: NavItemProps) {
+  return (
+    <ListItem disablePadding>
+      <ListItemButton
+        selected={active}
+        onClick={onClick}
+        sx={{
+          pl: indent ? 4 : 2,
+          borderLeft: active ? '2px solid' : '2px solid transparent',
+          borderColor: active ? 'primary.main' : 'transparent',
+          fontWeight: active ? 600 : 400,
+          '& .MuiListItemIcon-root': {
+            color: active ? 'primary.main' : 'text.secondary',
+          },
+          '& .MuiListItemText-primary': {
+            fontWeight: active ? 600 : 400,
+          },
+        }}
+      >
+        <ListItemIcon sx={{ minWidth: 36 }}>{icon}</ListItemIcon>
+        <ListItemText primary={label} />
+      </ListItemButton>
+    </ListItem>
+  );
+}
+
+function SectionLabel({ label }: { label: string }) {
+  return (
+    <Typography
+      variant="caption"
+      sx={{
+        px: 2,
+        pt: 1.5,
+        pb: 0.5,
+        display: 'block',
+        color: 'text.secondary',
+        fontWeight: 600,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        fontSize: '0.65rem',
+        opacity: 0.7,
+      }}
+    >
+      {label}
+    </Typography>
+  );
 }
 
 export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) {
@@ -56,17 +114,9 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
     }
   };
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
-  const isClippingActive = () => {
-    return location.pathname.startsWith('/clipping');
-  };
-
-  const isYoutubeActive = () => {
-    return location.pathname.startsWith('/youtube');
-  };
+  const isActive = (path: string) => location.pathname === path;
+  const isClippingActive = () => location.pathname.startsWith('/clipping');
+  const isYoutubeActive = () => location.pathname.startsWith('/youtube');
 
   return (
     <Drawer
@@ -79,257 +129,136 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
         '& .MuiDrawer-paper': {
           width: DRAWER_WIDTH,
           boxSizing: 'border-box',
+          background: (theme) =>
+            theme.palette.mode === 'dark'
+              ? 'linear-gradient(180deg, #2a2438 0%, #352f44 100%)'
+              : theme.palette.background.paper,
+          borderRight: '1px solid',
+          borderColor: 'divider',
         },
       }}
     >
       <Toolbar />
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton
-            selected={isActive(PATHS.DASHBOARD)}
+
+      {/* NAVIGATION group */}
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2, delay: 0 }}
+      >
+        <SectionLabel label="Navigation" />
+        <List disablePadding>
+          <NavItem
+            icon={<DashboardIcon />}
+            label="Dashboard"
+            active={isActive(PATHS.DASHBOARD)}
             onClick={() => handleNavigation(PATHS.DASHBOARD)}
-          >
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-          </ListItemButton>
-        </ListItem>
-
-        <Divider sx={{ my: 1 }} />
-
-        <ListItem disablePadding>
-          <ListItemButton
-            selected={isActive(PATHS.AGENT_CHAT)}
+          />
+          <NavItem
+            icon={<AgentIcon />}
+            label="AI Agent"
+            active={isActive(PATHS.AGENT_CHAT)}
             onClick={() => handleNavigation(PATHS.AGENT_CHAT)}
-          >
-            <ListItemIcon>
-              <AgentIcon />
-            </ListItemIcon>
-            <ListItemText primary="AI Agent" />
-          </ListItemButton>
-        </ListItem>
+          />
+        </List>
+      </motion.div>
 
-        <Divider sx={{ my: 1 }} />
+      <Divider sx={{ my: 1 }} />
 
-        <ListItem disablePadding>
-          <ListItemButton
-            selected={isClippingActive()}
-            onClick={() => setClippingOpen(!clippingOpen)}
-          >
-            <ListItemIcon>
-              <ClippingIcon />
-            </ListItemIcon>
-            <ListItemText primary="YouTube Clipping" />
-            {clippingOpen ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-        </ListItem>
-
-        <Collapse in={clippingOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
+      {/* TOOLS group */}
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2, delay: 0.05 }}
+      >
+        <SectionLabel label="Tools" />
+        <List disablePadding>
+          {/* Clipping section */}
+          <ListItem disablePadding>
             <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.CLIPPING.OVERVIEW)}
-              onClick={() => handleNavigation(PATHS.CLIPPING.OVERVIEW)}
+              selected={isClippingActive()}
+              onClick={() => setClippingOpen(!clippingOpen)}
+              sx={{
+                borderLeft: isClippingActive() ? '2px solid' : '2px solid transparent',
+                borderColor: isClippingActive() ? 'primary.main' : 'transparent',
+              }}
             >
-              <ListItemIcon>
-                <DashboardIcon fontSize="small" />
+              <ListItemIcon sx={{ minWidth: 36, color: isClippingActive() ? 'primary.main' : 'text.secondary' }}>
+                <ClippingIcon />
               </ListItemIcon>
-              <ListItemText primary="Overview" />
+              <ListItemText primary="YouTube Clipping" />
+              {clippingOpen ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
+          </ListItem>
 
+          <Collapse in={clippingOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <NavItem icon={<DashboardIcon fontSize="small" />} label="Overview" active={isActive(PATHS.CLIPPING.OVERVIEW)} onClick={() => handleNavigation(PATHS.CLIPPING.OVERVIEW)} indent />
+              <NavItem icon={<VideoLibraryIcon fontSize="small" />} label="Source Channels" active={isActive(PATHS.CLIPPING.SOURCE_CHANNELS)} onClick={() => handleNavigation(PATHS.CLIPPING.SOURCE_CHANNELS)} indent />
+              <NavItem icon={<LinkIcon fontSize="small" />} label="Linkages" active={isActive(PATHS.CLIPPING.LINKAGES)} onClick={() => handleNavigation(PATHS.CLIPPING.LINKAGES)} indent />
+              <NavItem icon={<JobIcon fontSize="small" />} label="Jobs" active={isActive(PATHS.CLIPPING.JOBS)} onClick={() => handleNavigation(PATHS.CLIPPING.JOBS)} indent />
+              <NavItem icon={<MovieIcon fontSize="small" />} label="Clips Gallery" active={isActive(PATHS.CLIPPING.CLIPS)} onClick={() => handleNavigation(PATHS.CLIPPING.CLIPS)} indent />
+              <NavItem icon={<TwitchIcon fontSize="small" />} label="Twitch Mappings" active={isActive(PATHS.CLIPPING.TWITCH_MAPPINGS)} onClick={() => handleNavigation(PATHS.CLIPPING.TWITCH_MAPPINGS)} indent />
+            </List>
+          </Collapse>
+
+          {/* YouTube section */}
+          <ListItem disablePadding>
             <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.CLIPPING.SOURCE_CHANNELS)}
-              onClick={() => handleNavigation(PATHS.CLIPPING.SOURCE_CHANNELS)}
+              selected={isYoutubeActive()}
+              onClick={() => setYoutubeOpen(!youtubeOpen)}
+              sx={{
+                borderLeft: isYoutubeActive() ? '2px solid' : '2px solid transparent',
+                borderColor: isYoutubeActive() ? 'primary.main' : 'transparent',
+              }}
             >
-              <ListItemIcon>
-                <VideoLibraryIcon fontSize="small" />
+              <ListItemIcon sx={{ minWidth: 36, color: isYoutubeActive() ? 'primary.main' : 'text.secondary' }}>
+                <YouTubeIcon />
               </ListItemIcon>
-              <ListItemText primary="Source Channels" />
+              <ListItemText primary="YouTube" />
+              {youtubeOpen ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
+          </ListItem>
 
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.CLIPPING.LINKAGES)}
-              onClick={() => handleNavigation(PATHS.CLIPPING.LINKAGES)}
-            >
-              <ListItemIcon>
-                <LinkIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Linkages" />
-            </ListItemButton>
+          <Collapse in={youtubeOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <NavItem icon={<UploadIcon fontSize="small" />} label="Upload Video" active={isActive(PATHS.YOUTUBE.UPLOAD)} onClick={() => handleNavigation(PATHS.YOUTUBE.UPLOAD)} indent />
+              <NavItem icon={<VideoLibraryIcon fontSize="small" />} label="My Videos" active={isActive(PATHS.YOUTUBE.UPLOADS)} onClick={() => handleNavigation(PATHS.YOUTUBE.UPLOADS)} indent />
+              <NavItem icon={<PlaylistIcon fontSize="small" />} label="Playlists" active={isActive(PATHS.YOUTUBE.PLAYLISTS)} onClick={() => handleNavigation(PATHS.YOUTUBE.PLAYLISTS)} indent />
+              <NavItem icon={<AnalyticsIcon fontSize="small" />} label="Analytics" active={isActive(PATHS.YOUTUBE.ANALYTICS)} onClick={() => handleNavigation(PATHS.YOUTUBE.ANALYTICS)} indent />
+              <NavItem icon={<SearchIcon fontSize="small" />} label="Search" active={isActive(PATHS.YOUTUBE.SEARCH)} onClick={() => handleNavigation(PATHS.YOUTUBE.SEARCH)} indent />
+              <NavItem icon={<CommentIcon fontSize="small" />} label="Comments" active={isActive(PATHS.YOUTUBE.COMMENTS)} onClick={() => handleNavigation(PATHS.YOUTUBE.COMMENTS)} indent />
+              <NavItem icon={<CaptionIcon fontSize="small" />} label="Captions" active={isActive(PATHS.YOUTUBE.CAPTIONS)} onClick={() => handleNavigation(PATHS.YOUTUBE.CAPTIONS)} indent />
+              <NavItem icon={<ChannelIcon fontSize="small" />} label="Channels" active={isActive(PATHS.CHANNELS.CONNECTED)} onClick={() => handleNavigation(PATHS.CHANNELS.CONNECTED)} indent />
+            </List>
+          </Collapse>
 
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.CLIPPING.JOBS)}
-              onClick={() => handleNavigation(PATHS.CLIPPING.JOBS)}
-            >
-              <ListItemIcon>
-                <JobIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Jobs" />
-            </ListItemButton>
-
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.CLIPPING.CLIPS)}
-              onClick={() => handleNavigation(PATHS.CLIPPING.CLIPS)}
-            >
-              <ListItemIcon>
-                <MovieIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Clips Gallery" />
-            </ListItemButton>
-
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.CLIPPING.TWITCH_MAPPINGS)}
-              onClick={() => handleNavigation(PATHS.CLIPPING.TWITCH_MAPPINGS)}
-            >
-              <ListItemIcon>
-                <TwitchIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Twitch Mappings" />
-            </ListItemButton>
-          </List>
-        </Collapse>
-
-        <Divider sx={{ my: 1 }} />
-
-        <ListItem disablePadding>
-          <ListItemButton
-            selected={isYoutubeActive()}
-            onClick={() => setYoutubeOpen(!youtubeOpen)}
-          >
-            <ListItemIcon>
-              <YouTubeIcon />
-            </ListItemIcon>
-            <ListItemText primary="YouTube" />
-            {youtubeOpen ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-        </ListItem>
-
-        <Collapse in={youtubeOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.YOUTUBE.UPLOAD)}
-              onClick={() => handleNavigation(PATHS.YOUTUBE.UPLOAD)}
-            >
-              <ListItemIcon>
-                <UploadIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Upload Video" />
-            </ListItemButton>
-
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.YOUTUBE.UPLOADS)}
-              onClick={() => handleNavigation(PATHS.YOUTUBE.UPLOADS)}
-            >
-              <ListItemIcon>
-                <VideoLibraryIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="My Videos" />
-            </ListItemButton>
-
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.YOUTUBE.PLAYLISTS)}
-              onClick={() => handleNavigation(PATHS.YOUTUBE.PLAYLISTS)}
-            >
-              <ListItemIcon>
-                <PlaylistIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Playlists" />
-            </ListItemButton>
-
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.YOUTUBE.ANALYTICS)}
-              onClick={() => handleNavigation(PATHS.YOUTUBE.ANALYTICS)}
-            >
-              <ListItemIcon>
-                <AnalyticsIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Analytics" />
-            </ListItemButton>
-
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.YOUTUBE.SEARCH)}
-              onClick={() => handleNavigation(PATHS.YOUTUBE.SEARCH)}
-            >
-              <ListItemIcon>
-                <SearchIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Search" />
-            </ListItemButton>
-
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.YOUTUBE.COMMENTS)}
-              onClick={() => handleNavigation(PATHS.YOUTUBE.COMMENTS)}
-            >
-              <ListItemIcon>
-                <CommentIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Comments" />
-            </ListItemButton>
-
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.YOUTUBE.CAPTIONS)}
-              onClick={() => handleNavigation(PATHS.YOUTUBE.CAPTIONS)}
-            >
-              <ListItemIcon>
-                <CaptionIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Captions" />
-            </ListItemButton>
-
-            <ListItemButton
-              sx={{ pl: 4 }}
-              selected={isActive(PATHS.CHANNELS.CONNECTED)}
-              onClick={() => handleNavigation(PATHS.CHANNELS.CONNECTED)}
-            >
-              <ListItemIcon>
-                <ChannelIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Channels" />
-            </ListItemButton>
-          </List>
-        </Collapse>
-
-        <Divider sx={{ my: 1 }} />
-
-        <ListItem disablePadding>
-          <ListItemButton
-            selected={isActive(PATHS.VIDEO_TOOLS)}
+          <NavItem
+            icon={<VideoToolsIcon />}
+            label="Video Tools"
+            active={isActive(PATHS.VIDEO_TOOLS)}
             onClick={() => handleNavigation(PATHS.VIDEO_TOOLS)}
-          >
-            <ListItemIcon>
-              <VideoToolsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Video Tools" />
-          </ListItemButton>
-        </ListItem>
+          />
+        </List>
+      </motion.div>
 
-        <Divider sx={{ my: 1 }} />
+      <Divider sx={{ my: 1 }} />
 
-        <ListItem disablePadding>
-          <ListItemButton
-            selected={isActive(PATHS.SETTINGS.ROOT)}
+      {/* SETTINGS group */}
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+      >
+        <List disablePadding>
+          <NavItem
+            icon={<SettingsIcon />}
+            label="Settings"
+            active={isActive(PATHS.SETTINGS.ROOT)}
             onClick={() => handleNavigation(PATHS.SETTINGS.ROOT)}
-          >
-            <ListItemIcon>
-              <SettingsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Settings" />
-          </ListItemButton>
-        </ListItem>
-      </List>
+          />
+        </List>
+      </motion.div>
     </Drawer>
   );
 }

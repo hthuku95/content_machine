@@ -27,7 +27,7 @@ interface TopBarProps {
 export function TopBar({ onMenuClick }: TopBarProps) {
   const navigate = useNavigate();
   const { themeMode, toggleTheme } = useUIStore();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const effectiveTheme = getEffectiveTheme(themeMode);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -50,7 +50,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
   };
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar elevation={0} position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
         <IconButton
           color="inherit"
@@ -62,11 +62,32 @@ export function TopBar({ onMenuClick }: TopBarProps) {
           <MenuIcon />
         </IconButton>
 
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            flexGrow: 1,
+            background: 'linear-gradient(135deg, #dbd8e3 0%, #ffffff 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
           Content Machine
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {user?.username && (
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary', display: { xs: 'none', sm: 'block' } }}
+            >
+              {user.username}
+            </Typography>
+          )}
+
           <IconButton color="inherit" onClick={toggleTheme}>
             {effectiveTheme === 'dark' ? <Brightness7 /> : <Brightness4 />}
           </IconButton>

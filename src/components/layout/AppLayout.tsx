@@ -1,16 +1,17 @@
 import { Box, Toolbar, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
 import { useUIStore } from '@/stores/uiStore';
-import { DynamicBackground } from '@/components/common/DynamicBackground';
 import { useChannelHealthMonitor } from '@/hooks/useChannelHealthMonitor';
 
 export function AppLayout() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { sidebarOpen, setSidebarOpen } = useUIStore();
+  const location = useLocation();
 
   // Monitor channel health and show notifications
   useChannelHealthMonitor();
@@ -29,10 +30,8 @@ export function AppLayout() {
   };
 
   return (
-    <>
-      <DynamicBackground opacity={0.1} updateInterval={5} />
-      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-        <TopBar onMenuClick={handleDrawerToggle} />
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <TopBar onMenuClick={handleDrawerToggle} />
 
       {isMobile ? (
         <Sidebar
@@ -52,12 +51,24 @@ export function AppLayout() {
           width: '100%',
           maxWidth: '100%',
           overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <Toolbar />
-        <Outlet />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            style={{ flex: 1 }}
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
       </Box>
     </Box>
-    </>
   );
 }
