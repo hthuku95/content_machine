@@ -19,6 +19,7 @@ export const PATHS = {
     JOB_DETAILS: (id: string) => `/clipping/jobs/${id}`,
     CLIPS: '/clipping/clips',
     CLIP_DETAILS: (id: string) => `/clipping/clips/${id}`,
+    TWITCH_MAPPINGS: '/clipping/twitch-mappings',
   },
 
   // Channels routes

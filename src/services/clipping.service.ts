@@ -11,6 +11,12 @@ import type {
   JobFilters,
   ExtractedClip,
   ClipFilters,
+  TwitchSourceChannel,
+  YoutubeTwitchMapping,
+  TwitchChannelSearchResult,
+  AddTwitchSourceChannelRequest,
+  CreateTwitchMappingRequest,
+  SearchTwitchChannelsRequest,
 } from '@/types/clipping.types';
 
 export const clippingService = {
@@ -217,5 +223,54 @@ export const clippingService = {
    */
   async repostClip(id: string): Promise<void> {
     await api.post(`/api/clipping/clips/${id}/repost`);
+  },
+
+  // ===== Twitch Integration =====
+
+  async listTwitchSourceChannels(): Promise<TwitchSourceChannel[]> {
+    const response = await api.get<{ success: boolean; channels: TwitchSourceChannel[] }>(
+      '/api/clipping/twitch/source-channels'
+    );
+    return Array.isArray(response.data?.channels) ? response.data.channels : [];
+  },
+
+  async addTwitchSourceChannel(data: AddTwitchSourceChannelRequest): Promise<TwitchSourceChannel> {
+    const response = await api.post<{ success: boolean; channel: TwitchSourceChannel }>(
+      '/api/clipping/twitch/source-channels',
+      data
+    );
+    return response.data.channel;
+  },
+
+  async removeTwitchSourceChannel(id: number): Promise<void> {
+    await api.delete(`/api/clipping/twitch/source-channels/${id}`);
+  },
+
+  async searchTwitchChannels(query: string): Promise<TwitchChannelSearchResult[]> {
+    const data: SearchTwitchChannelsRequest = { query };
+    const response = await api.post<{ success: boolean; channels: TwitchChannelSearchResult[] }>(
+      '/api/clipping/twitch/source-channels/search',
+      data
+    );
+    return Array.isArray(response.data?.channels) ? response.data.channels : [];
+  },
+
+  async listTwitchMappings(): Promise<YoutubeTwitchMapping[]> {
+    const response = await api.get<{ success: boolean; mappings: YoutubeTwitchMapping[] }>(
+      '/api/clipping/twitch/mappings'
+    );
+    return Array.isArray(response.data?.mappings) ? response.data.mappings : [];
+  },
+
+  async createTwitchMapping(data: CreateTwitchMappingRequest): Promise<YoutubeTwitchMapping> {
+    const response = await api.post<{ success: boolean; mapping: YoutubeTwitchMapping }>(
+      '/api/clipping/twitch/mappings',
+      data
+    );
+    return response.data.mapping;
+  },
+
+  async deleteTwitchMapping(id: number): Promise<void> {
+    await api.delete(`/api/clipping/twitch/mappings/${id}`);
   },
 };

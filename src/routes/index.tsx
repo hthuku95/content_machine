@@ -15,6 +15,7 @@ import { JobsPage } from '@/pages/Clipping/JobsPage';
 import { JobDetailPage } from '@/pages/Clipping/JobDetailPage';
 import { ClipsGalleryPage } from '@/pages/Clipping/ClipsGalleryPage';
 import { ClipDetailPage } from '@/pages/Clipping/ClipDetailPage';
+import { TwitchMappingsPage } from '@/pages/Clipping/TwitchMappingsPage';
 import { ConnectedChannelsPage } from '@/pages/Channels/ConnectedChannelsPage';
 import { SettingsPage } from '@/pages/Settings/SettingsPage';
 import { NotFoundPage } from '@/pages/NotFound/NotFoundPage';
@@ -88,6 +89,10 @@ export const router = createBrowserRouter([
       {
         path: '/clipping/clips/:id',
         element: <ClipDetailPage />,
+      },
+      {
+        path: PATHS.CLIPPING.TWITCH_MAPPINGS,
+        element: <TwitchMappingsPage />,
       },
       // Channels routes
       {

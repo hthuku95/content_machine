@@ -29,6 +29,7 @@ import {
   AccountCircle as ChannelIcon,
   BuildCircle as VideoToolsIcon,
   SmartToy as AgentIcon,
+  SportsEsports as TwitchIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -179,6 +180,17 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
                 <MovieIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText primary="Clips Gallery" />
+            </ListItemButton>
+
+            <ListItemButton
+              sx={{ pl: 4 }}
+              selected={isActive(PATHS.CLIPPING.TWITCH_MAPPINGS)}
+              onClick={() => handleNavigation(PATHS.CLIPPING.TWITCH_MAPPINGS)}
+            >
+              <ListItemIcon>
+                <TwitchIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Twitch Mappings" />
             </ListItemButton>
           </List>
         </Collapse>

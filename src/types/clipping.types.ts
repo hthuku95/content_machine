@@ -9,6 +9,8 @@ export interface SourceChannel {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  /** 'unmapped' | 'mapped' | 'no_twitch_equivalent' */
+  twitch_mapping_status?: string;
 }
 
 export interface CreateSourceChannelRequest {
@@ -74,6 +76,10 @@ export interface ClippingJob {
   steps_completed?: number;
   total_steps?: number;
   current_action_detail?: string | null;
+  // Twitch fallback fields
+  used_twitch_fallback?: boolean;
+  twitch_video_id?: string | null;
+  active_video_url?: string | null;
   // Populated fields
   linkage?: ChannelLinkage;
 }
@@ -130,6 +136,10 @@ export interface ExtractedClip {
   created_at: string;
   uploaded_at: string | null;
   updated_at: string;
+  // Phase C+ enhancement tracking
+  enhancement_applied?: boolean;
+  enhancement_tools?: string[];
+  enhancement_reasoning?: string | null;
 }
 
 export interface ClipFilters {
@@ -143,4 +153,50 @@ export interface ClipFilters {
 
 export interface ClippingAccessResponse {
   has_access: boolean;
+}
+
+// ─────────────────────── Twitch types ───────────────────────────────────────
+
+export interface TwitchSourceChannel {
+  id: number;
+  broadcaster_id: string;
+  broadcaster_login: string;
+  display_name: string;
+  profile_image_url: string | null;
+  is_active: boolean;
+  last_polled_at: string | null;
+  last_video_checked: string | null;
+  mapped_youtube_channel_name: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface YoutubeTwitchMapping {
+  id: number;
+  youtube_source_channel_id: number;
+  twitch_source_channel_id: number;
+  youtube_channel_name: string;
+  broadcaster_login: string;
+  twitch_display_name: string;
+  created_at: string;
+}
+
+export interface TwitchChannelSearchResult {
+  broadcaster_id: string;
+  broadcaster_login: string;
+  display_name: string;
+  profile_image_url: string | null;
+}
+
+export interface SearchTwitchChannelsRequest {
+  query: string;
+}
+
+export interface AddTwitchSourceChannelRequest {
+  broadcaster_id: string;
+}
+
+export interface CreateTwitchMappingRequest {
+  youtube_source_channel_id: number;
+  twitch_source_channel_id: number;
 }

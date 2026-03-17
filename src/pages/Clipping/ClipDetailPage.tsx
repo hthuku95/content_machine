@@ -11,6 +11,8 @@ import {
   IconButton,
   Tooltip,
   Snackbar,
+  Chip,
+  Collapse,
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -19,6 +21,9 @@ import {
   Error as ErrorIcon,
   VideoLibrary as VideoIcon,
   Share as ShareIcon,
+  AutoFixHigh as EnhanceIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
 import { useState } from 'react';
 import { AccessGate } from '@/components/clipping/AccessGate';
@@ -35,6 +40,7 @@ export function ClipDetailPage() {
   const { data: clip, isLoading, error, repostClip, isReposting } = useClipDetail(id!);
   const { clips: allClips } = useClips();
   const [copySnackbarOpen, setCopySnackbarOpen] = useState(false);
+  const [reasoningOpen, setReasoningOpen] = useState(false);
 
   // Calculate averages for comparison
   const uploadedClips = allClips.filter(c => c.upload_status === 'uploaded');
@@ -244,6 +250,61 @@ export function ClipDetailPage() {
           {/* Right Column - Metadata */}
           <Grid item xs={12} md={4}>
             <ClipMetadataCard clip={clip} />
+
+            {/* Phase C+ Enhancement Status */}
+            {(() => {
+              if (clip.enhancement_applied && (clip.enhancement_tools?.length ?? 0) > 0) {
+                return (
+                  <Paper sx={{ p: 2, mt: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <EnhanceIcon color="success" fontSize="small" />
+                      <Chip label="AI Enhanced" color="success" size="small" />
+                    </Box>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
+                      {clip.enhancement_tools!.map((tool) => (
+                        <Chip key={tool} label={tool} size="small" variant="outlined" />
+                      ))}
+                    </Box>
+                    {clip.enhancement_reasoning && (
+                      <>
+                        <Box
+                          sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                          onClick={() => setReasoningOpen((o) => !o)}
+                        >
+                          <Typography variant="caption" color="text.secondary">
+                            AI reasoning
+                          </Typography>
+                          {reasoningOpen ? (
+                            <ExpandLessIcon fontSize="small" sx={{ ml: 0.5, color: 'text.secondary' }} />
+                          ) : (
+                            <ExpandMoreIcon fontSize="small" sx={{ ml: 0.5, color: 'text.secondary' }} />
+                          )}
+                        </Box>
+                        <Collapse in={reasoningOpen}>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                            {clip.enhancement_reasoning}
+                          </Typography>
+                        </Collapse>
+                      </>
+                    )}
+                  </Paper>
+                );
+              }
+              // Fallback: old data that used the ai_tags tag pattern
+              const legacyTag = (clip.tags ?? []).find((t) => t.startsWith('ai_enhanced_'));
+              if (legacyTag) {
+                const n = legacyTag.match(/ai_enhanced_(\d+)tools/)?.[1] ?? '?';
+                return (
+                  <Paper sx={{ p: 2, mt: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <EnhanceIcon color="action" fontSize="small" />
+                      <Chip label={`AI Enhanced (${n} tools)`} size="small" />
+                    </Box>
+                  </Paper>
+                );
+              }
+              return null;
+            })()}
 
             {/* Performance Comparison */}
             {clip.upload_status === 'uploaded' && uploadedClips.length > 1 && (
