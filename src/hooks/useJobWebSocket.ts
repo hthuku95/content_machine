@@ -20,7 +20,8 @@ export function useJobWebSocket(jobId: string, enabled: boolean): UseJobWebSocke
   const connect = useCallback(() => {
     if (!enabledRef.current || !jobId) return;
     const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const url = `${proto}://${window.location.host}/ws/clipping-jobs/${jobId}`;
+    const token = localStorage.getItem('authToken') ?? '';
+    const url = `${proto}://${window.location.host}/ws/clipping-jobs/${jobId}?token=${encodeURIComponent(token)}`;
     const ws = new WebSocket(url);
     wsRef.current = ws;
 

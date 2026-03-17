@@ -64,35 +64,35 @@ export const router = createBrowserRouter([
       // Clipping routes
       {
         path: PATHS.CLIPPING.OVERVIEW,
-        element: <ClippingDashboard />,
+        element: <ErrorBoundary><ClippingDashboard /></ErrorBoundary>,
       },
       {
         path: PATHS.CLIPPING.SOURCE_CHANNELS,
-        element: <SourceChannelsPage />,
+        element: <ErrorBoundary><SourceChannelsPage /></ErrorBoundary>,
       },
       {
         path: PATHS.CLIPPING.LINKAGES,
-        element: <LinkagesPage />,
+        element: <ErrorBoundary><LinkagesPage /></ErrorBoundary>,
       },
       {
         path: PATHS.CLIPPING.JOBS,
-        element: <JobsPage />,
+        element: <ErrorBoundary><JobsPage /></ErrorBoundary>,
       },
       {
         path: '/clipping/jobs/:id',
-        element: <JobDetailPage />,
+        element: <ErrorBoundary><JobDetailPage /></ErrorBoundary>,
       },
       {
         path: PATHS.CLIPPING.CLIPS,
-        element: <ClipsGalleryPage />,
+        element: <ErrorBoundary><ClipsGalleryPage /></ErrorBoundary>,
       },
       {
         path: '/clipping/clips/:id',
-        element: <ClipDetailPage />,
+        element: <ErrorBoundary><ClipDetailPage /></ErrorBoundary>,
       },
       {
         path: PATHS.CLIPPING.TWITCH_MAPPINGS,
-        element: <TwitchMappingsPage />,
+        element: <ErrorBoundary><TwitchMappingsPage /></ErrorBoundary>,
       },
       // Channels routes
       {
