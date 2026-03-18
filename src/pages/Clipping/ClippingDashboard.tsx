@@ -43,16 +43,16 @@ export function ClippingDashboard() {
   return (
     <AccessGate>
       <Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', md: '2.125rem' } }} gutterBottom>
               YouTube Clipping Overview
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Monitor your clipping operations and performance
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
             <Button
               variant="outlined"
               size="small"

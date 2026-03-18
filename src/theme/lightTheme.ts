@@ -89,7 +89,32 @@ export const lightTheme = createTheme({
           borderRadius: 8,
           '&.Mui-selected': {
             borderLeft: '2px solid #352f44',
+            backgroundColor: 'rgba(53,47,68,0.08)',
           },
+          '&.Mui-selected:hover': {
+            backgroundColor: 'rgba(53,47,68,0.12)',
+          },
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            '&:hover fieldset': {
+              borderColor: '#5c5470',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#352f44',
+            },
+          },
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          borderRight: '1px solid rgba(42,36,56,0.1)',
         },
       },
     },

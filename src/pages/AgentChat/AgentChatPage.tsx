@@ -336,7 +336,13 @@ export function AgentChatPage() {
   }, [sessionId]);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: { xs: 'calc(100vh - 56px)', sm: 'calc(100vh - 64px)' },
+      }}
+    >
       {/* History drawer */}
       <HistoryDrawer
         open={historyOpen}

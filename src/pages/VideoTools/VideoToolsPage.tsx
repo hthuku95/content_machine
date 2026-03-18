@@ -280,13 +280,14 @@ function AudioVisualizePanel() {
             ))}
           </Select>
         </FormControl>
-        <Stack direction="row" spacing={2}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
           <TextField
             label="Width (px)"
             type="number"
             value={width}
             onChange={e => setWidth(Number(e.target.value))}
             size="small"
+            fullWidth
             inputProps={{ min: 320, max: 3840, step: 160 }}
           />
           <TextField
@@ -295,6 +296,7 @@ function AudioVisualizePanel() {
             value={height}
             onChange={e => setHeight(Number(e.target.value))}
             size="small"
+            fullWidth
             inputProps={{ min: 100, max: 1080, step: 100 }}
           />
         </Stack>
@@ -411,13 +413,14 @@ function WorkflowPanel() {
           <>
             <Divider />
             <Typography variant="subtitle2">GIF options</Typography>
-            <Stack direction="row" spacing={2}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
               <TextField
                 label="Start (s)"
                 type="number"
                 value={startSec}
                 onChange={e => setStartSec(Number(e.target.value))}
                 size="small"
+                fullWidth
                 inputProps={{ min: 0, step: 1 }}
               />
               <TextField
@@ -426,6 +429,7 @@ function WorkflowPanel() {
                 value={durationSec}
                 onChange={e => setDurationSec(Number(e.target.value))}
                 size="small"
+                fullWidth
                 inputProps={{ min: 1, max: 60, step: 1 }}
               />
               <TextField
@@ -434,6 +438,7 @@ function WorkflowPanel() {
                 value={gifWidth}
                 onChange={e => setGifWidth(Number(e.target.value))}
                 size="small"
+                fullWidth
                 inputProps={{ min: 120, max: 960, step: 40 }}
               />
             </Stack>

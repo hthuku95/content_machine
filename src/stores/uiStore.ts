@@ -6,10 +6,12 @@ type ThemeMode = 'light' | 'dark' | 'system';
 interface UIState {
   themeMode: ThemeMode;
   sidebarOpen: boolean;
+  sidebarCollapsed: boolean;
   toggleTheme: () => void;
   setThemeMode: (mode: ThemeMode) => void;
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
+  toggleSidebarCollapsed: () => void;
 }
 
 // Helper to get system preference
@@ -31,6 +33,7 @@ export const useUIStore = create<UIState>()(
     (set, get) => ({
       themeMode: 'system',
       sidebarOpen: true,
+      sidebarCollapsed: false,
 
       toggleTheme: () => {
         const current = get().themeMode;
@@ -50,11 +53,16 @@ export const useUIStore = create<UIState>()(
       setSidebarOpen: (open: boolean) => {
         set({ sidebarOpen: open });
       },
+
+      toggleSidebarCollapsed: () => {
+        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed }));
+      },
     }),
     {
       name: 'ui-storage',
       partialize: (state) => ({
         themeMode: state.themeMode,
+        sidebarCollapsed: state.sidebarCollapsed,
       }),
     }
   )

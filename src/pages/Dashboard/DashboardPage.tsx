@@ -48,7 +48,8 @@ export function DashboardPage() {
       icon: <ContentCutIcon sx={{ fontSize: 48 }} />,
       title: 'YouTube Clipping',
       description: 'Automatically extract and republish viral clips from monitored channels',
-      color: '#f44336',
+      iconColor: 'error.main',
+      btnColor: 'error' as const,
       link: PATHS.CLIPPING.OVERVIEW,
       benefits: [
         'Monitor source channels for new content',
@@ -61,7 +62,8 @@ export function DashboardPage() {
       icon: <CloudUploadIcon sx={{ fontSize: 48 }} />,
       title: 'YouTube Management',
       description: 'Complete YouTube video management with uploads, metadata editing, and scheduling',
-      color: '#2196f3',
+      iconColor: 'info.main',
+      btnColor: 'info' as const,
       link: PATHS.YOUTUBE.UPLOADS,
       benefits: [
         'Resumable chunked video uploads',
@@ -74,7 +76,8 @@ export function DashboardPage() {
       icon: <AnalyticsIcon sx={{ fontSize: 48 }} />,
       title: 'Analytics & Insights',
       description: 'Track performance with real-time analytics and engagement metrics',
-      color: '#4caf50',
+      iconColor: 'success.main',
+      btnColor: 'success' as const,
       link: PATHS.YOUTUBE.ANALYTICS,
       benefits: [
         'View counts and watch time',
@@ -126,10 +129,22 @@ export function DashboardPage() {
       <Box sx={{ py: 4 }}>
         {/* Hero Section */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography variant="h2" gutterBottom sx={{ fontWeight: 700 }}>
+          <Typography
+            variant="h2"
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3.75rem' },
+            }}
+          >
             Welcome to Content Machine
           </Typography>
-          <Typography variant="h5" color="text.secondary" paragraph sx={{ maxWidth: 800, mx: 'auto' }}>
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            paragraph
+            sx={{ maxWidth: 800, mx: 'auto', fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}
+          >
             Your AI-Powered YouTube Content Automation Platform
           </Typography>
           {user && (
@@ -142,7 +157,15 @@ export function DashboardPage() {
         </Box>
 
         {/* What We Do */}
-        <Paper sx={{ p: 4, mb: 4, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+        <Paper
+          sx={{
+            p: { xs: 3, md: 4 },
+            mb: 4,
+            background: 'linear-gradient(135deg, #2a2438 0%, #5c5470 100%)',
+            color: 'white',
+            border: '1px solid rgba(219,216,227,0.12)',
+          }}
+        >
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
             What We Do
           </Typography>
@@ -173,7 +196,7 @@ export function DashboardPage() {
               <Grid item xs={12} md={4} key={index}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Box sx={{ color: feature.color, mb: 2 }}>{feature.icon}</Box>
+                    <Box sx={{ color: feature.iconColor, mb: 2 }}>{feature.icon}</Box>
                     <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
                       {feature.title}
                     </Typography>
@@ -199,9 +222,9 @@ export function DashboardPage() {
                     <Button
                       fullWidth
                       variant="contained"
+                      color={feature.btnColor}
                       component={RouterLink}
                       to={feature.link}
-                      sx={{ bgcolor: feature.color }}
                     >
                       Get Started
                     </Button>
