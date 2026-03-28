@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { ClippingJob, ClippingProgressUpdate } from '@/types/clipping.types';
+import { config } from '@/config/config';
 
 interface UseJobWebSocketResult {
   liveJob: Partial<ClippingJob> | null;
@@ -19,9 +20,11 @@ export function useJobWebSocket(jobId: string, enabled: boolean): UseJobWebSocke
 
   const connect = useCallback(() => {
     if (!enabledRef.current || !jobId) return;
-    const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const wsBase = config.apiBaseUrl
+      .replace(/^https:\/\//, 'wss://')
+      .replace(/^http:\/\//, 'ws://');
     const token = localStorage.getItem('authToken') ?? '';
-    const url = `${proto}://${window.location.host}/ws/clipping-jobs/${jobId}?token=${encodeURIComponent(token)}`;
+    const url = `${wsBase}/ws/clipping-jobs/${jobId}?token=${encodeURIComponent(token)}`;
     const ws = new WebSocket(url);
     wsRef.current = ws;
 
