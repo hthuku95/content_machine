@@ -116,15 +116,25 @@ export const darkTheme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
+            backgroundColor: 'rgba(255,255,255,0.06)',
             '& fieldset': {
-              borderColor: 'rgba(219,216,227,0.2)',
+              borderColor: 'rgba(219,216,227,0.25)',
             },
             '&:hover fieldset': {
-              borderColor: 'rgba(219,216,227,0.4)',
+              borderColor: 'rgba(219,216,227,0.5)',
             },
             '&.Mui-focused fieldset': {
               borderColor: '#dbd8e3',
             },
+            '&.Mui-focused': {
+              backgroundColor: 'rgba(255,255,255,0.09)',
+            },
+          },
+          '& .MuiInputLabel-root': {
+            color: 'rgba(219,216,227,0.7)',
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: '#dbd8e3',
           },
         },
       },

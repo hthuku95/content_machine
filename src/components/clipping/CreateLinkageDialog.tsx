@@ -47,20 +47,11 @@ export function CreateLinkageDialog({
     queryKey: ['youtube', 'channels'],
     queryFn: async () => {
       const response = await api.get<{ success: boolean; channels: any[] }>('/api/youtube/channels');
-      console.log('[CreateLinkageDialog] YouTube channels API response:', response.data);
       return response.data.channels || [];
     },
   });
 
   const destinationChannels = Array.isArray(destinationChannelsData) ? destinationChannelsData : [];
-
-  console.log('[CreateLinkageDialog] Data state:', {
-    sourceChannels,
-    sourceChannelsCount: sourceChannels?.length || 0,
-    destinationChannels,
-    destinationChannelsCount: destinationChannels?.length || 0,
-    destinationChannelsData
-  });
 
   const {
     register,
@@ -103,7 +94,7 @@ export function CreateLinkageDialog({
           </Typography>
 
           <TextField
-            {...register('source_channel_id')}
+            {...register('source_channel_id', { valueAsNumber: true })}
             select
             label="Source Channel"
             fullWidth
@@ -130,7 +121,7 @@ export function CreateLinkageDialog({
           </TextField>
 
           <TextField
-            {...register('destination_channel_id')}
+            {...register('destination_channel_id', { valueAsNumber: true })}
             select
             label="Destination Channel"
             fullWidth
