@@ -28,6 +28,7 @@ import { CommentModerationPage } from '@/pages/YouTube/CommentModerationPage';
 import { CaptionsPage } from '@/pages/YouTube/CaptionsPage';
 import { VideoToolsPage } from '@/pages/VideoTools/VideoToolsPage';
 import { AgentChatPage } from '@/pages/AgentChat/AgentChatPage';
+import { GigTemplatesPage } from '@/pages/GigTemplates/GigTemplatesPage';
 
 export const router = createBrowserRouter([
   // Auth routes (no sidebar/topbar)
@@ -171,6 +172,15 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <AgentChatPage />
+          </ErrorBoundary>
+        ),
+      },
+      // Gig Templates route
+      {
+        path: PATHS.GIG_TEMPLATES,
+        element: (
+          <ErrorBoundary>
+            <GigTemplatesPage />
           </ErrorBoundary>
         ),
       },

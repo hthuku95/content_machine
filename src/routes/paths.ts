@@ -54,6 +54,9 @@ export const PATHS = {
   // AI Agent Chat
   AGENT_CHAT: '/agent',
 
+  // Gig Templates (Fiverr/PPH)
+  GIG_TEMPLATES: '/gig-templates',
+
   // Other
   NOT_FOUND: '/404',
 };

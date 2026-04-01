@@ -36,6 +36,7 @@ import {
   SportsEsports as TwitchIcon,
   ChevronLeft as CollapseIcon,
   ChevronRight as ExpandIcon,
+  Storefront as GigIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -289,6 +290,13 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             label="Video Tools"
             active={isActive(PATHS.VIDEO_TOOLS)}
             onClick={() => handleNavigation(PATHS.VIDEO_TOOLS)}
+            collapsed={isCollapsed}
+          />
+          <NavItem
+            icon={<GigIcon />}
+            label="Gig Templates"
+            active={isActive(PATHS.GIG_TEMPLATES)}
+            onClick={() => handleNavigation(PATHS.GIG_TEMPLATES)}
             collapsed={isCollapsed}
           />
         </List>
