@@ -29,6 +29,7 @@ import { CaptionsPage } from '@/pages/YouTube/CaptionsPage';
 import { VideoToolsPage } from '@/pages/VideoTools/VideoToolsPage';
 import { AgentChatPage } from '@/pages/AgentChat/AgentChatPage';
 import { GigTemplatesPage } from '@/pages/GigTemplates/GigTemplatesPage';
+import ManualClippingPage from '@/pages/ManualClipping/ManualClippingPage';
 
 export const router = createBrowserRouter([
   // Auth routes (no sidebar/topbar)
@@ -181,6 +182,15 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <GigTemplatesPage />
+          </ErrorBoundary>
+        ),
+      },
+      // Manual Clipping route
+      {
+        path: PATHS.MANUAL_CLIPPING,
+        element: (
+          <ErrorBoundary>
+            <ManualClippingPage />
           </ErrorBoundary>
         ),
       },

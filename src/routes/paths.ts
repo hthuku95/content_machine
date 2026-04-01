@@ -57,6 +57,9 @@ export const PATHS = {
   // Gig Templates (Fiverr/PPH)
   GIG_TEMPLATES: '/gig-templates',
 
+  // Manual Clipping (no destination channel required)
+  MANUAL_CLIPPING: '/manual-clipping',
+
   // Other
   NOT_FOUND: '/404',
 };

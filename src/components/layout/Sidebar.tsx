@@ -37,6 +37,7 @@ import {
   ChevronLeft as CollapseIcon,
   ChevronRight as ExpandIcon,
   Storefront as GigIcon,
+  ContentCut as ClipIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -297,6 +298,13 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             label="Gig Templates"
             active={isActive(PATHS.GIG_TEMPLATES)}
             onClick={() => handleNavigation(PATHS.GIG_TEMPLATES)}
+            collapsed={isCollapsed}
+          />
+          <NavItem
+            icon={<ClipIcon />}
+            label="Manual Clipping"
+            active={isActive(PATHS.MANUAL_CLIPPING)}
+            onClick={() => handleNavigation(PATHS.MANUAL_CLIPPING)}
             collapsed={isCollapsed}
           />
         </List>
