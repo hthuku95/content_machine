@@ -30,6 +30,7 @@ import { VideoToolsPage } from '@/pages/VideoTools/VideoToolsPage';
 import { AgentChatPage } from '@/pages/AgentChat/AgentChatPage';
 import { GigTemplatesPage } from '@/pages/GigTemplates/GigTemplatesPage';
 import ManualClippingPage from '@/pages/ManualClipping/ManualClippingPage';
+import { InstagramLeadsPage } from '@/pages/InstagramLeads/InstagramLeadsPage';
 
 export const router = createBrowserRouter([
   // Auth routes (no sidebar/topbar)
@@ -191,6 +192,15 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <ManualClippingPage />
+          </ErrorBoundary>
+        ),
+      },
+      // Instagram Lead Finder route
+      {
+        path: PATHS.INSTAGRAM_LEADS,
+        element: (
+          <ErrorBoundary>
+            <InstagramLeadsPage />
           </ErrorBoundary>
         ),
       },

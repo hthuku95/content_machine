@@ -60,6 +60,9 @@ export const PATHS = {
   // Manual Clipping (no destination channel required)
   MANUAL_CLIPPING: '/manual-clipping',
 
+  // Instagram Lead Finder (whitelisted users — for cold DM outreach)
+  INSTAGRAM_LEADS: '/instagram-leads',
+
   // Other
   NOT_FOUND: '/404',
 };

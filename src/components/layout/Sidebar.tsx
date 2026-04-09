@@ -38,6 +38,7 @@ import {
   ChevronRight as ExpandIcon,
   Storefront as GigIcon,
   ContentCut as ClipIcon,
+  PhotoCamera as InstagramIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -305,6 +306,13 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             label="Manual Clipping"
             active={isActive(PATHS.MANUAL_CLIPPING)}
             onClick={() => handleNavigation(PATHS.MANUAL_CLIPPING)}
+            collapsed={isCollapsed}
+          />
+          <NavItem
+            icon={<InstagramIcon />}
+            label="Instagram Leads"
+            active={isActive(PATHS.INSTAGRAM_LEADS)}
+            onClick={() => handleNavigation(PATHS.INSTAGRAM_LEADS)}
             collapsed={isCollapsed}
           />
         </List>
