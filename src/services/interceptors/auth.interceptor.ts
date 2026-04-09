@@ -23,31 +23,38 @@ api.interceptors.response.use(
       const requestUrl = error.config?.url || '';
       const errorMessage = error.response?.data?.message || '';
 
-      // Check if this is a YouTube-specific token error (channel token, not app session)
+      // Auth endpoints (login/register/verify) returning 401 are credential errors,
+      // not session expiry — let the calling code handle them, never auto-logout.
+      if (
+        requestUrl.includes('/api/auth/login') ||
+        requestUrl.includes('/api/auth/register') ||
+        requestUrl.includes('/api/auth/verify')
+      ) {
+        return Promise.reject(error);
+      }
+
+      // YouTube-specific token error (channel token, not app session)
       if (requestUrl.includes('/api/youtube/') || errorMessage.includes('Token expired')) {
-        // YouTube channel token expired, not the app session
         const msg = errorMessage || 'YouTube channel authentication failed';
-
         toast.error(`${msg}. Please reconnect your YouTube channel.`);
-
         // DON'T clear auth or redirect - user's app session is still valid
         return Promise.reject(error);
-      } else {
-        // General app auth error - session expired
-        toast('Your session has expired. Logging you out...', {
-          icon: '⚠️',
-        });
-
-        // Wait briefly so user sees the message
-        setTimeout(() => {
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('auth_user');
-
-          if (!window.location.pathname.includes('/login')) {
-            window.location.href = '/login';
-          }
-        }, 2000);
       }
+
+      // General app auth error on a protected endpoint - session truly expired
+      toast('Your session has expired. Logging you out...', {
+        icon: '⚠️',
+      });
+
+      // Wait briefly so user sees the message
+      setTimeout(() => {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user');
+
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
+      }, 2000);
     }
     return Promise.reject(error);
   }
