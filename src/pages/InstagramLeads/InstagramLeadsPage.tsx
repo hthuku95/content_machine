@@ -5,7 +5,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableRow, Paper,
   IconButton, Tooltip, Dialog, DialogTitle, DialogContent,
   DialogActions, Select, MenuItem, FormControl, InputLabel,
-  InputAdornment, Divider,
+  InputAdornment, Divider, Tabs, Tab, LinearProgress,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import TagIcon from '@mui/icons-material/Tag';
@@ -13,6 +13,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PeopleIcon from '@mui/icons-material/People';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import StarIcon from '@mui/icons-material/Star';
 import {
   instagramLeadsService,
   InstagramLead,
@@ -26,6 +28,19 @@ const STATUS_COLORS: Record<string, 'default' | 'primary' | 'success' | 'warning
   skipped:   'error',
 };
 
+const NICHE_OPTIONS = [
+  { value: 'content creator',   label: 'Content Creator' },
+  { value: 'youtuber',          label: 'YouTuber' },
+  { value: 'podcaster',         label: 'Podcaster' },
+  { value: 'online educator',   label: 'Online Educator / Course Creator' },
+  { value: 'fitness coach',     label: 'Fitness Coach' },
+  { value: 'business coach',    label: 'Business Coach' },
+  { value: 'gaming streamer',   label: 'Gaming / Streamer' },
+  { value: 'lifestyle blogger', label: 'Lifestyle Blogger' },
+  { value: 'real estate',       label: 'Real Estate Agent' },
+  { value: 'motivational speaker', label: 'Motivational Speaker' },
+];
+
 function formatFollowers(n: number | null): string {
   if (!n) return '—';
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -33,17 +48,151 @@ function formatFollowers(n: number | null): string {
   return String(n);
 }
 
+function ScoreBadge({ score }: { score: number | null }) {
+  if (score == null) return <Typography variant="caption" color="text.disabled">—</Typography>;
+  const color = score >= 80 ? '#4ade80' : score >= 60 ? '#facc15' : '#9ca3af';
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+      <StarIcon sx={{ fontSize: 14, color }} />
+      <Typography variant="body2" fontWeight={700} sx={{ color }}>{score}</Typography>
+    </Box>
+  );
+}
+
+function LeadsTable({
+  leads,
+  onDmClick,
+  onStatusChange,
+}: {
+  leads: InstagramLead[];
+  onDmClick: (lead: InstagramLead) => void;
+  onStatusChange: (lead: InstagramLead, status: InstagramLead['contact_status']) => void;
+}) {
+  if (leads.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 6 }}>
+        <PeopleIcon sx={{ fontSize: 48, color: '#5c5470', mb: 1 }} />
+        <Typography color="text.secondary">No leads yet.</Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Paper sx={{ overflow: 'auto', bgcolor: 'transparent' }}>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ color: '#9999bb' }}>Creator</TableCell>
+            <TableCell sx={{ color: '#9999bb' }}>Followers</TableCell>
+            <TableCell sx={{ color: '#9999bb' }}>Score</TableCell>
+            <TableCell sx={{ color: '#9999bb' }}>Hashtag</TableCell>
+            <TableCell sx={{ color: '#9999bb' }}>Status</TableCell>
+            <TableCell sx={{ color: '#9999bb' }} align="right">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {leads.map(lead => (
+            <TableRow key={lead.id} sx={{ '&:hover': { bgcolor: 'rgba(92,84,112,0.15)' } }}>
+              <TableCell>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Avatar
+                    src={lead.profile_pic_url ?? undefined}
+                    sx={{ width: 32, height: 32, bgcolor: '#5c5470', fontSize: 14 }}
+                  >
+                    {lead.username?.[0]?.toUpperCase()}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="body2" fontWeight={600}>
+                      @{lead.username}
+                      {lead.is_verified && (
+                        <Chip label="✓" size="small" sx={{ ml: 0.5, height: 16, fontSize: 10, bgcolor: '#2563eb' }} />
+                      )}
+                    </Typography>
+                    {lead.full_name && (
+                      <Typography variant="caption" color="text.secondary">{lead.full_name}</Typography>
+                    )}
+                    {lead.bio && (
+                      <Typography variant="caption" color="text.disabled" sx={{ display: 'block', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {lead.bio}
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              </TableCell>
+              <TableCell>
+                <Typography variant="body2" fontWeight={600} sx={{ color: '#dbd8e3' }}>
+                  {formatFollowers(lead.followers_count)}
+                </Typography>
+              </TableCell>
+              <TableCell><ScoreBadge score={(lead as any).score ?? null} /></TableCell>
+              <TableCell>
+                {lead.hashtag_source && (
+                  <Chip label={`#${lead.hashtag_source}`} size="small" sx={{ bgcolor: '#2a2438', color: '#dbd8e3', fontSize: 11 }} />
+                )}
+              </TableCell>
+              <TableCell>
+                <FormControl size="small" variant="standard">
+                  <Select
+                    value={lead.contact_status}
+                    onChange={e => onStatusChange(lead, e.target.value as InstagramLead['contact_status'])}
+                    disableUnderline
+                    sx={{ fontSize: 12 }}
+                  >
+                    {(['new', 'contacted', 'replied', 'converted', 'skipped'] as const).map(s => (
+                      <MenuItem key={s} value={s}>
+                        <Chip label={s} size="small" color={STATUS_COLORS[s]} sx={{ fontSize: 11 }} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </TableCell>
+              <TableCell align="right">
+                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
+                  <Tooltip title="Generate cold DM">
+                    <IconButton size="small" onClick={() => onDmClick(lead)} sx={{ color: '#dbd8e3' }}>
+                      <AutoFixHighIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  {lead.profile_url && (
+                    <Tooltip title="Open Instagram profile">
+                      <IconButton size="small" component="a" href={lead.profile_url} target="_blank" rel="noopener" sx={{ color: '#9999bb' }}>
+                        <OpenInNewIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Paper>
+  );
+}
+
 export function InstagramLeadsPage() {
+  const [tab, setTab] = useState(0); // 0 = Auto-Discover, 1 = Manual Search, 2 = All Leads, 3 = Top Leads
+
+  // Auto-discover state
+  const [niche, setNiche] = useState('content creator');
+  const [maxPostsPerHashtag, setMaxPostsPerHashtag] = useState(30);
+  const [discovering, setDiscovering] = useState(false);
+  const [discoverResult, setDiscoverResult] = useState<{ hashtags: string[]; jobs: number; message: string } | null>(null);
+
+  // Manual search state
   const [hashtag, setHashtag] = useState('');
   const [maxPosts, setMaxPosts] = useState(50);
   const [searching, setSearching] = useState(false);
   const [searchMsg, setSearchMsg] = useState<string | null>(null);
 
+  // Leads state
   const [leads, setLeads] = useState<InstagramLead[]>([]);
+  const [topLeads, setTopLeads] = useState<InstagramLead[]>([]);
   const [loading, setLoading] = useState(false);
   const [filterHashtag, setFilterHashtag] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
 
+  // DM dialog state
   const [dmDialog, setDmDialog] = useState<{ open: boolean; lead: InstagramLead | null; generating: boolean; text: string }>({
     open: false, lead: null, generating: false, text: '',
   });
@@ -61,7 +210,7 @@ export function InstagramLeadsPage() {
       const res = await instagramLeadsService.listLeads({
         hashtag:        filterHashtag || undefined,
         contact_status: filterStatus  || undefined,
-        limit: 100,
+        limit: 200,
       });
       if (res.success) setLeads(res.leads);
     } catch {
@@ -71,19 +220,56 @@ export function InstagramLeadsPage() {
     }
   }, [filterHashtag, filterStatus]);
 
-  useEffect(() => { loadLeads(); }, [loadLeads]);
+  const loadTopLeads = useCallback(async () => {
+    try {
+      const res = await instagramLeadsService.getTopLeads();
+      if (res.success) setTopLeads(res.leads);
+    } catch { /* silent */ }
+  }, []);
+
+  useEffect(() => { loadLeads(); loadTopLeads(); }, [loadLeads, loadTopLeads]);
+
+  // Auto-refresh leads every 60s (PB poller imports every 5 min)
+  useEffect(() => {
+    const t = setInterval(() => { loadLeads(); loadTopLeads(); }, 60_000);
+    return () => clearInterval(t);
+  }, [loadLeads, loadTopLeads]);
+
+  const handleAutoDiscover = async () => {
+    setDiscovering(true);
+    setDiscoverResult(null);
+    try {
+      const res = await instagramLeadsService.autoDiscover({
+        niche,
+        max_posts_per_hashtag: maxPostsPerHashtag,
+        hashtag_count: 4,
+      });
+      if (res.success) {
+        setDiscoverResult({
+          hashtags: res.hashtags ?? [],
+          jobs:     res.jobs?.length ?? 0,
+          message:  res.message ?? 'Searches launched!',
+        });
+        showSnack(`Auto-discover launched ${res.jobs?.length} searches for "${niche}"`, 'info');
+      } else {
+        showSnack(res.error ?? 'Auto-discover failed', 'error');
+      }
+    } catch (err: any) {
+      showSnack(err?.response?.data?.error ?? 'Auto-discover failed', 'error');
+    } finally {
+      setDiscovering(false);
+    }
+  };
 
   const handleSearch = async () => {
     if (!hashtag.trim()) return;
     setSearching(true);
     setSearchMsg(null);
     try {
-      const res = await instagramLeadsService.searchByHashtag(
-        hashtag.trim(), maxPosts,
-      );
+      const res = await instagramLeadsService.searchByHashtag(hashtag.trim(), maxPosts);
       if (res.success) {
         setSearchMsg(res.message ?? 'Search launched!');
-        showSnack(`PhantomBuster launched for #${hashtag} — check back in ~5 min`, 'info');
+        showSnack(`PhantomBuster launched for #${hashtag}`, 'info');
       } else {
         showSnack(res.error ?? 'Search failed', 'error');
       }
@@ -106,6 +292,7 @@ export function InstagramLeadsPage() {
       if (res.success && res.dm_script) {
         setDmDialog(d => ({ ...d, generating: false, text: res.dm_script! }));
         setLeads(ls => ls.map(l => l.id === dmDialog.lead!.id ? { ...l, dm_script: res.dm_script! } : l));
+        setTopLeads(ls => ls.map(l => l.id === dmDialog.lead!.id ? { ...l, dm_script: res.dm_script! } : l));
       } else {
         showSnack(res.error ?? 'Generation failed', 'error');
         setDmDialog(d => ({ ...d, generating: false }));
@@ -116,17 +303,11 @@ export function InstagramLeadsPage() {
     }
   };
 
-  const copyDm = () => {
-    if (dmDialog.text) {
-      navigator.clipboard.writeText(dmDialog.text);
-      showSnack('DM copied to clipboard!');
-    }
-  };
-
   const updateStatus = async (lead: InstagramLead, status: InstagramLead['contact_status']) => {
     try {
       await instagramLeadsService.updateContactStatus(lead.id, status);
       setLeads(ls => ls.map(l => l.id === lead.id ? { ...l, contact_status: status } : l));
+      setTopLeads(ls => ls.map(l => l.id === lead.id ? { ...l, contact_status: status } : l));
     } catch {
       showSnack('Failed to update status', 'error');
     }
@@ -135,206 +316,231 @@ export function InstagramLeadsPage() {
   return (
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
       {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" fontWeight={700} sx={{ color: '#dbd8e3' }}>
-          Instagram Lead Finder
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Discover Instagram creators by hashtag using PhantomBuster, then send personalised cold DMs.
-        </Typography>
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+        <Box>
+          <Typography variant="h5" fontWeight={700} sx={{ color: '#dbd8e3' }}>
+            Instagram Lead Finder
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            AI-powered discovery of Instagram creators who need video clipping. Auto-scores leads and generates cold DMs.
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Chip label={`${leads.length} leads`} size="small" sx={{ bgcolor: '#2a2438', color: '#dbd8e3' }} />
+          <Chip label={`${topLeads.length} top-scored`} size="small" color="success" />
+        </Box>
       </Box>
 
-      {/* Search card */}
-      <Card sx={{ mb: 3, bgcolor: '#352f44', border: '1px solid #5c5470' }}>
-        <CardContent>
-          <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#dbd8e3' }}>
-            Search by Hashtag
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <TextField
-              label="Hashtag"
-              placeholder="e.g. contentcreator"
-              value={hashtag}
-              onChange={e => setHashtag(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
-              size="small"
-              sx={{ minWidth: 220 }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <TagIcon sx={{ fontSize: 16, color: '#5c5470' }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              label="Max profiles"
-              type="number"
-              value={maxPosts}
-              onChange={e => setMaxPosts(Number(e.target.value))}
-              size="small"
-              sx={{ width: 140 }}
-              inputProps={{ min: 10, max: 200, step: 10 }}
-            />
-            <Button
-              variant="contained"
-              startIcon={searching ? <CircularProgress size={16} color="inherit" /> : <SearchIcon />}
-              onClick={handleSearch}
-              disabled={searching || !hashtag.trim()}
-              sx={{ bgcolor: '#5c5470', '&:hover': { bgcolor: '#7a7090' } }}
-            >
-              {searching ? 'Launching…' : 'Launch Search'}
-            </Button>
-          </Box>
-          {searchMsg && (
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-              {searchMsg}
-            </Typography>
-          )}
-          <Typography variant="caption" color="text.disabled" sx={{ mt: 1, display: 'block' }}>
-            PhantomBuster scrapes Instagram for profiles posting under this hashtag. Results appear below in ~5–10 minutes.
-          </Typography>
-        </CardContent>
-      </Card>
+      <Tabs
+        value={tab}
+        onChange={(_, v) => setTab(v)}
+        sx={{ mb: 3, borderBottom: 1, borderColor: '#5c5470' }}
+      >
+        <Tab icon={<AutoAwesomeIcon fontSize="small" />} iconPosition="start" label="Auto-Discover" sx={{ minHeight: 40 }} />
+        <Tab icon={<TagIcon fontSize="small" />} iconPosition="start" label="Manual Search" sx={{ minHeight: 40 }} />
+        <Tab icon={<PeopleIcon fontSize="small" />} iconPosition="start" label={`All Leads (${leads.length})`} sx={{ minHeight: 40 }} />
+        <Tab icon={<StarIcon fontSize="small" />} iconPosition="start" label={`Top Leads (${topLeads.length})`} sx={{ minHeight: 40 }} />
+      </Tabs>
 
-      {/* Filters + results */}
-      <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#dbd8e3', flexGrow: 1 }}>
-              Leads {leads.length > 0 && `(${leads.length})`}
-            </Typography>
-            <TextField
-              label="Filter by hashtag"
-              size="small"
-              value={filterHashtag}
-              onChange={e => setFilterHashtag(e.target.value)}
-              sx={{ width: 180 }}
-            />
-            <FormControl size="small" sx={{ width: 160 }}>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={filterStatus}
-                label="Status"
-                onChange={e => setFilterStatus(e.target.value)}
-              >
-                <MenuItem value="">All</MenuItem>
-                {['new', 'contacted', 'replied', 'converted', 'skipped'].map(s => (
-                  <MenuItem key={s} value={s}>{s}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <Button size="small" onClick={loadLeads} disabled={loading}>
-              {loading ? <CircularProgress size={14} /> : 'Refresh'}
-            </Button>
-          </Box>
-
-          <Divider sx={{ mb: 2 }} />
-
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-              <CircularProgress />
-            </Box>
-          ) : leads.length === 0 ? (
-            <Box sx={{ textAlign: 'center', py: 6 }}>
-              <PeopleIcon sx={{ fontSize: 48, color: '#5c5470', mb: 1 }} />
-              <Typography color="text.secondary">
-                No leads yet. Launch a hashtag search above to discover creators.
+      {/* ── Auto-Discover tab ─────────────────────────────────────────────── */}
+      {tab === 0 && (
+        <Box>
+          <Card sx={{ mb: 3, bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+            <CardContent>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 0.5, color: '#dbd8e3', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <AutoAwesomeIcon fontSize="small" sx={{ color: '#a78bfa' }} />
+                AI-Powered Auto-Discovery
               </Typography>
-            </Box>
-          ) : (
-            <Paper sx={{ overflow: 'auto', bgcolor: 'transparent' }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ color: '#9999bb' }}>Creator</TableCell>
-                    <TableCell sx={{ color: '#9999bb' }}>Followers</TableCell>
-                    <TableCell sx={{ color: '#9999bb' }}>Hashtag</TableCell>
-                    <TableCell sx={{ color: '#9999bb' }}>Status</TableCell>
-                    <TableCell sx={{ color: '#9999bb' }} align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {leads.map(lead => (
-                    <TableRow key={lead.id} sx={{ '&:hover': { bgcolor: 'rgba(92,84,112,0.15)' } }}>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                          <Avatar
-                            src={lead.profile_pic_url ?? undefined}
-                            sx={{ width: 32, height: 32, bgcolor: '#5c5470', fontSize: 14 }}
-                          >
-                            {lead.username?.[0]?.toUpperCase()}
-                          </Avatar>
-                          <Box>
-                            <Typography variant="body2" fontWeight={600}>
-                              @{lead.username}
-                              {lead.is_verified && (
-                                <Chip label="✓" size="small" sx={{ ml: 0.5, height: 16, fontSize: 10, bgcolor: '#2563eb' }} />
-                              )}
-                            </Typography>
-                            {lead.full_name && (
-                              <Typography variant="caption" color="text.secondary">{lead.full_name}</Typography>
-                            )}
-                            {lead.bio && (
-                              <Typography variant="caption" color="text.disabled" sx={{ display: 'block', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {lead.bio}
-                              </Typography>
-                            )}
-                          </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight={600} sx={{ color: '#dbd8e3' }}>
-                          {formatFollowers(lead.followers_count)}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        {lead.hashtag_source && (
-                          <Chip label={`#${lead.hashtag_source}`} size="small" sx={{ bgcolor: '#2a2438', color: '#dbd8e3', fontSize: 11 }} />
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <FormControl size="small" variant="standard">
-                          <Select
-                            value={lead.contact_status}
-                            onChange={e => updateStatus(lead, e.target.value as InstagramLead['contact_status'])}
-                            disableUnderline
-                            sx={{ fontSize: 12 }}
-                          >
-                            {(['new', 'contacted', 'replied', 'converted', 'skipped'] as const).map(s => (
-                              <MenuItem key={s} value={s}>
-                                <Chip label={s} size="small" color={STATUS_COLORS[s]} sx={{ fontSize: 11 }} />
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </TableCell>
-                      <TableCell align="right">
-                        <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
-                          <Tooltip title="Generate cold DM">
-                            <IconButton size="small" onClick={() => openDmDialog(lead)} sx={{ color: '#dbd8e3' }}>
-                              <AutoFixHighIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                          {lead.profile_url && (
-                            <Tooltip title="Open Instagram profile">
-                              <IconButton size="small" component="a" href={lead.profile_url} target="_blank" rel="noopener" sx={{ color: '#9999bb' }}>
-                                <OpenInNewIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Paper>
-          )}
-        </CardContent>
-      </Card>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                The AI picks the best hashtags for your target niche, launches PhantomBuster searches, then automatically imports and scores leads in the background.
+              </Typography>
 
-      {/* DM Dialog */}
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                <FormControl size="small" sx={{ minWidth: 260 }}>
+                  <InputLabel>Target Niche</InputLabel>
+                  <Select
+                    value={niche}
+                    label="Target Niche"
+                    onChange={e => setNiche(e.target.value)}
+                  >
+                    {NICHE_OPTIONS.map(o => (
+                      <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <TextField
+                  label="Profiles per hashtag"
+                  type="number"
+                  value={maxPostsPerHashtag}
+                  onChange={e => setMaxPostsPerHashtag(Number(e.target.value))}
+                  size="small"
+                  sx={{ width: 160 }}
+                  inputProps={{ min: 10, max: 100, step: 10 }}
+                />
+                <Button
+                  variant="contained"
+                  startIcon={discovering ? <CircularProgress size={16} color="inherit" /> : <AutoAwesomeIcon />}
+                  onClick={handleAutoDiscover}
+                  disabled={discovering}
+                  sx={{ bgcolor: '#7c3aed', '&:hover': { bgcolor: '#6d28d9' } }}
+                >
+                  {discovering ? 'Launching…' : 'Auto-Discover Leads'}
+                </Button>
+              </Box>
+
+              {discovering && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="caption" color="text.secondary">AI selecting hashtags and launching searches…</Typography>
+                  <LinearProgress sx={{ mt: 1, borderRadius: 1 }} />
+                </Box>
+              )}
+
+              {discoverResult && (
+                <Box sx={{ mt: 2, p: 2, bgcolor: '#1a1825', borderRadius: 1, border: '1px solid #5c5470' }}>
+                  <Typography variant="body2" sx={{ color: '#4ade80', mb: 1 }}>
+                    ✅ {discoverResult.jobs} searches launched
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
+                    {discoverResult.hashtags.map(h => (
+                      <Chip key={h} label={`#${h}`} size="small" sx={{ bgcolor: '#2a2438', color: '#a78bfa', fontSize: 11 }} />
+                    ))}
+                  </Box>
+                  <Typography variant="caption" color="text.secondary">{discoverResult.message}</Typography>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card sx={{ bgcolor: '#2a2438', border: '1px solid #3a3050' }}>
+            <CardContent>
+              <Typography variant="subtitle2" sx={{ color: '#9999bb', mb: 1.5 }}>How it works</Typography>
+              {[
+                ['1. Pick a niche', 'Choose which type of creator you\'re targeting (YouTubers, podcasters, coaches, etc.)'],
+                ['2. AI selects hashtags', 'The AI picks 4 high-signal hashtags where your ideal clients actively post'],
+                ['3. PhantomBuster scrapes', 'PB finds creators posting under those hashtags — runs in background (5–10 min)'],
+                ['4. Auto-import + scoring', 'Results auto-import every 5 min. AI scores each lead 0–100 for client likelihood'],
+                ['5. Generate & send DMs', 'Go to "Top Leads" tab → click the wand icon → copy personalised cold DM'],
+              ].map(([title, desc]) => (
+                <Box key={title} sx={{ display: 'flex', gap: 1.5, mb: 1.5 }}>
+                  <Chip label={title} size="small" sx={{ bgcolor: '#352f44', color: '#dbd8e3', fontSize: 11, flexShrink: 0 }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ pt: 0.3 }}>{desc}</Typography>
+                </Box>
+              ))}
+            </CardContent>
+          </Card>
+        </Box>
+      )}
+
+      {/* ── Manual Search tab ─────────────────────────────────────────────── */}
+      {tab === 1 && (
+        <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+          <CardContent>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: '#dbd8e3' }}>
+              Manual Hashtag Search
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+              <TextField
+                label="Hashtag"
+                placeholder="e.g. contentcreator"
+                value={hashtag}
+                onChange={e => setHashtag(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                size="small"
+                sx={{ minWidth: 220 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <TagIcon sx={{ fontSize: 16, color: '#5c5470' }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                label="Max profiles"
+                type="number"
+                value={maxPosts}
+                onChange={e => setMaxPosts(Number(e.target.value))}
+                size="small"
+                sx={{ width: 140 }}
+                inputProps={{ min: 10, max: 200, step: 10 }}
+              />
+              <Button
+                variant="contained"
+                startIcon={searching ? <CircularProgress size={16} color="inherit" /> : <SearchIcon />}
+                onClick={handleSearch}
+                disabled={searching || !hashtag.trim()}
+                sx={{ bgcolor: '#5c5470', '&:hover': { bgcolor: '#7a7090' } }}
+              >
+                {searching ? 'Launching…' : 'Launch Search'}
+              </Button>
+            </Box>
+            {searchMsg && (
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1.5, display: 'block' }}>
+                {searchMsg}
+              </Typography>
+            )}
+            <Typography variant="caption" color="text.disabled" sx={{ mt: 1, display: 'block' }}>
+              Results appear in "All Leads" within ~5–10 minutes and are scored automatically.
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── All Leads tab ─────────────────────────────────────────────────── */}
+      {tab === 2 && (
+        <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#dbd8e3', flexGrow: 1 }}>
+                All Leads
+              </Typography>
+              <TextField label="Filter hashtag" size="small" value={filterHashtag} onChange={e => setFilterHashtag(e.target.value)} sx={{ width: 160 }} />
+              <FormControl size="small" sx={{ width: 160 }}>
+                <InputLabel>Status</InputLabel>
+                <Select value={filterStatus} label="Status" onChange={e => setFilterStatus(e.target.value)}>
+                  <MenuItem value="">All</MenuItem>
+                  {['new', 'contacted', 'replied', 'converted', 'skipped'].map(s => (
+                    <MenuItem key={s} value={s}>{s}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button size="small" onClick={loadLeads} disabled={loading}>
+                {loading ? <CircularProgress size={14} /> : 'Refresh'}
+              </Button>
+            </Box>
+            <Divider sx={{ mb: 2 }} />
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <LeadsTable leads={leads} onDmClick={openDmDialog} onStatusChange={updateStatus} />
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── Top Leads tab ─────────────────────────────────────────────────── */}
+      {tab === 3 && (
+        <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <StarIcon sx={{ color: '#facc15', mr: 1 }} />
+              <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#dbd8e3', flexGrow: 1 }}>
+                Top Leads — AI Score ≥ 60
+              </Typography>
+              <Button size="small" onClick={loadTopLeads}>Refresh</Button>
+            </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              These creators scored highest as potential paying clients for video clipping. Send them a cold DM — click the wand icon to generate a personalised message.
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <LeadsTable leads={topLeads} onDmClick={openDmDialog} onStatusChange={updateStatus} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── DM Dialog ──────────────────────────────────────────────────────── */}
       <Dialog open={dmDialog.open} onClose={() => setDmDialog(d => ({ ...d, open: false }))} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ bgcolor: '#2a2438', color: '#dbd8e3' }}>
           Cold DM — @{dmDialog.lead?.username}
@@ -358,9 +564,7 @@ export function InstagramLeadsPage() {
           )}
         </DialogContent>
         <DialogActions sx={{ bgcolor: '#2a2438', gap: 1 }}>
-          <Button onClick={() => setDmDialog(d => ({ ...d, open: false }))} color="inherit">
-            Close
-          </Button>
+          <Button onClick={() => setDmDialog(d => ({ ...d, open: false }))} color="inherit">Close</Button>
           <Button
             startIcon={dmDialog.generating ? <CircularProgress size={14} color="inherit" /> : <AutoFixHighIcon />}
             onClick={generateDm}
@@ -373,7 +577,7 @@ export function InstagramLeadsPage() {
           {dmDialog.text && (
             <Button
               startIcon={<ContentCopyIcon />}
-              onClick={copyDm}
+              onClick={() => { navigator.clipboard.writeText(dmDialog.text); showSnack('DM copied!'); }}
               variant="contained"
               sx={{ bgcolor: '#5c5470', '&:hover': { bgcolor: '#7a7090' } }}
             >

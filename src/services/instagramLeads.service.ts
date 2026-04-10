@@ -50,7 +50,39 @@ const getAuthHeaders = () => {
   return { Authorization: `Bearer ${token}` };
 };
 
+export interface AutoDiscoverResponse {
+  success: boolean;
+  niche?: string;
+  hashtags?: string[];
+  jobs?: Array<{ job_id: string; hashtag: string; container_id: string }>;
+  errors?: string[];
+  message?: string;
+  error?: string;
+}
+
 export const instagramLeadsService = {
+  /** AI picks hashtags for a niche and auto-launches PB searches */
+  autoDiscover: async (params: {
+    niche?: string;
+    max_posts_per_hashtag?: number;
+    hashtag_count?: number;
+  }): Promise<AutoDiscoverResponse> => {
+    const { data } = await axios.post(
+      `${API_BASE_URL}/api/instagram/leads/auto-discover`,
+      params,
+      { headers: getAuthHeaders() },
+    );
+    return data;
+  },
+
+  /** Get top-scored leads (score >= 60) ready for outreach */
+  getTopLeads: async (): Promise<LeadsListResponse> => {
+    const { data } = await axios.get(`${API_BASE_URL}/api/instagram/leads/top`, {
+      headers: getAuthHeaders(),
+    });
+    return data;
+  },
+
   /** Launch a PhantomBuster hashtag search */
   searchByHashtag: async (
     hashtag: string,
