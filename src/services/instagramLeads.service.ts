@@ -46,7 +46,7 @@ export interface DmResponse {
 }
 
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem('auth_token');
   return { Authorization: `Bearer ${token}` };
 };
 
