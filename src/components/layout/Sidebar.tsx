@@ -156,6 +156,7 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
           width: drawerWidth,
           boxSizing: 'border-box',
           overflowX: 'hidden',
+          overflowY: 'auto',
           transition: 'width 0.2s ease',
           background: (theme) =>
             theme.palette.mode === 'dark'
@@ -188,6 +189,13 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             label="AI Agent"
             active={isActive(PATHS.AGENT_CHAT)}
             onClick={() => handleNavigation(PATHS.AGENT_CHAT)}
+            collapsed={isCollapsed}
+          />
+          <NavItem
+            icon={<InstagramIcon />}
+            label="Instagram Leads"
+            active={isActive(PATHS.INSTAGRAM_LEADS)}
+            onClick={() => handleNavigation(PATHS.INSTAGRAM_LEADS)}
             collapsed={isCollapsed}
           />
         </List>
@@ -306,13 +314,6 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             label="Manual Clipping"
             active={isActive(PATHS.MANUAL_CLIPPING)}
             onClick={() => handleNavigation(PATHS.MANUAL_CLIPPING)}
-            collapsed={isCollapsed}
-          />
-          <NavItem
-            icon={<InstagramIcon />}
-            label="Instagram Leads"
-            active={isActive(PATHS.INSTAGRAM_LEADS)}
-            onClick={() => handleNavigation(PATHS.INSTAGRAM_LEADS)}
             collapsed={isCollapsed}
           />
         </List>
