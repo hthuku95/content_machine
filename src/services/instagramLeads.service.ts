@@ -1,8 +1,7 @@
 // Instagram lead generation service — whitelisted users can search
 // for Instagram creators by hashtag and generate cold DM scripts.
 
-import axios from 'axios';
-import { API_BASE_URL } from '@/config/api';
+import { api } from '@/services/api';
 
 export interface InstagramLead {
   id: string;
@@ -19,6 +18,8 @@ export interface InstagramLead {
   external_url: string | null;
   dm_script: string | null;
   contact_status: 'new' | 'contacted' | 'replied' | 'converted' | 'skipped';
+  score?: number | null;
+  score_reason?: string | null;
 }
 
 export interface SearchResponse {
@@ -45,11 +46,6 @@ export interface DmResponse {
   error?: string;
 }
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('auth_token');
-  return { Authorization: `Bearer ${token}` };
-};
-
 export interface AutoDiscoverResponse {
   success: boolean;
   niche?: string;
@@ -67,19 +63,13 @@ export const instagramLeadsService = {
     max_posts_per_hashtag?: number;
     hashtag_count?: number;
   }): Promise<AutoDiscoverResponse> => {
-    const { data } = await axios.post(
-      `${API_BASE_URL}/api/instagram/leads/auto-discover`,
-      params,
-      { headers: getAuthHeaders() },
-    );
+    const { data } = await api.post('/api/instagram/leads/auto-discover', params);
     return data;
   },
 
   /** Get top-scored leads (score >= 60) ready for outreach */
   getTopLeads: async (): Promise<LeadsListResponse> => {
-    const { data } = await axios.get(`${API_BASE_URL}/api/instagram/leads/top`, {
-      headers: getAuthHeaders(),
-    });
+    const { data } = await api.get('/api/instagram/leads/top');
     return data;
   },
 
@@ -89,11 +79,11 @@ export const instagramLeadsService = {
     maxPosts: number = 50,
     category?: string,
   ): Promise<SearchResponse> => {
-    const { data } = await axios.post(
-      `${API_BASE_URL}/api/instagram/leads/search`,
-      { hashtag, max_posts: maxPosts, category: category || hashtag },
-      { headers: getAuthHeaders() },
-    );
+    const { data } = await api.post('/api/instagram/leads/search', {
+      hashtag,
+      max_posts: maxPosts,
+      category: category || hashtag,
+    });
     return data;
   },
 
@@ -105,19 +95,15 @@ export const instagramLeadsService = {
     limit?: number;
     offset?: number;
   }): Promise<LeadsListResponse> => {
-    const { data } = await axios.get(`${API_BASE_URL}/api/instagram/leads`, {
-      headers: getAuthHeaders(),
-      params,
-    });
+    const { data } = await api.get('/api/instagram/leads', { params });
     return data;
   },
 
   /** Generate a cold DM script for a lead */
   generateDm: async (id: string, niche?: string): Promise<DmResponse> => {
-    const { data } = await axios.post(
-      `${API_BASE_URL}/api/instagram/leads/${id}/generate-dm`,
+    const { data } = await api.post(
+      `/api/instagram/leads/${id}/generate-dm`,
       niche ? { niche } : null,
-      { headers: getAuthHeaders() },
     );
     return data;
   },
@@ -127,10 +113,9 @@ export const instagramLeadsService = {
     id: string,
     contact_status: InstagramLead['contact_status'],
   ): Promise<{ success: boolean }> => {
-    const { data } = await axios.patch(
-      `${API_BASE_URL}/api/instagram/leads/${id}/contact-status`,
+    const { data } = await api.patch(
+      `/api/instagram/leads/${id}/contact-status`,
       { contact_status },
-      { headers: getAuthHeaders() },
     );
     return data;
   },
