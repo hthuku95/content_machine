@@ -94,6 +94,30 @@ function MessageBubble({ msg }: { msg: AgentMessage }) {
     );
   }
 
+  if (msg.type === 'thinking' || msg.type === 'background_job_status') {
+    return (
+      <Box sx={{ maxWidth: '80%', alignSelf: 'flex-start', mb: 1 }}>
+        <Paper
+          variant="outlined"
+          sx={{ px: 2, py: 1.5, bgcolor: 'action.hover', borderRadius: 2 }}
+        >
+          <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+            <CircularProgress size={14} thickness={5} />
+            <Typography variant="caption" color="text.secondary">
+              {msg.type === 'background_job_status' ? 'Background task' : 'Agent thinking…'}
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
+            {msg.content}
+          </Typography>
+        </Paper>
+        <Typography variant="caption" color="text.disabled" sx={{ ml: 1 }}>
+          {formatTime(msg.timestamp)}
+        </Typography>
+      </Box>
+    );
+  }
+
   if (msg.type === 'error') {
     return (
       <Box sx={{ maxWidth: '80%', alignSelf: 'flex-start', mb: 1 }}>
@@ -276,17 +300,13 @@ export function AgentChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const isProcessing = useMemo(
-    () => messages.some(m => m.type === 'progress'),
+  // With background tasks, agents run independently — never block sending new messages.
+  // We only show "in-flight" for the brief ACK period (thinking message is last).
+  const inFlight = useMemo(
+    () => messages[messages.length - 1]?.type === 'thinking',
     [messages],
   );
-
-  // Use last progress message as the "in-flight" indicator
-  const lastProgress = useMemo(
-    () => [...messages].reverse().find(m => m.type === 'progress'),
-    [messages],
-  );
-  const inFlight = lastProgress !== undefined && messages[messages.length - 1]?.type === 'progress';
+  const isProcessing = inFlight;
 
   const handleSend = useCallback(() => {
     const text = input.trim();
