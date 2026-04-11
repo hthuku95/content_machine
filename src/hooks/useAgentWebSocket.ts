@@ -117,7 +117,9 @@ export function useAgentWebSocket({ sessionId, onMessage }: UseAgentWebSocketOpt
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
     setStatus('connecting');
-    const url = `${wsBaseUrl}/ws?session=${sessionId}`;
+    const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken');
+    const tokenParam = authToken ? `&token=${encodeURIComponent(authToken)}` : '';
+    const url = `${wsBaseUrl}/ws?session=${sessionId}${tokenParam}`;
     const ws = new WebSocket(url);
     wsRef.current = ws;
 
