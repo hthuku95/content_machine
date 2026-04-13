@@ -20,6 +20,19 @@ export interface InstagramLead {
   contact_status: 'new' | 'contacted' | 'replied' | 'converted' | 'skipped';
   score?: number | null;
   score_reason?: string | null;
+  service_type?: 'clipping' | 'animations' | 'thumbnails' | 'ugc' | 'full_stack' | null;
+  sample_delivery_id?: string | null;
+}
+
+export interface SampleResponse {
+  success: boolean;
+  delivery_id?: string;
+  delivery_url?: string;
+  service?: string | null;
+  message?: string;
+  /** True when the lead's service is `clipping` and the user must paste a video URL. */
+  requires_source_url?: boolean;
+  error?: string;
 }
 
 export interface SearchResponse {
@@ -116,6 +129,16 @@ export const instagramLeadsService = {
     const { data } = await api.patch(
       `/api/instagram/leads/${id}/contact-status`,
       { contact_status },
+    );
+    return data;
+  },
+
+  /** Auto-generate a portfolio sample tailored to the lead's service_type.
+   *  Returns the public /delivery/:id URL the user can paste into the DM. */
+  generateSample: async (id: string, sourceUrl?: string): Promise<SampleResponse> => {
+    const { data } = await api.post(
+      `/api/instagram/leads/${id}/generate-sample`,
+      sourceUrl ? { source_url: sourceUrl } : null,
     );
     return data;
   },

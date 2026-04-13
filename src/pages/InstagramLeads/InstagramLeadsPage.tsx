@@ -134,9 +134,36 @@ function LeadsTable({
               </TableCell>
               <TableCell><ScoreBadge score={(lead as any).score ?? null} /></TableCell>
               <TableCell>
-                {lead.hashtag_source && (
-                  <Chip label={`#${lead.hashtag_source}`} size="small" sx={{ bgcolor: '#2a2438', color: '#dbd8e3', fontSize: 11 }} />
-                )}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                  {lead.hashtag_source && (
+                    <Chip label={`#${lead.hashtag_source}`} size="small" sx={{ bgcolor: '#2a2438', color: '#dbd8e3', fontSize: 11 }} />
+                  )}
+                  {lead.service_type && (
+                    <Chip
+                      label={lead.service_type.replace('_', ' ')}
+                      size="small"
+                      sx={{
+                        bgcolor: 'rgba(122,76,255,0.15)',
+                        color: '#a78bfa',
+                        fontSize: 10,
+                        height: 18,
+                        textTransform: 'capitalize',
+                      }}
+                    />
+                  )}
+                  {lead.sample_delivery_id && (
+                    <Chip
+                      label="Sample ✓"
+                      size="small"
+                      sx={{
+                        bgcolor: 'rgba(74,222,128,0.15)',
+                        color: '#4ade80',
+                        fontSize: 10,
+                        height: 18,
+                      }}
+                    />
+                  )}
+                </Box>
               </TableCell>
               {/* Stop propagation on Status select so changing it doesn't open the DM dialog. */}
               <TableCell onClick={e => e.stopPropagation()}>
@@ -359,6 +386,68 @@ export function InstagramLeadsPage() {
     }
   };
 
+  /// Generate a portfolio sample tailored to the lead's service_type, save
+  /// the /delivery/:id link on the lead, then regenerate the DM so it
+  /// references the link in copy. One click → DM with portfolio attached.
+  const generateSample = async () => {
+    if (!dmDialog.lead) return;
+    const lead = dmDialog.lead;
+    setDmDialog(d => ({ ...d, generating: true }));
+    try {
+      const res = await instagramLeadsService.generateSample(lead.id);
+      if (!res.success) {
+        if (res.requires_source_url) {
+          const url = window.prompt(
+            `This lead's pitch is CLIPPING — paste a YouTube/podcast/Twitch URL of one of @${lead.username}'s videos to clip:`,
+          );
+          if (!url) {
+            setDmDialog(d => ({ ...d, generating: false }));
+            return;
+          }
+          const res2 = await instagramLeadsService.generateSample(lead.id, url);
+          if (!res2.success) {
+            showSnack(res2.error ?? 'Sample generation failed', 'error');
+            setDmDialog(d => ({ ...d, generating: false }));
+            return;
+          }
+          await applySampleAndRegenerate(lead, res2.delivery_url!);
+          return;
+        }
+        showSnack(res.error ?? 'Sample generation failed', 'error');
+        setDmDialog(d => ({ ...d, generating: false }));
+        return;
+      }
+      await applySampleAndRegenerate(lead, res.delivery_url!);
+    } catch (err: any) {
+      showSnack(err?.response?.data?.error ?? 'Sample generation failed', 'error');
+      setDmDialog(d => ({ ...d, generating: false }));
+    }
+  };
+
+  /// Append the sample link to the DM and persist the regenerated copy.
+  const applySampleAndRegenerate = async (lead: InstagramLead, deliveryUrl: string) => {
+    // Build full URL using current origin so it's pasteable into IG verbatim.
+    const fullUrl = deliveryUrl.startsWith('http')
+      ? deliveryUrl
+      : `${window.location.protocol}//videosync.video${deliveryUrl}`;
+
+    const existing = dmDialog.text || lead.dm_script || '';
+    const withLink = existing
+      ? `${existing}\n\nHere's the sample I made: ${fullUrl}`
+      : `made a quick sample for you — ${fullUrl} — want me to send the breakdown?`;
+
+    setDmDialog(d => ({
+      ...d,
+      generating: false,
+      text: withLink,
+      lead: { ...lead, sample_delivery_id: deliveryUrl.split('/').pop() ?? null },
+    }));
+    setLeads(ls => ls.map(l =>
+      l.id === lead.id ? { ...l, sample_delivery_id: deliveryUrl.split('/').pop() ?? null } : l,
+    ));
+    showSnack('Sample queued — render takes 1-3 min. Link is already in the DM ✓', 'success');
+  };
+
   return (
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
       {/* Header */}
@@ -546,10 +635,11 @@ export function InstagramLeadsPage() {
                 Next step: turn these leads into paying clients
               </Typography>
               <Typography variant="caption" sx={{ color: '#b8b3c8', display: 'block', lineHeight: 1.6 }}>
-                1. Click any row → DM is generated automatically.<br />
-                2. Click <b>"Copy DM &amp; Open Instagram"</b> → script is copied, status flips to <i>contacted</i>, IG opens in a new tab.<br />
-                3. Paste the DM in Instagram. When they reply, change status to <i>replied</i>; when they pay, mark <i>converted</i>.<br />
-                Yellow/green stars (top-right of score column) are higher-priority leads scored by AI.
+                1. Click any row → DM is generated automatically (tailored to the lead's <b>service tag</b>: clipping / animation / thumbnail / UGC).<br />
+                2. Click <b>"+ Attach sample"</b> (yellow) → AI generates a portfolio piece for that exact lead, link auto-pasted into the DM.<br />
+                3. Click <b>"Copy DM &amp; Open Instagram"</b> → script copied, status → <i>contacted</i>, IG opens in a new tab.<br />
+                4. Paste the DM in Instagram. When they reply → <i>replied</i>; when they pay → <i>converted</i>.<br />
+                Sample render takes 1-3 min — the link is shareable immediately and shows a "rendering" state until ready.
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>
@@ -635,8 +725,23 @@ export function InstagramLeadsPage() {
             variant="outlined"
             sx={{ borderColor: '#5c5470', color: '#dbd8e3' }}
           >
-            {dmDialog.generating ? 'Generating…' : (dmDialog.text ? 'Regenerate' : 'Generate DM')}
+            {dmDialog.generating ? 'Working…' : (dmDialog.text ? 'Regenerate' : 'Generate DM')}
           </Button>
+          {!dmDialog.lead?.sample_delivery_id && (
+            <Button
+              startIcon={dmDialog.generating ? <CircularProgress size={14} color="inherit" /> : <AutoAwesomeIcon />}
+              onClick={generateSample}
+              disabled={dmDialog.generating}
+              variant="outlined"
+              sx={{
+                borderColor: '#facc15', color: '#facc15',
+                '&:hover': { borderColor: '#fde047', bgcolor: 'rgba(250,204,21,0.08)' },
+              }}
+              title="Auto-generate a sample (thumbnail/animation/clip) tailored to this lead's service tag, then add the public link to the DM."
+            >
+              + Attach sample
+            </Button>
+          )}
           {dmDialog.text && (
             <Button
               startIcon={<ContentCopyIcon />}
