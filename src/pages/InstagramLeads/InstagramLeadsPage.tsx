@@ -92,7 +92,15 @@ function LeadsTable({
         </TableHead>
         <TableBody>
           {leads.map(lead => (
-            <TableRow key={lead.id} sx={{ '&:hover': { bgcolor: 'rgba(92,84,112,0.15)' } }}>
+            <TableRow
+              key={lead.id}
+              hover
+              onClick={() => onDmClick(lead)}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': { bgcolor: 'rgba(92,84,112,0.25)' },
+              }}
+            >
               <TableCell>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <Avatar
@@ -130,7 +138,8 @@ function LeadsTable({
                   <Chip label={`#${lead.hashtag_source}`} size="small" sx={{ bgcolor: '#2a2438', color: '#dbd8e3', fontSize: 11 }} />
                 )}
               </TableCell>
-              <TableCell>
+              {/* Stop propagation on Status select so changing it doesn't open the DM dialog. */}
+              <TableCell onClick={e => e.stopPropagation()}>
                 <FormControl size="small" variant="standard">
                   <Select
                     value={lead.contact_status}
@@ -146,13 +155,24 @@ function LeadsTable({
                   </Select>
                 </FormControl>
               </TableCell>
-              <TableCell align="right">
-                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
-                  <Tooltip title="Generate cold DM">
-                    <IconButton size="small" onClick={() => onDmClick(lead)} sx={{ color: '#dbd8e3' }}>
-                      <AutoFixHighIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+              <TableCell align="right" onClick={e => e.stopPropagation()}>
+                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end', alignItems: 'center' }}>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    startIcon={<AutoFixHighIcon fontSize="small" />}
+                    onClick={() => onDmClick(lead)}
+                    sx={{
+                      bgcolor: lead.dm_script ? '#5c5470' : '#7a4cff',
+                      color: '#fff',
+                      textTransform: 'none',
+                      fontSize: 12,
+                      px: 1.5,
+                      '&:hover': { bgcolor: lead.dm_script ? '#7a7090' : '#6a3def' },
+                    }}
+                  >
+                    {lead.dm_script ? 'View DM' : 'Generate DM'}
+                  </Button>
                   {lead.profile_url && (
                     <Tooltip title="Open Instagram profile">
                       <IconButton size="small" component="a" href={lead.profile_url} target="_blank" rel="noopener" sx={{ color: '#9999bb' }}>
@@ -281,18 +301,28 @@ export function InstagramLeadsPage() {
   };
 
   const openDmDialog = (lead: InstagramLead) => {
-    setDmDialog({ open: true, lead, generating: false, text: lead.dm_script ?? '' });
+    const existing = lead.dm_script ?? '';
+    setDmDialog({ open: true, lead, generating: false, text: existing });
+
+    // Auto-generate on first open so the user never sees an empty dialog.
+    // (User feedback: opening a lead with no DM yet was confusing — they
+    // didn't know the next step was to click "Generate DM".)
+    if (!existing) {
+      // Defer one tick so the dialog is visible while generation runs.
+      setTimeout(() => generateDm(lead), 50);
+    }
   };
 
-  const generateDm = async () => {
-    if (!dmDialog.lead) return;
-    setDmDialog(d => ({ ...d, generating: true }));
+  const generateDm = async (overrideLead?: InstagramLead) => {
+    const target = overrideLead ?? dmDialog.lead;
+    if (!target) return;
+    setDmDialog(d => ({ ...d, lead: target, open: true, generating: true }));
     try {
-      const res = await instagramLeadsService.generateDm(dmDialog.lead.id);
+      const res = await instagramLeadsService.generateDm(target.id);
       if (res.success && res.dm_script) {
         setDmDialog(d => ({ ...d, generating: false, text: res.dm_script! }));
-        setLeads(ls => ls.map(l => l.id === dmDialog.lead!.id ? { ...l, dm_script: res.dm_script! } : l));
-        setTopLeads(ls => ls.map(l => l.id === dmDialog.lead!.id ? { ...l, dm_script: res.dm_script! } : l));
+        setLeads(ls => ls.map(l => l.id === target.id ? { ...l, dm_script: res.dm_script! } : l));
+        setTopLeads(ls => ls.map(l => l.id === target.id ? { ...l, dm_script: res.dm_script! } : l));
       } else {
         showSnack(res.error ?? 'Generation failed', 'error');
         setDmDialog(d => ({ ...d, generating: false }));
@@ -301,6 +331,22 @@ export function InstagramLeadsPage() {
       showSnack('DM generation failed', 'error');
       setDmDialog(d => ({ ...d, generating: false }));
     }
+  };
+
+  /// One-tap "send" flow: copy DM, mark contacted, open Instagram profile in new tab.
+  const sendAndOpen = async () => {
+    if (!dmDialog.lead || !dmDialog.text) return;
+    try {
+      await navigator.clipboard.writeText(dmDialog.text);
+    } catch { /* clipboard may be blocked; continue */ }
+    if (dmDialog.lead.contact_status === 'new') {
+      await updateStatus(dmDialog.lead, 'contacted');
+    }
+    if (dmDialog.lead.profile_url) {
+      window.open(dmDialog.lead.profile_url, '_blank', 'noopener');
+    }
+    showSnack('DM copied + marked contacted. Paste into IG.', 'success');
+    setDmDialog(d => ({ ...d, open: false }));
   };
 
   const updateStatus = async (lead: InstagramLead, status: InstagramLead['contact_status']) => {
@@ -490,6 +536,22 @@ export function InstagramLeadsPage() {
       {tab === 2 && (
         <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
           <CardContent>
+            {/* Inline how-to banner — answers "I don't know what to do next" */}
+            <Box sx={{
+              mb: 2, p: 2, borderRadius: 1,
+              bgcolor: 'rgba(122,76,255,0.08)',
+              border: '1px solid rgba(122,76,255,0.3)',
+            }}>
+              <Typography variant="body2" fontWeight={600} sx={{ color: '#dbd8e3', mb: 0.5 }}>
+                Next step: turn these leads into paying clients
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#b8b3c8', display: 'block', lineHeight: 1.6 }}>
+                1. Click any row → DM is generated automatically.<br />
+                2. Click <b>"Copy DM &amp; Open Instagram"</b> → script is copied, status flips to <i>contacted</i>, IG opens in a new tab.<br />
+                3. Paste the DM in Instagram. When they reply, change status to <i>replied</i>; when they pay, mark <i>converted</i>.<br />
+                Yellow/green stars (top-right of score column) are higher-priority leads scored by AI.
+              </Typography>
+            </Box>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center', mb: 2 }}>
               <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#dbd8e3', flexGrow: 1 }}>
                 All Leads
@@ -563,25 +625,40 @@ export function InstagramLeadsPage() {
             </Typography>
           )}
         </DialogContent>
-        <DialogActions sx={{ bgcolor: '#2a2438', gap: 1 }}>
+        <DialogActions sx={{ bgcolor: '#2a2438', gap: 1, flexWrap: 'wrap' }}>
           <Button onClick={() => setDmDialog(d => ({ ...d, open: false }))} color="inherit">Close</Button>
+          <Box sx={{ flexGrow: 1 }} />
           <Button
             startIcon={dmDialog.generating ? <CircularProgress size={14} color="inherit" /> : <AutoFixHighIcon />}
-            onClick={generateDm}
+            onClick={() => generateDm()}
             disabled={dmDialog.generating}
             variant="outlined"
             sx={{ borderColor: '#5c5470', color: '#dbd8e3' }}
           >
-            {dmDialog.generating ? 'Generating…' : 'Generate DM'}
+            {dmDialog.generating ? 'Generating…' : (dmDialog.text ? 'Regenerate' : 'Generate DM')}
           </Button>
           {dmDialog.text && (
             <Button
               startIcon={<ContentCopyIcon />}
               onClick={() => { navigator.clipboard.writeText(dmDialog.text); showSnack('DM copied!'); }}
-              variant="contained"
-              sx={{ bgcolor: '#5c5470', '&:hover': { bgcolor: '#7a7090' } }}
+              variant="outlined"
+              sx={{ borderColor: '#5c5470', color: '#dbd8e3' }}
             >
-              Copy
+              Copy only
+            </Button>
+          )}
+          {dmDialog.text && dmDialog.lead?.profile_url && (
+            <Button
+              startIcon={<OpenInNewIcon />}
+              onClick={sendAndOpen}
+              variant="contained"
+              sx={{
+                bgcolor: '#7a4cff', color: '#fff',
+                '&:hover': { bgcolor: '#6a3def' },
+                fontWeight: 700,
+              }}
+            >
+              Copy DM &amp; Open Instagram
             </Button>
           )}
         </DialogActions>
