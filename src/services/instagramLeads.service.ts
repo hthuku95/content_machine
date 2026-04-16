@@ -133,6 +133,18 @@ export const instagramLeadsService = {
     return data;
   },
 
+  /** Override the AI-picked service_type on a lead. Pass null to reset. */
+  updateServiceType: async (
+    id: string,
+    service_type: InstagramLead['service_type'] | null,
+  ): Promise<{ success: boolean }> => {
+    const { data } = await api.patch(
+      `/api/instagram/leads/${id}/service-type`,
+      { service_type },
+    );
+    return data;
+  },
+
   /** Auto-generate a portfolio sample tailored to the lead's service_type.
    *  Returns the public /delivery/:id URL the user can paste into the DM. */
   generateSample: async (id: string, sourceUrl?: string): Promise<SampleResponse> => {

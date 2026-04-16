@@ -39,6 +39,24 @@ const NICHE_OPTIONS = [
   { value: 'lifestyle blogger', label: 'Lifestyle Blogger' },
   { value: 'real estate',       label: 'Real Estate Agent' },
   { value: 'motivational speaker', label: 'Motivational Speaker' },
+  // Niches for the newer service types — landing-page + product mockup
+  { value: 'saas founder',      label: 'SaaS Founder / Indie Hacker' },
+  { value: 'shopify store',     label: 'Shopify / Ecommerce Store' },
+  { value: 'app developer',     label: 'Mobile App Developer' },
+  { value: 'hardware startup',  label: 'Hardware / Kickstarter Creator' },
+];
+
+/// Service types the whitelisted user can pitch. Mirrors the Rust scorer
+/// enum (src/handlers/prospects.rs) — the AI picks one automatically but
+/// the dropdown lets the user override per lead.
+const SERVICE_TYPE_OPTIONS: Array<{ value: NonNullable<InstagramLead['service_type']>; label: string; pitch: string }> = [
+  { value: 'clipping',       label: '🎬 Clipping',        pitch: '$297–$899/mo retainer, 20–40 Shorts/Reels from long-form' },
+  { value: 'animations',     label: '🎞️ Animations',      pitch: '$50–$150 each Blender animation (title cards, data viz, LaTeX)' },
+  { value: 'thumbnails',     label: '🖼️ AI Thumbnails',   pitch: '$25–$50 each, CTR-optimized YouTube thumbnails' },
+  { value: 'ugc',            label: '📱 UGC Ads',         pitch: '$200–$500 each, vertical product-demo videos' },
+  { value: 'product_mockup', label: '📦 Product Mockup',  pitch: '$100–$300 each, 3D product renders for ecom / Kickstarter' },
+  { value: 'landing_page',   label: '🚀 Landing Page',    pitch: '$200–$600 each, animated SaaS hero mockups' },
+  { value: 'full_stack',     label: '⭐ Full Stack',       pitch: '$1,500–$3,000/mo retainer covering everything above' },
 ];
 
 function formatFollowers(n: number | null): string {
@@ -386,6 +404,28 @@ export function InstagramLeadsPage() {
     }
   };
 
+  /// User overrides the AI-picked service for the lead currently open in
+  /// the DM dialog. Persists to the backend so subsequent /generate-dm
+  /// and /generate-sample calls pitch the chosen service.
+  const overrideServiceType = async (newType: InstagramLead['service_type'] | null | '') => {
+    if (!dmDialog.lead) return;
+    const target = dmDialog.lead;
+    const normalized: InstagramLead['service_type'] = (newType === '' || !newType) ? null : newType;
+    // Optimistically update UI first — feels snappier; if the server
+    // rejects we still rollback in the catch.
+    setDmDialog(d => d.lead ? ({ ...d, lead: { ...d.lead!, service_type: normalized } }) : d);
+    setLeads(ls => ls.map(l => l.id === target.id ? { ...l, service_type: normalized } : l));
+    setTopLeads(ls => ls.map(l => l.id === target.id ? { ...l, service_type: normalized } : l));
+    try {
+      await instagramLeadsService.updateServiceType(target.id, normalized);
+      showSnack(`Service switched to ${normalized ?? 'AI default'} — click Regenerate for a new DM`, 'success');
+    } catch {
+      showSnack('Failed to update service type', 'error');
+      setDmDialog(d => d.lead ? ({ ...d, lead: { ...d.lead!, service_type: target.service_type } }) : d);
+      setLeads(ls => ls.map(l => l.id === target.id ? { ...l, service_type: target.service_type } : l));
+    }
+  };
+
   /// Generate a portfolio sample tailored to the lead's service_type, save
   /// the /delivery/:id link on the lead, then regenerate the DM so it
   /// references the link in copy. One click → DM with portfolio attached.
@@ -475,6 +515,7 @@ export function InstagramLeadsPage() {
         <Tab icon={<TagIcon fontSize="small" />} iconPosition="start" label="Manual Search" sx={{ minHeight: 40 }} />
         <Tab icon={<PeopleIcon fontSize="small" />} iconPosition="start" label={`All Leads (${leads.length})`} sx={{ minHeight: 40 }} />
         <Tab icon={<StarIcon fontSize="small" />} iconPosition="start" label={`Top Leads (${topLeads.length})`} sx={{ minHeight: 40 }} />
+        <Tab icon={<span style={{ fontSize: 14 }}>📘</span>} iconPosition="start" label="How It Works" sx={{ minHeight: 40 }} />
       </Tabs>
 
       {/* ── Auto-Discover tab ─────────────────────────────────────────────── */}
@@ -684,10 +725,92 @@ export function InstagramLeadsPage() {
               <Button size="small" onClick={loadTopLeads}>Refresh</Button>
             </Box>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              These creators scored highest as potential paying clients for video clipping. Send them a cold DM — click the wand icon to generate a personalised message.
+              These creators scored highest as potential paying clients. The AI picks the best service to pitch per lead — see the service chip on each row. Click a row to review, override the service if you disagree, generate a DM, attach a sample, and copy it into Instagram.
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <LeadsTable leads={topLeads} onDmClick={openDmDialog} onStatusChange={updateStatus} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── How It Works tab ─────────────────────────────────────────────── */}
+      {tab === 4 && (
+        <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+          <CardContent>
+            <Typography variant="h6" fontWeight={700} sx={{ color: '#dbd8e3', mb: 2 }}>
+              📘 How Instagram Leads Work
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.7 }}>
+              This dashboard finds Instagram creators who match your offer and generates personalized cold DMs + portfolio samples so you can close them. Below is the full workflow and the list of services you can pitch.
+            </Typography>
+
+            <Divider sx={{ my: 2, bgcolor: '#5c5470' }} />
+
+            <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#dbd8e3', mb: 1 }}>
+              🔁 The workflow
+            </Typography>
+            <Box component="ol" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
+              <li><strong>Auto-Discover</strong> (recommended): pick your niche (podcaster, SaaS founder, etc.) → AI picks the 3–4 best hashtags → launches PhantomBuster searches in background.</li>
+              <li><strong>Manual Search</strong>: enter a specific hashtag if you already know what works (e.g. <code>#shopifystore</code>).</li>
+              <li>Wait 3–10 min. PhantomBuster scrapes Instagram, imports leads here, AI scores each 0–100 against our service offerings and picks the best-fit service type.</li>
+              <li>Open <strong>All Leads</strong> or <strong>Top Leads</strong>. Click any row → DM dialog opens.</li>
+              <li>Review the AI's service pick — override it via the dropdown if you disagree.</li>
+              <li>Click <strong>+ Attach sample</strong> → system generates a portfolio piece tailored to the chosen service (a thumbnail, an animation, a product mockup, etc.) and creates a shareable <code>/delivery/:id</code> link.</li>
+              <li>Click <strong>Generate DM</strong> (or Regenerate) → AI writes a personalized cold message that references their bio and naturally includes the delivery link.</li>
+              <li>Click <strong>Copy DM &amp; Open Instagram</strong> → DM copied to clipboard, Instagram opens in a new tab, lead auto-marks as "contacted". Paste + send.</li>
+              <li>When they reply → change status to <em>replied</em>. When they pay → <em>converted</em>. The admin revenue ledger tracks your cut automatically.</li>
+            </Box>
+
+            <Divider sx={{ my: 3, bgcolor: '#5c5470' }} />
+
+            <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#dbd8e3', mb: 1 }}>
+              💼 What you can pitch — service menu
+            </Typography>
+            <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mb: 2 }}>
+              The AI picks one per lead based on their bio, but you can override before generating the DM. Pricing shown is what we suggest — adjust per-deal.
+            </Typography>
+            <Box sx={{ display: 'grid', gap: 1.5 }}>
+              {SERVICE_TYPE_OPTIONS.map(s => (
+                <Box key={s.value} sx={{
+                  p: 2, borderRadius: 1.5,
+                  bgcolor: 'rgba(42,36,56,0.5)',
+                  border: '1px solid rgba(92,84,112,0.3)',
+                }}>
+                  <Typography variant="body2" fontWeight={700} sx={{ color: '#dbd8e3', mb: 0.5 }}>
+                    {s.label}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#b8b3c8', display: 'block' }}>
+                    {s.pitch}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+
+            <Divider sx={{ my: 3, bgcolor: '#5c5470' }} />
+
+            <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#dbd8e3', mb: 1 }}>
+              💰 How you get paid
+            </Typography>
+            <Box component="ul" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
+              <li>When a lead visits your <code>/delivery/:id</code> link and pays <strong>$5 USDC</strong> to unlock the HD download, the payment is attributed to you on the admin Revenue Ledger.</li>
+              <li>Your cut is <strong>50%</strong> of everything paid on your leads (admin sends USDC to your Base wallet; we'll share payout dates + address collection details separately).</li>
+              <li>For bigger retainer deals closed via DM (not x402), invoice the client directly and coordinate with the admin off-ledger.</li>
+              <li>Leads are private to you — no other team member sees your pipeline. Attribution survives even if the admin re-scores or re-attaches samples.</li>
+            </Box>
+
+            <Divider sx={{ my: 3, bgcolor: '#5c5470' }} />
+
+            <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#dbd8e3', mb: 1 }}>
+              ⚡ Tips
+            </Typography>
+            <Box component="ul" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
+              <li>Top Leads (score ≥ 60) convert ~3× better than average — prioritize those.</li>
+              <li>Regenerate a DM if the first one feels off — AI takes context from the lead's full bio each time.</li>
+              <li>For <strong>Landing Page</strong> leads: paste the prospect's own site URL when attaching the sample — system scrapes their hero image for a more relevant mockup.</li>
+              <li>For <strong>Clipping</strong> leads: system asks for a YouTube/podcast URL of THEIR content — paste it, the sample clip is built from that.</li>
+              <li>When follower count is unknown (pulled from hashtag posts, not profile scrape), the AI still scores based on bio + handle — these are still viable leads.</li>
+            </Box>
           </CardContent>
         </Card>
       )}
@@ -698,6 +821,34 @@ export function InstagramLeadsPage() {
           Cold DM — @{dmDialog.lead?.username}
         </DialogTitle>
         <DialogContent sx={{ bgcolor: '#2a2438', pt: '12px !important' }}>
+          {/* Service-type override — the AI picks one when scoring the lead,
+              but the user can flip it here before generating the DM. Updates
+              the lead on the server so subsequent samples + DMs use the
+              override. See SERVICE_TYPE_OPTIONS for the full menu + pricing. */}
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="caption" sx={{ color: '#9999bb', display: 'block', mb: 0.5 }}>
+              Service to pitch (AI's pick — change if you have a better read)
+            </Typography>
+            <FormControl size="small" fullWidth>
+              <Select
+                value={dmDialog.lead?.service_type ?? ''}
+                onChange={(e) => overrideServiceType(e.target.value as InstagramLead['service_type'])}
+                displayEmpty
+                sx={{ fontSize: 13, bgcolor: '#1a1825', color: '#dbd8e3' }}
+              >
+                <MenuItem value=""><em>— AI default —</em></MenuItem>
+                {SERVICE_TYPE_OPTIONS.map(s => (
+                  <MenuItem key={s.value} value={s.value}>
+                    <Box>
+                      <Typography variant="body2" fontWeight={600}>{s.label}</Typography>
+                      <Typography variant="caption" color="text.disabled">{s.pitch}</Typography>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
           {dmDialog.text ? (
             <Box
               component="pre"
