@@ -31,6 +31,7 @@ import { AgentChatPage } from '@/pages/AgentChat/AgentChatPage';
 import { GigTemplatesPage } from '@/pages/GigTemplates/GigTemplatesPage';
 import ManualClippingPage from '@/pages/ManualClipping/ManualClippingPage';
 import { InstagramLeadsPage } from '@/pages/InstagramLeads/InstagramLeadsPage';
+import { PortfolioSamplesPage } from '@/pages/PortfolioSamples/PortfolioSamplesPage';
 
 export const router = createBrowserRouter([
   // Auth routes (no sidebar/topbar)
@@ -201,6 +202,15 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <InstagramLeadsPage />
+          </ErrorBoundary>
+        ),
+      },
+      // Portfolio samples route
+      {
+        path: PATHS.PORTFOLIO_SAMPLES,
+        element: (
+          <ErrorBoundary>
+            <PortfolioSamplesPage />
           </ErrorBoundary>
         ),
       },

@@ -15,10 +15,8 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PeopleIcon from '@mui/icons-material/People';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StarIcon from '@mui/icons-material/Star';
-import {
-  instagramLeadsService,
-  InstagramLead,
-} from '@/services/instagramLeads.service';
+import { instagramLeadsService } from '@/services/instagramLeads.service';
+import type { InstagramLead } from '@/services/instagramLeads.service';
 
 const STATUS_COLORS: Record<string, 'default' | 'primary' | 'success' | 'warning' | 'error'> = {
   new:       'default',
@@ -793,7 +791,7 @@ export function InstagramLeadsPage() {
               💰 How you get paid
             </Typography>
             <Box component="ul" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
-              <li>When a lead visits your <code>/delivery/:id</code> link and pays <strong>$5 USDC</strong> to unlock the HD download, the payment is attributed to you on the admin Revenue Ledger.</li>
+              <li>When a lead visits your <code>/delivery/:id</code> link and pays the sample's unlock price to get the HD download, the payment is attributed to you on the admin Revenue Ledger.</li>
               <li>Your cut is <strong>50%</strong> of everything paid on your leads (admin sends USDC to your Base wallet; we'll share payout dates + address collection details separately).</li>
               <li>For bigger retainer deals closed via DM (not x402), invoice the client directly and coordinate with the admin off-ledger.</li>
               <li>Leads are private to you — no other team member sees your pipeline. Attribution survives even if the admin re-scores or re-attaches samples.</li>
