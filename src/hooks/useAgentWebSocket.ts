@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { config } from '@/config/config';
-import { api } from '@/services/api';
 
 // ─── Message types from server ────────────────────────────────────────────────
 
@@ -27,7 +26,17 @@ export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'disconnect
 
 async function pollSessionJobs(sessionId: string): Promise<AgentMessage[]> {
   try {
-    const { data } = await api.get(`/api/chat/sessions/${sessionId}/jobs`);
+    const token = localStorage.getItem('auth_token') || localStorage.getItem('authToken');
+    if (!token) return [];
+
+    const resp = await fetch(`${config.apiBaseUrl}/api/chat/sessions/${sessionId}/jobs`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!resp.ok) return [];
+
+    const data = await resp.json();
     const jobs: Array<{
       id: string;
       user_message: string;
@@ -75,6 +84,8 @@ export function useAgentWebSocket({ sessionId, onMessage }: UseAgentWebSocketOpt
   const wsRef = useRef<WebSocket | null>(null);
   const onMessageRef = useRef(onMessage);
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const shouldReconnectRef = useRef(true);
   const seenJobIds = useRef<Set<string>>(new Set());
   onMessageRef.current = onMessage;
 
@@ -115,9 +126,18 @@ export function useAgentWebSocket({ sessionId, onMessage }: UseAgentWebSocketOpt
 
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
 
     setStatus('connecting');
     const authToken = localStorage.getItem('auth_token') || localStorage.getItem('authToken');
+    if (!authToken) {
+      setStatus('error');
+      startPolling();
+      return;
+    }
     const tokenParam = authToken ? `&token=${encodeURIComponent(authToken)}` : '';
     const url = `${wsBaseUrl}/ws?session=${sessionId}${tokenParam}`;
     const ws = new WebSocket(url);
@@ -182,10 +202,20 @@ export function useAgentWebSocket({ sessionId, onMessage }: UseAgentWebSocketOpt
       wsRef.current = null;
       // Start polling so we catch any tasks that complete while disconnected
       startPolling();
+      if (shouldReconnectRef.current) {
+        reconnectTimerRef.current = setTimeout(() => {
+          connect();
+        }, 3000);
+      }
     };
   }, [sessionId, wsBaseUrl, addMessage, startPolling, stopPolling]);
 
   const disconnect = useCallback(() => {
+    shouldReconnectRef.current = false;
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
     wsRef.current?.close();
     wsRef.current = null;
     stopPolling();
@@ -205,9 +235,15 @@ export function useAgentWebSocket({ sessionId, onMessage }: UseAgentWebSocketOpt
 
   // Auto-connect on mount / when sessionId changes, cleanup on unmount
   useEffect(() => {
+    shouldReconnectRef.current = true;
     seenJobIds.current = new Set();
     connect();
     return () => {
+      shouldReconnectRef.current = false;
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
       wsRef.current?.close();
       stopPolling();
     };
