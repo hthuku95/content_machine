@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Alert,
   Box,
@@ -284,6 +285,7 @@ const SUGGESTIONS = [
 export function AgentChatPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const location = useLocation();
 
   const [sessionId, setSessionId] = useState<string>(() => newSessionId());
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -292,6 +294,7 @@ export function AgentChatPage() {
   const [uploadedFile, setUploadedFile] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const prefillSentRef = useRef(false);
 
   const { status, messages, sendMessage, connect, clearMessages } = useAgentWebSocket({ sessionId });
 
@@ -353,6 +356,33 @@ export function AgentChatPage() {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  }, [sessionId]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const prompt = params.get('prompt')?.trim() || '';
+    const autosend = params.get('autosend') === '1';
+
+    if (!prompt) return;
+    if (!input) {
+      setInput(prompt);
+    }
+
+    if (!autosend || prefillSentRef.current || status !== 'connected') return;
+
+    prefillSentRef.current = true;
+    const timer = window.setTimeout(() => {
+      const fullMessage = uploadedFile ? `[File: ${uploadedFile}]\n${prompt}` : prompt;
+      sendMessage(fullMessage);
+      setInput('');
+      setUploadedFile(null);
+    }, 250);
+
+    return () => window.clearTimeout(timer);
+  }, [location.search, status, sendMessage, uploadedFile, input]);
+
+  useEffect(() => {
+    prefillSentRef.current = false;
   }, [sessionId]);
 
   return (

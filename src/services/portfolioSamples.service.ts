@@ -6,6 +6,7 @@ export interface PortfolioSample {
   delivery_id: string;
   delivery_url: string;
   public_delivery_url?: string | null;
+  internal_delivery_url?: string | null;
   client_ref?: string | null;
   slug?: string | null;
   title: string;
@@ -51,13 +52,32 @@ export interface GeneratePortfolioSamplesResponse extends PortfolioSamplesRespon
 
 const toAbsoluteDeliveryUrl = (value?: string | null): string => {
   if (!value) return '';
-  if (/^https?:\/\//i.test(value)) return value;
+  const apiBase = config.apiBaseUrl || (typeof window !== 'undefined' ? window.location.origin : '');
+  let resolved = value;
+  try {
+    resolved = /^https?:\/\//i.test(value) ? value : new URL(value, apiBase).toString();
+  } catch {
+    resolved = value;
+  }
+  return resolved;
+};
 
+const toInternalPreviewUrl = (value?: string | null): string => {
+  const resolved = toAbsoluteDeliveryUrl(value);
+  if (!resolved) return '';
   const apiBase = config.apiBaseUrl || (typeof window !== 'undefined' ? window.location.origin : '');
   try {
-    return new URL(value, apiBase).toString();
+    const token = typeof window !== 'undefined'
+      ? (localStorage.getItem('auth_token') || localStorage.getItem('authToken') || '')
+      : '';
+    if (!token) return resolved;
+
+    const url = new URL(resolved, apiBase || window.location.origin);
+    url.searchParams.set('internal_preview', '1');
+    url.searchParams.set('token', token);
+    return url.toString();
   } catch {
-    return value;
+    return resolved;
   }
 };
 
@@ -65,6 +85,7 @@ const normalizeSample = (sample: PortfolioSample): PortfolioSample => ({
   ...sample,
   delivery_url: toAbsoluteDeliveryUrl(sample.delivery_url),
   public_delivery_url: toAbsoluteDeliveryUrl(sample.public_delivery_url || sample.delivery_url) || null,
+  internal_delivery_url: toInternalPreviewUrl(sample.public_delivery_url || sample.delivery_url) || null,
 });
 
 export const portfolioSamplesService = {

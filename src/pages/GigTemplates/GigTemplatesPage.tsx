@@ -8,7 +8,6 @@ import {
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { gigTemplatesService, GigTemplate, GigSample } from '@/services/gigTemplates.service';
 
 // ─── Tier badge colors ────────────────────────────────────────────────────────
@@ -57,14 +56,6 @@ function SampleSlot({ sample, onDelete }: { sample: GigSample | null; onDelete?:
       </Box>
       {/* Hover actions */}
       <Box className="sample-actions" sx={{ position: 'absolute', top: 4, right: 4, opacity: 0, transition: 'opacity 0.15s', display: 'flex', gap: 0.5 }}>
-        {sample.r2_url && (
-          <Tooltip title="Open full size">
-            <IconButton size="small" sx={{ bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 0.4 }}
-                        onClick={() => window.open(sample.r2_url, '_blank')}>
-              <OpenInNewIcon sx={{ fontSize: 12 }} />
-            </IconButton>
-          </Tooltip>
-        )}
         {onDelete && (
           <Tooltip title="Delete sample">
             <IconButton size="small" sx={{ bgcolor: 'rgba(220,38,38,0.8)', color: '#fff', p: 0.4 }}

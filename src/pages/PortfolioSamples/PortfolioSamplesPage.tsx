@@ -13,6 +13,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  TextField,
   Stack,
   Typography,
   Paper,
@@ -28,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import { portfolioSamplesService } from '@/services/portfolioSamples.service';
 import type { PortfolioSample, PortfolioTarget } from '@/services/portfolioSamples.service';
+import { PATHS } from '@/routes/paths';
 
 type StatusColor = 'success' | 'error' | 'warning' | 'info';
 
@@ -45,6 +47,9 @@ export function PortfolioSamplesPage() {
   const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [customUrl, setCustomUrl] = useState('');
+  const [customProspect, setCustomProspect] = useState('');
+  const [customBrief, setCustomBrief] = useState('');
 
   const loadSamples = async () => {
     setError(null);
@@ -102,6 +107,33 @@ export function PortfolioSamplesPage() {
     } catch {
       setError('Unable to copy automatically on this browser. Open the delivery link and copy it manually.');
     }
+  };
+
+  const launchCustomSampleChat = () => {
+    const brief = customBrief.trim();
+    if (!brief) {
+      setError('Add a short custom sample brief before launching the agent.');
+      return;
+    }
+
+    const prompt = [
+      'I need a custom portfolio sample for outbound sales.',
+      '',
+      customProspect.trim() ? `Target prospect or brand: ${customProspect.trim()}` : null,
+      `Reference URL or media: ${customUrl.trim() || 'No URL supplied'}`,
+      `Sample brief: ${brief}`,
+      '',
+      'Please generate one polished preview sample, explain your creative direction, and use the full VideoSync stack where appropriate.',
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    const params = new URLSearchParams({
+      prompt,
+      autosend: '1',
+      source: 'portfolio-samples',
+    });
+    window.location.href = `${PATHS.AGENT_CHAT}?${params.toString()}`;
   };
 
   return (
@@ -177,6 +209,62 @@ export function PortfolioSamplesPage() {
           </Paper>
         ))}
       </Box>
+
+      <Card variant="outlined" sx={{ mb: 3, borderRadius: 3 }}>
+        <CardContent>
+          <Typography variant="overline" color="primary.main">
+            Custom Sample Studio
+          </Typography>
+          <Typography variant="h6" fontWeight={800} sx={{ mt: 0.5 }}>
+            Generate a portfolio sample from scratch with the agent
+          </Typography>
+          <Typography color="text.secondary" sx={{ mt: 1, mb: 2 }}>
+            The five crypto SaaS demos stay as the shared baseline set. Use this section when you need a more custom
+            outbound sample for a different brand, creator, URL, or offer angle.
+          </Typography>
+
+          <Stack spacing={1.5}>
+            <TextField
+              label="Reference URL or media link"
+              placeholder="https://example.com, YouTube/Twitch URL, or target landing page"
+              value={customUrl}
+              onChange={(event) => setCustomUrl(event.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Prospect or brand name"
+              placeholder="Optional"
+              value={customProspect}
+              onChange={(event) => setCustomProspect(event.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Describe the custom sample"
+              placeholder="Example: create a 20-second narrated landing-page hero with cleaner motion, stronger fintech styling, and a clearer CTA."
+              value={customBrief}
+              onChange={(event) => setCustomBrief(event.target.value)}
+              multiline
+              minRows={4}
+              fullWidth
+            />
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.25}>
+              <Button variant="contained" startIcon={<GenerateIcon />} onClick={launchCustomSampleChat}>
+                Open Agent Chat
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setCustomUrl('');
+                  setCustomProspect('');
+                  setCustomBrief('');
+                }}
+              >
+                Clear
+              </Button>
+            </Stack>
+          </Stack>
+        </CardContent>
+      </Card>
 
       {message && <Alert severity="info" sx={{ mb: 2 }}>{message}</Alert>}
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -355,7 +443,7 @@ export function PortfolioSamplesPage() {
                   <Button
                     size="small"
                     endIcon={<OpenIcon />}
-                    href={sample.public_delivery_url || sample.delivery_url}
+                    href={sample.internal_delivery_url || sample.public_delivery_url || sample.delivery_url}
                     target="_blank"
                     rel="noreferrer"
                   >
