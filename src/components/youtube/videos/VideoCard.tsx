@@ -41,18 +41,23 @@ const PRIVACY_COLORS: Record<VideoPrivacyStatus, 'default' | 'success' | 'warnin
   private: 'default',
 };
 
-function formatNumber(num: number): string {
-  if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(1)}M`;
+function formatNumber(num?: number | null): string {
+  const value = typeof num === 'number' && Number.isFinite(num) ? num : 0;
+
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M`;
   }
-  if (num >= 1000) {
-    return `${(num / 1000).toFixed(1)}K`;
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(1)}K`;
   }
-  return num.toString();
+  return value.toString();
 }
 
 export function VideoCard({ video, onEdit, onDelete, onSchedule }: VideoCardProps) {
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const title = video.title || 'Untitled video';
+  const privacyStatus = video.privacy_status || 'private';
+  const uploadedAt = video.uploaded_at || video.published_at;
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -61,20 +66,20 @@ export function VideoCard({ video, onEdit, onDelete, onSchedule }: VideoCardProp
           component="img"
           height="180"
           image={video.thumbnail_url || '/placeholder-video.png'}
-          alt={video.title}
+          alt={title}
           sx={{ objectFit: 'cover' }}
         />
         <Chip
-          label={video.privacy_status.toUpperCase()}
+          label={privacyStatus.toUpperCase()}
           size="small"
-          color={PRIVACY_COLORS[video.privacy_status]}
+          color={PRIVACY_COLORS[privacyStatus]}
           sx={{ position: 'absolute', top: 8, right: 8 }}
         />
       </Box>
 
       <CardContent sx={{ flexGrow: 1 }}>
-        <Typography variant="h6" gutterBottom noWrap title={video.title}>
-          {video.title}
+        <Typography variant="h6" gutterBottom noWrap title={title}>
+          {title}
         </Typography>
 
         <Typography
@@ -105,9 +110,11 @@ export function VideoCard({ video, onEdit, onDelete, onSchedule }: VideoCardProp
           </Box>
         </Box>
 
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-          Uploaded {formatDistanceToNow(new Date(video.uploaded_at), { addSuffix: true })}
-        </Typography>
+        {uploadedAt && (
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+            Uploaded {formatDistanceToNow(new Date(uploadedAt), { addSuffix: true })}
+          </Typography>
+        )}
       </CardContent>
 
       <Divider />
