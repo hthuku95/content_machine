@@ -53,8 +53,8 @@ const SERVICE_TYPE_OPTIONS: Array<{ value: NonNullable<InstagramLead['service_ty
   { value: 'thumbnails',     label: '🖼️ AI Thumbnails',   pitch: '$25–$50 each, CTR-optimized YouTube thumbnails' },
   { value: 'ugc',            label: '📱 UGC Ads',         pitch: '$200–$500 each, vertical product-demo videos' },
   { value: 'product_mockup', label: '📦 Product Mockup',  pitch: '$100–$300 each, 3D product renders for ecom / Kickstarter' },
-  { value: 'landing_page',   label: '🚀 Landing Page',    pitch: '$200–$600 each, animated SaaS hero mockups' },
-  { value: 'full_stack',     label: '⭐ Full Stack',       pitch: '$1,500–$3,000/mo retainer covering everything above' },
+  { value: 'landing_page',   label: '🚀 SaaS Demo / Landing Page', pitch: '$99–$499 quick demo packs, animated SaaS hero videos, and app walkthroughs' },
+  { value: 'full_stack',     label: '⭐ Mixed Agency Bundle', pitch: '$500–$3,000/mo retainer: clips, thumbnails, long-form edits, mockups, audio, and delivery pages' },
 ];
 
 function formatFollowers(n: number | null): string {
@@ -495,7 +495,7 @@ export function InstagramLeadsPage() {
             Instagram Lead Finder
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            AI-powered discovery of Instagram creators who need video clipping. Auto-scores leads and generates cold DMs.
+            Agentic prospect discovery for clipping, SaaS demo packs, thumbnails, mockups, education videos, 3D scenes, voice/audio work, and mixed agency bundles. Auto-scores leads and generates cold DMs.
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -526,7 +526,7 @@ export function InstagramLeadsPage() {
                 AI-Powered Auto-Discovery
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                The AI picks the best hashtags for your target niche, launches PhantomBuster searches, then automatically imports and scores leads in the background.
+                The AI picks the best hashtags for your target niche, launches searches, imports leads in the background, scores each prospect against the full service menu, and suggests the best offer to pitch.
               </Typography>
 
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
@@ -874,7 +874,7 @@ export function InstagramLeadsPage() {
             variant="outlined"
             sx={{ borderColor: '#5c5470', color: '#dbd8e3' }}
           >
-            {dmDialog.generating ? 'Working…' : (dmDialog.text ? 'Regenerate' : 'Generate DM')}
+            {dmDialog.generating ? 'Generating outreach draft' : (dmDialog.text ? 'Regenerate' : 'Generate DM')}
           </Button>
           {!dmDialog.lead?.sample_delivery_id && (
             <Button

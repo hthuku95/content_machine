@@ -1,4 +1,5 @@
 import { Link as RouterLink } from 'react-router-dom';
+import type React from 'react';
 import {
   Card,
   CardContent,
@@ -117,20 +118,22 @@ export function JobStatusCard({ job, onCancel, onRetry }: JobStatusCardProps) {
           </Box>
         </Box>
 
-        {job.status === 'processing' && (
+        {(job.status === 'processing' || job.status === 'pending') && (
           <Box sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
               <Typography variant="caption" color="text.secondary">
-                Progress
+                {job.status === 'pending' ? 'Queue / workflow' : 'Progress'}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 {job.steps_completed != null && job.total_steps != null
                   ? `Step ${job.steps_completed}/${job.total_steps}`
-                  : `${job.progress}%`}
+                  : job.progress > 0
+                    ? `${job.progress}%`
+                    : 'waiting for worker'}
               </Typography>
             </Box>
             <LinearProgress
-              variant="determinate"
+              variant={job.progress > 0 ? 'determinate' : 'indeterminate'}
               value={job.progress}
               sx={{
                 height: 8,
@@ -140,6 +143,11 @@ export function JobStatusCard({ job, onCancel, onRetry }: JobStatusCardProps) {
             {job.current_step && (
               <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
                 {job.current_step}
+              </Typography>
+            )}
+            {job.workflow_id && !job.current_step && (
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                Durable workflow attached. Open details for node-level progress.
               </Typography>
             )}
           </Box>

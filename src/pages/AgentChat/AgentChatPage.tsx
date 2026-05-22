@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import type React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   Alert,
   Box,
@@ -33,6 +35,7 @@ import {
   WifiOff as DisconnectedIcon,
 } from '@mui/icons-material';
 import { useAgentWebSocket, type AgentMessage } from '@/hooks/useAgentWebSocket';
+import { api } from '@/services/api';
 import { chatService, type ChatSession } from '@/services/chat.service';
 import { config } from '@/config/config';
 
@@ -74,7 +77,7 @@ function MessageBubble({ msg }: { msg: AgentMessage }) {
           <Box display="flex" alignItems="center" gap={1} mb={0.5}>
             <CircularProgress size={14} thickness={5} />
             <Typography variant="caption" color="text.secondary">
-              {msg.percentage !== undefined ? `${msg.percentage}%` : 'Working…'}
+              {msg.percentage !== undefined ? `${msg.percentage}%` : (msg.content || 'Progress update received')}
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary">
@@ -105,7 +108,7 @@ function MessageBubble({ msg }: { msg: AgentMessage }) {
           <Box display="flex" alignItems="center" gap={1} mb={0.5}>
             <CircularProgress size={14} thickness={5} />
             <Typography variant="caption" color="text.secondary">
-              {msg.type === 'background_job_status' ? 'Background task' : 'Agent thinking…'}
+              {msg.type === 'background_job_status' ? 'Background task' : 'Live workflow update'}
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
@@ -280,12 +283,22 @@ const SUGGESTIONS = [
   'Remove background noise and normalize audio levels',
 ];
 
+async function fetchWorkflowStatus(workflowId: string): Promise<Record<string, unknown>> {
+  const response = await api.get<Record<string, unknown>>(`/api/workflows/${workflowId}/status`);
+  return response.data;
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export function AgentChatPage() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  useMediaQuery(theme.breakpoints.down('sm'));
   const location = useLocation();
+  const navigate = useNavigate();
+  const workflowId = useMemo(
+    () => new URLSearchParams(location.search).get('workflow_id')?.trim() || undefined,
+    [location.search],
+  );
 
   const [sessionId, setSessionId] = useState<string>(() => newSessionId());
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -296,7 +309,23 @@ export function AgentChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const prefillSentRef = useRef(false);
 
-  const { status, messages, sendMessage, connect, clearMessages } = useAgentWebSocket({ sessionId });
+  const { status, messages, sendMessage, connect, clearMessages } = useAgentWebSocket({
+    sessionId,
+    workflowId,
+  });
+  const { data: workflowStatus } = useQuery({
+    queryKey: ['agent-workflow-status', workflowId],
+    queryFn: () => fetchWorkflowStatus(workflowId!),
+    enabled: Boolean(workflowId),
+    refetchInterval: 10000,
+  });
+  const workflowSummary = workflowStatus?.node_summary as
+    | {
+        progress_percent?: number;
+        active_node?: { node_key?: string; durable_policy?: string };
+        blocked_reason?: string | null;
+      }
+    | undefined;
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -309,7 +338,6 @@ export function AgentChatPage() {
     () => messages[messages.length - 1]?.type === 'thinking',
     [messages],
   );
-  const isProcessing = inFlight;
 
   const handleSend = useCallback(() => {
     const text = input.trim();
@@ -362,6 +390,7 @@ export function AgentChatPage() {
     const params = new URLSearchParams(location.search);
     const prompt = params.get('prompt')?.trim() || '';
     const autosend = params.get('autosend') === '1';
+    const sampleRequestId = params.get('sample_request_id')?.trim() || '';
 
     if (!prompt) return;
     if (!input) {
@@ -370,16 +399,34 @@ export function AgentChatPage() {
 
     if (!autosend || prefillSentRef.current || status !== 'connected') return;
 
+    const autosendKey = sampleRequestId
+      ? `videosync:autosent:${sampleRequestId}`
+      : `videosync:autosent:${sessionId}:${prompt}`;
+    if (sessionStorage.getItem(autosendKey) === '1') return;
+
     prefillSentRef.current = true;
     const timer = window.setTimeout(() => {
       const fullMessage = uploadedFile ? `[File: ${uploadedFile}]\n${prompt}` : prompt;
+      sessionStorage.setItem(autosendKey, '1');
       sendMessage(fullMessage);
       setInput('');
       setUploadedFile(null);
+
+      const cleanParams = new URLSearchParams(location.search);
+      cleanParams.delete('prompt');
+      cleanParams.delete('autosend');
+      cleanParams.delete('sample_request_id');
+      navigate(
+        {
+          pathname: location.pathname,
+          search: cleanParams.toString() ? `?${cleanParams.toString()}` : '',
+        },
+        { replace: true },
+      );
     }, 250);
 
     return () => window.clearTimeout(timer);
-  }, [location.search, status, sendMessage, uploadedFile, input]);
+  }, [location, navigate, sessionId, status, sendMessage, uploadedFile, input]);
 
   useEffect(() => {
     prefillSentRef.current = false;
@@ -438,6 +485,43 @@ export function AgentChatPage() {
         </Tooltip>
       </Box>
 
+      {workflowId && (
+        <Box
+          sx={{
+            px: 2,
+            py: 1,
+            borderBottom: 1,
+            borderColor: 'divider',
+            bgcolor: 'action.hover',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Chip size="small" color="secondary" variant="outlined" label="Workflow attached" />
+          {typeof workflowSummary?.progress_percent === 'number' && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 180 }}>
+              <LinearProgress
+                variant="determinate"
+                value={workflowSummary.progress_percent}
+                sx={{ flex: 1, height: 6, borderRadius: 1 }}
+              />
+              <Typography variant="caption" color="text.secondary">
+                {Math.round(workflowSummary.progress_percent)}%
+              </Typography>
+            </Box>
+          )}
+          <Typography variant="caption" color={workflowSummary?.blocked_reason ? 'error' : 'text.secondary'}>
+            {workflowSummary?.blocked_reason
+              ? `Blocked: ${workflowSummary.blocked_reason}`
+              : workflowSummary?.active_node
+                ? `Active: ${workflowSummary.active_node.node_key || 'workflow node'}${workflowSummary.active_node.durable_policy ? ` (${workflowSummary.active_node.durable_policy})` : ''}`
+                : 'Waiting for persisted workflow events...'}
+          </Typography>
+        </Box>
+      )}
+
       {/* Messages area */}
       <Box
         sx={{
@@ -490,7 +574,7 @@ export function AgentChatPage() {
         {inFlight && (
           <Box sx={{ alignSelf: 'flex-start', mb: 1 }}>
             <Typography variant="caption" color="text.secondary">
-              Agent is working…
+              {messages[messages.length - 1]?.content || 'The active workflow sent a live status update.'}
             </Typography>
           </Box>
         )}

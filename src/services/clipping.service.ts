@@ -166,6 +166,16 @@ export const clippingService = {
   },
 
   /**
+   * Get durable workflow/node progress for a job or generated delivery.
+   */
+  async getWorkflowStatus(workflowId: string): Promise<Record<string, unknown>> {
+    const response = await api.get<Record<string, unknown>>(
+      `/api/workflows/${workflowId}/status`
+    );
+    return response.data;
+  },
+
+  /**
    * Cancel a running job
    */
   async cancelJob(id: string): Promise<void> {

@@ -1,4 +1,6 @@
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
+import type React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Box,
   Typography,
@@ -9,7 +11,7 @@ import {
   LinearProgress,
   Breadcrumbs,
   Link,
-  Grid,
+  GridLegacy as Grid,
   Card,
   CardContent,
   Divider,
@@ -24,6 +26,7 @@ import {
   Work as WorkIcon,
   VideoLibrary as VideoIcon,
   Refresh as RefreshIcon,
+  SmartToy as AgentIcon,
 } from '@mui/icons-material';
 import { AccessGate } from '@/components/clipping/AccessGate';
 import { JobTimeline } from '@/components/clipping/JobTimeline';
@@ -34,13 +37,14 @@ import { useJobDetail } from '@/hooks/useJobDetail';
 import { useJobWebSocket } from '@/hooks/useJobWebSocket';
 import { useJobs } from '@/hooks/useJobs';
 import { useClips } from '@/hooks/useClips';
+import { clippingService } from '@/services/clipping.service';
 import { PATHS } from '@/routes/paths';
 import type { JobStatus } from '@/types/clipping.types';
 import { formatDistanceToNow, format } from 'date-fns';
 
 const STATUS_CONFIG: Record<
   JobStatus,
-  { color: 'default' | 'primary' | 'success' | 'error'; icon: React.ReactNode }
+  { color: 'default' | 'primary' | 'success' | 'error'; icon: React.ReactElement }
 > = {
   pending: {
     color: 'default',
@@ -80,6 +84,31 @@ export function JobDetailPage() {
   // Fetch clips for this job (filter by job_id isn't in the API, so we'll filter client-side)
   const { clips: allClips } = useClips();
   const jobClips = allClips.filter((clip) => clip.job_id === id);
+  const workflowId = displayJob?.workflow_id || null;
+  const { data: workflowStatus } = useQuery({
+    queryKey: ['workflow-status', workflowId],
+    queryFn: () => clippingService.getWorkflowStatus(workflowId!),
+    enabled: Boolean(workflowId),
+    refetchInterval: isActive ? 10000 : false,
+  });
+  const nodeSummary = workflowStatus?.node_summary as
+    | {
+        progress_percent?: number;
+        active_node?: { node_key?: string; durable_policy?: string };
+        blocked_reason?: string | null;
+      }
+    | undefined;
+  const rawWorkflowNodes = workflowStatus?.workflow_nodes ?? workflowStatus?.nodes;
+  const workflowNodes = Array.isArray(rawWorkflowNodes)
+    ? (rawWorkflowNodes as Array<{
+        node_key?: string;
+        node_type?: string;
+        status?: string;
+        durable_policy?: string;
+        input?: { durable_policy?: string; tool_name?: string };
+        error_message?: string | null;
+      }>)
+    : [];
 
   if (isLoading) {
     return (
@@ -140,7 +169,13 @@ export function JobDetailPage() {
   const statusConfig = STATUS_CONFIG[displayJob!.status] || STATUS_CONFIG.pending; // Fallback to pending if invalid
   const canCancel = displayJob!.status === 'pending' || displayJob!.status === 'processing';
   const canRetry = displayJob!.status === 'failed';
-
+  const workflowChatSearch = displayJob!.workflow_id
+    ? new URLSearchParams({
+        workflow_id: displayJob!.workflow_id,
+        prompt: 'Give me the exact progress, blockers, and latest persisted workflow events for this clipping job.',
+        autosend: '1',
+      }).toString()
+    : null;
   const handleCancel = () => {
     if (window.confirm('Are you sure you want to cancel this job?')) {
       cancelJob(job!.id);
@@ -192,6 +227,17 @@ export function JobDetailPage() {
             >
               Back
             </Button>
+            {workflowChatSearch && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                startIcon={<AgentIcon />}
+                component={RouterLink}
+                to={`${PATHS.AGENT_CHAT}?${workflowChatSearch}`}
+              >
+                Discuss With AI
+              </Button>
+            )}
             {canRetry && (
               <Button
                 variant="contained"
@@ -232,7 +278,7 @@ export function JobDetailPage() {
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2" color="text.secondary">
-                    {displayJob!.current_step || 'Processing...'}
+                    {displayJob!.current_step || 'This workflow has not persisted a detailed execution step yet.'}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {displayJob!.steps_completed != null && displayJob!.total_steps != null
@@ -249,6 +295,47 @@ export function JobDetailPage() {
                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
                     {displayJob!.current_action_detail}
                   </Typography>
+                )}
+              </Paper>
+            )}
+
+            {nodeSummary && (
+              <Paper sx={{ p: 3, mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                  <AgentIcon color="secondary" />
+                  <Typography variant="h6">Durable Workflow Progress</Typography>
+                  {typeof nodeSummary.progress_percent === 'number' && (
+                    <Chip label={`${Math.round(nodeSummary.progress_percent)}%`} size="small" color="primary" />
+                  )}
+                </Box>
+                {nodeSummary.active_node && (
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Active node: <strong>{nodeSummary.active_node.node_key || 'unknown'}</strong>
+                    {nodeSummary.active_node.durable_policy ? ` (${nodeSummary.active_node.durable_policy})` : ''}
+                  </Typography>
+                )}
+                {nodeSummary.blocked_reason && (
+                  <Typography variant="body2" color="error" sx={{ mb: 1 }}>
+                    Blocked: {nodeSummary.blocked_reason}
+                  </Typography>
+                )}
+                {workflowNodes.length > 0 && (
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 1 }}>
+                    {workflowNodes.map((node) => {
+                      const policy = node.durable_policy || node.input?.durable_policy;
+                      const toolName = node.input?.tool_name;
+                      const labelBase = toolName || node.node_key || node.node_type || 'node';
+                      return (
+                        <Chip
+                          key={node.node_key || node.node_type}
+                          label={`${labelBase}: ${node.status || 'unknown'}${policy ? ` (${policy})` : ''}`}
+                          size="small"
+                          color={node.status === 'completed' ? 'success' : node.status === 'failed' ? 'error' : 'default'}
+                          variant={node.status === 'running' ? 'filled' : 'outlined'}
+                        />
+                      );
+                    })}
+                  </Box>
                 )}
               </Paper>
             )}
@@ -367,6 +454,16 @@ export function JobDetailPage() {
                       </Typography>
                     </Box>
                   )}
+                  {!displayJob!.linkage.source_channel && displayJob!.linkage.source_channel_name && (
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        Source Channel
+                      </Typography>
+                      <Typography variant="body2">
+                        {displayJob!.linkage.source_channel_name}
+                      </Typography>
+                    </Box>
+                  )}
 
                   {displayJob!.linkage.destination_channel_title && (
                     <Box sx={{ mb: 2 }}>
@@ -375,6 +472,16 @@ export function JobDetailPage() {
                       </Typography>
                       <Typography variant="body2">
                         {displayJob!.linkage.destination_channel_title}
+                      </Typography>
+                    </Box>
+                  )}
+                  {!displayJob!.linkage.destination_channel_title && displayJob!.linkage.destination_channel_name && (
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        Destination Channel
+                      </Typography>
+                      <Typography variant="body2">
+                        {displayJob!.linkage.destination_channel_name}
                       </Typography>
                     </Box>
                   )}

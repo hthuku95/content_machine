@@ -15,6 +15,7 @@ import {
   Link,
   Typography,
 } from '@mui/material';
+import type React from 'react';
 import {
   Cancel as CancelIcon,
   Visibility as ViewIcon,
@@ -41,7 +42,7 @@ interface JobsTableViewProps {
 
 const STATUS_CONFIG: Record<
   JobStatus,
-  { color: 'default' | 'primary' | 'success' | 'error'; icon: React.ReactNode }
+  { color: 'default' | 'primary' | 'success' | 'error'; icon: React.ReactElement }
 > = {
   pending: {
     color: 'default',
@@ -58,6 +59,14 @@ const STATUS_CONFIG: Record<
   failed: {
     color: 'error',
     icon: <ErrorIcon fontSize="small" />,
+  },
+  cancelled: {
+    color: 'default',
+    icon: <CancelIcon fontSize="small" />,
+  },
+  no_clips_found: {
+    color: 'default',
+    icon: <CheckCircleIcon fontSize="small" />,
   },
 };
 
@@ -150,17 +159,24 @@ export function JobsTableView({
                       </Typography>
                     </Box>
                   )}
+                  {job.workflow_id && !job.current_step && (job.status === 'pending' || job.status === 'processing') && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">
+                        Durable workflow attached. Open details for node-level progress.
+                      </Typography>
+                    </Box>
+                  )}
                 </TableCell>
                 <TableCell sx={{ minWidth: 150 }}>
-                  {job.status === 'processing' ? (
+                  {job.status === 'processing' || job.status === 'pending' ? (
                     <Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                         <LinearProgress
-                          variant="determinate"
+                          variant={job.progress > 0 ? 'determinate' : 'indeterminate'}
                           value={job.progress}
                           sx={{ flexGrow: 1, height: 6, borderRadius: 1 }}
                         />
-                        <Typography variant="caption">{job.progress}%</Typography>
+                        <Typography variant="caption">{job.progress > 0 ? `${job.progress}%` : 'queued'}</Typography>
                       </Box>
                     </Box>
                   ) : (
@@ -171,7 +187,7 @@ export function JobsTableView({
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2" noWrap sx={{ maxWidth: 150 }}>
-                    {job.linkage?.source_channel?.channel_title || 'Unknown'}
+                    {job.linkage?.source_channel?.channel_title || job.linkage?.source_channel_name || 'Unknown'}
                   </Typography>
                 </TableCell>
                 <TableCell>

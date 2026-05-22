@@ -53,11 +53,21 @@ function formatNumber(num?: number | null): string {
   return value.toString();
 }
 
+function formatUploadedAt(value?: string | null): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return formatDistanceToNow(date, { addSuffix: true });
+}
+
 export function VideoCard({ video, onEdit, onDelete, onSchedule }: VideoCardProps) {
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const title = video.title || 'Untitled video';
   const privacyStatus = video.privacy_status || 'private';
   const uploadedAt = video.uploaded_at || video.published_at;
+  const uploadedAgo = formatUploadedAt(uploadedAt);
+  const youtubeVideoId = video.youtube_video_id || video.id?.replace(/^yt:/, '');
+  const watchUrl = youtubeVideoId ? `https://youtube.com/watch?v=${youtubeVideoId}` : undefined;
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -110,9 +120,9 @@ export function VideoCard({ video, onEdit, onDelete, onSchedule }: VideoCardProp
           </Box>
         </Box>
 
-        {uploadedAt && (
+        {uploadedAgo && (
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-            Uploaded {formatDistanceToNow(new Date(uploadedAt), { addSuffix: true })}
+            Uploaded {uploadedAgo}
           </Typography>
         )}
       </CardContent>
@@ -122,10 +132,11 @@ export function VideoCard({ video, onEdit, onDelete, onSchedule }: VideoCardProp
         <Button
           size="small"
           component="a"
-          href={`https://youtube.com/watch?v=${video.youtube_video_id}`}
+          href={watchUrl}
           target="_blank"
           rel="noopener noreferrer"
           startIcon={<OpenInNewIcon />}
+          disabled={!watchUrl}
         >
           Watch
         </Button>

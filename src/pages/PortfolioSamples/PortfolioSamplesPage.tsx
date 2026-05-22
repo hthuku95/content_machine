@@ -22,6 +22,7 @@ import {
   AutoAwesome as GenerateIcon,
   CollectionsBookmark as PortfolioIcon,
   ContentCopy as CopyIcon,
+  Download as DownloadIcon,
   Launch as LaunchIcon,
   OpenInNew as OpenIcon,
   Refresh as RefreshIcon,
@@ -349,6 +350,11 @@ export function PortfolioSamplesPage() {
           }}
         >
           {samples.map((sample) => {
+            const downloadUrl = sample.output_r2_url || sample.preview_r2_url || '';
+            const downloadName = `${sample.company || sample.title || 'videosync-sample'}`
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '') || 'videosync-sample';
             return (
               <Card
                 key={sample.id}
@@ -465,6 +471,18 @@ export function PortfolioSamplesPage() {
                       rel="noreferrer"
                     >
                       Website
+                    </Button>
+                  )}
+                  {downloadUrl && (
+                    <Button
+                      size="small"
+                      endIcon={<DownloadIcon />}
+                      href={downloadUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      download={`${downloadName}.mp4`}
+                    >
+                      Download
                     </Button>
                   )}
                 </CardActions>
