@@ -32,6 +32,10 @@ import { GigTemplatesPage } from '@/pages/GigTemplates/GigTemplatesPage';
 import ManualClippingPage from '@/pages/ManualClipping/ManualClippingPage';
 import { InstagramLeadsPage } from '@/pages/InstagramLeads/InstagramLeadsPage';
 import { PortfolioSamplesPage } from '@/pages/PortfolioSamples/PortfolioSamplesPage';
+import CampaignsPage from '@/pages/Campaigns/CampaignsPage';
+import NewCampaignPage from '@/pages/Campaigns/NewCampaignPage';
+import CampaignDetailPage from '@/pages/Campaigns/CampaignDetailPage';
+import SocialAccountsPage from '@/pages/Campaigns/SocialAccountsPage';
 
 export const router = createBrowserRouter([
   // Auth routes (no sidebar/topbar)
@@ -211,6 +215,40 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <PortfolioSamplesPage />
+          </ErrorBoundary>
+        ),
+      },
+      // Social Media Campaigns routes
+      {
+        path: PATHS.CAMPAIGNS.ROOT,
+        element: (
+          <ErrorBoundary>
+            <CampaignsPage />
+          </ErrorBoundary>
+        ),
+      },
+      {
+        path: PATHS.CAMPAIGNS.NEW,
+        element: (
+          <ErrorBoundary>
+            <NewCampaignPage />
+          </ErrorBoundary>
+        ),
+      },
+      {
+        path: '/campaigns/:id',
+        element: (
+          <ErrorBoundary>
+            <CampaignDetailPage />
+          </ErrorBoundary>
+        ),
+      },
+      // Social Account Management
+      {
+        path: PATHS.SOCIAL_ACCOUNTS,
+        element: (
+          <ErrorBoundary>
+            <SocialAccountsPage />
           </ErrorBoundary>
         ),
       },

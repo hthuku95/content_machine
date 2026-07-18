@@ -66,6 +66,16 @@ export const PATHS = {
   // Portfolio samples (shareable proof for outbound sales)
   PORTFOLIO_SAMPLES: '/portfolio-samples',
 
+  // Social Media Campaigns (Zernio-powered)
+  CAMPAIGNS: {
+    ROOT: '/campaigns',
+    NEW: '/campaigns/new',
+    DETAIL: (id: string) => `/campaigns/${id}`,
+  },
+
+  // Social Account Management (Zernio)
+  SOCIAL_ACCOUNTS: '/social/accounts',
+
   // Other
   NOT_FOUND: '/404',
 };

@@ -40,6 +40,7 @@ import {
   ContentCut as ClipIcon,
   CollectionsBookmark as PortfolioIcon,
   PhotoCamera as InstagramIcon,
+  Campaign as CampaignIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -204,6 +205,20 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             label="Portfolio Samples"
             active={isActive(PATHS.PORTFOLIO_SAMPLES)}
             onClick={() => handleNavigation(PATHS.PORTFOLIO_SAMPLES)}
+            collapsed={isCollapsed}
+          />
+          <NavItem
+            icon={<CampaignIcon />}
+            label="Campaigns"
+            active={location.pathname.startsWith('/campaigns')}
+            onClick={() => handleNavigation(PATHS.CAMPAIGNS.ROOT)}
+            collapsed={isCollapsed}
+          />
+          <NavItem
+            icon={<LinkIcon />}
+            label="Social Accounts"
+            active={isActive(PATHS.SOCIAL_ACCOUNTS)}
+            onClick={() => handleNavigation(PATHS.SOCIAL_ACCOUNTS)}
             collapsed={isCollapsed}
           />
         </List>
