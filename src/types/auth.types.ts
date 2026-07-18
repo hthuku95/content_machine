@@ -4,6 +4,8 @@ export interface User {
   id: string;
   email: string;
   username: string;
+  is_staff?: boolean;
+  is_superuser?: boolean;
   created_at: string;
 }
 

@@ -4,13 +4,11 @@ import {
   DialogContent,
   TextField,
   List,
-  ListItem,
   ListItemButton,
   ListItemText,
   ListItemIcon,
   Box,
   Typography,
-  Chip,
   InputAdornment,
   Divider,
 } from '@mui/material';
@@ -20,7 +18,6 @@ import {
   Work as WorkIcon,
   Movie as MovieIcon,
   VideoLibrary as VideoLibraryIcon,
-  TrendingUp as TrendingIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from '@/routes/paths';

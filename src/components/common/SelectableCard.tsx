@@ -1,7 +1,8 @@
-import { Box, Checkbox, Card, CardProps } from '@mui/material';
+import { Box, Checkbox, Card } from '@mui/material';
+import type { CardProps } from '@mui/material';
 import { useState } from 'react';
 
-interface SelectableCardProps extends CardProps {
+interface SelectableCardProps extends Omit<CardProps, 'onSelect'> {
   id: string;
   selected: boolean;
   onSelect: (id: string) => void;
@@ -54,7 +55,7 @@ export function SelectableCard({
         {...cardProps}
         sx={{
           ...sx,
-          cursor: selectionMode ? 'pointer' : sx?.cursor,
+          cursor: selectionMode ? 'pointer' : undefined,
           border: selected ? '2px solid' : '1px solid',
           borderColor: selected ? 'primary.main' : 'divider',
           transition: 'all 0.2s ease-in-out',

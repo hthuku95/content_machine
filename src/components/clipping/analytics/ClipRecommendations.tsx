@@ -6,14 +6,9 @@ import {
   Box,
   List,
   ListItem,
-  ListItemText,
-  Chip,
-  LinearProgress,
-  Tooltip,
   Divider,
 } from '@mui/material';
 import {
-  TrendingUp as TrendingIcon,
   EmojiEvents as TrophyIcon,
   Psychology as AIIcon,
   Lightbulb as InsightIcon,

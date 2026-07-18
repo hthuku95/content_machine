@@ -415,7 +415,7 @@ export function PortfolioSamplesPage() {
                     </Typography>
                   )}
                   <Typography variant="body2" color="text.secondary">
-                    Unlock price: {sample.unlock_price_usdc ? `$${sample.unlock_price_usdc} USDC` : 'default'}
+                    Free sample — no payment required
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                     Render time: {sample.completed_in_minutes ? `${sample.completed_in_minutes.toFixed(1)} min` : 'In progress'}

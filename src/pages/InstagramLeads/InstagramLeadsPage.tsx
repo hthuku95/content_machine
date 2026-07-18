@@ -48,13 +48,18 @@ const NICHE_OPTIONS = [
 /// enum (src/handlers/prospects.rs) — the AI picks one automatically but
 /// the dropdown lets the user override per lead.
 const SERVICE_TYPE_OPTIONS: Array<{ value: NonNullable<InstagramLead['service_type']>; label: string; pitch: string }> = [
-  { value: 'clipping',       label: '🎬 Clipping',        pitch: '$297–$899/mo retainer, 20–40 Shorts/Reels from long-form' },
-  { value: 'animations',     label: '🎞️ Animations',      pitch: '$50–$150 each Blender animation (title cards, data viz, LaTeX)' },
-  { value: 'thumbnails',     label: '🖼️ AI Thumbnails',   pitch: '$25–$50 each, CTR-optimized YouTube thumbnails' },
-  { value: 'ugc',            label: '📱 UGC Ads',         pitch: '$200–$500 each, vertical product-demo videos' },
-  { value: 'product_mockup', label: '📦 Product Mockup',  pitch: '$100–$300 each, 3D product renders for ecom / Kickstarter' },
-  { value: 'landing_page',   label: '🚀 SaaS Demo / Landing Page', pitch: '$99–$499 quick demo packs, animated SaaS hero videos, and app walkthroughs' },
-  { value: 'full_stack',     label: '⭐ Mixed Agency Bundle', pitch: '$500–$3,000/mo retainer: clips, thumbnails, long-form edits, mockups, audio, and delivery pages' },
+  { value: 'clipping',             label: '🎬 Clipping',              pitch: '$297/mo — daily clips from long-form content, auto-posted to your socials' },
+  { value: 'kick_auto_clipper',    label: '⚡ Kick Auto-Clipper',     pitch: '$297/mo — daily clips from Kick streamers, auto-posted to your socials' },
+  { value: 'education',           label: '📚 Education',             pitch: '$199/mo — daily Manim/LaTeX explainer videos, auto-posted to your socials' },
+  { value: 'landing_page',         label: '🚀 Landing Page Hero',    pitch: '$149/mo — daily animated hero videos from your URL, auto-posted to your socials' },
+  { value: 'manim_explainer',      label: '🎞️ Manim Explainer',     pitch: '$149/mo — daily Manim-animated explainers, auto-posted to your socials' },
+  { value: 'whiteboard_animation', label: '✏️ Whiteboard Animation', pitch: '$149/mo — daily whiteboard explainers, auto-posted to your socials' },
+  { value: 'kinetic_typography',   label: '🔤 Kinetic Typography',  pitch: '$149/mo — daily text-motion videos, auto-posted to your socials' },
+  { value: 'animated_infographic', label: '📊 Animated Infographic', pitch: '$149/mo — daily data viz videos, auto-posted to your socials' },
+  { value: 'algorithm_viz',        label: '💻 Algorithm Viz',        pitch: '$149/mo — daily algorithm visualization videos, auto-posted to your socials' },
+  { value: 'investor_pitch',       label: '📈 Investor Pitch',      pitch: '$149/mo — daily pitch deck videos, auto-posted to your socials' },
+  { value: 'year_in_review',       label: '📅 Year in Review',      pitch: '$149/mo — daily recap/wrapped-style videos, auto-posted to your socials' },
+  { value: 'isometric_explainer',  label: '🏗️ Isometric Explainer', pitch: '$149/mo — daily isometric 3D explainers, auto-posted to your socials' },
 ];
 
 function formatFollowers(n: number | null): string {
@@ -791,9 +796,8 @@ export function InstagramLeadsPage() {
               💰 How you get paid
             </Typography>
             <Box component="ul" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
-              <li>When a lead visits your <code>/delivery/:id</code> link and pays the sample's unlock price to get the HD download, the payment is attributed to you on the admin Revenue Ledger.</li>
               <li>Your cut is <strong>50%</strong> of everything paid on your leads (admin sends USDC to your Base wallet; we'll share payout dates + address collection details separately).</li>
-              <li>For bigger retainer deals closed via DM (not x402), invoice the client directly and coordinate with the admin off-ledger.</li>
+              <li>For retainer deals closed via DM, invoice the client directly and coordinate with the admin off-ledger.</li>
               <li>Leads are private to you — no other team member sees your pipeline. Attribution survives even if the admin re-scores or re-attaches samples.</li>
             </Box>
 
@@ -806,7 +810,7 @@ export function InstagramLeadsPage() {
               <li>Top Leads (score ≥ 60) convert ~3× better than average — prioritize those.</li>
               <li>Regenerate a DM if the first one feels off — AI takes context from the lead's full bio each time.</li>
               <li>For <strong>Landing Page</strong> leads: paste the prospect's own site URL when attaching the sample — system scrapes their hero image for a more relevant mockup.</li>
-              <li>For <strong>Clipping</strong> leads: system asks for a YouTube/podcast URL of THEIR content — paste it, the sample clip is built from that.</li>
+              <li>For <strong>Clipping / Kick Auto-Clipper</strong> leads: system asks for a source video URL — paste it, the sample clip is built from that.</li>
               <li>When follower count is unknown (pulled from hashtag posts, not profile scrape), the AI still scores based on bio + handle — these are still viable leads.</li>
             </Box>
           </CardContent>

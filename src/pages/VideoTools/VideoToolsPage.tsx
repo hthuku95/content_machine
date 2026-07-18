@@ -61,7 +61,7 @@ function ToolResultBox({ result }: { result: ToolResult | null }) {
 function StabilizePanel() {
   const [inputFile, setInputFile] = useState('');
   const [shakiness, setShakiness] = useState<number>(5);
-  const [accuracy, setAccuracy] = useState<number>(10);
+  const [accuracy] = useState<number>(10);
   const [smoothing, setSmoothing] = useState<number>(10);
   const [zoom, setZoom] = useState<number>(0);
   const [loading, setLoading] = useState(false);

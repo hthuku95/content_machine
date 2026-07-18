@@ -33,7 +33,7 @@ export const channelsService = {
 
       // Make API call to get Google OAuth URL (uses Authorization header from interceptor)
       const response = await api.get<{ success: boolean; auth_url: string; message: string }>(
-        `/youtube/connect?${params.toString()}`
+        `/api/youtube/connect?${params.toString()}`
       );
 
       if (response.data.success && response.data.auth_url) {

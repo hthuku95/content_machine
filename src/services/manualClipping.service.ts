@@ -19,6 +19,7 @@ export interface ManualClippingJob {
   video_url: string;
   video_platform: string;
   video_title?: string;
+  workflow_id?: string;
   clips_requested: number;
   status: 'pending' | 'analyzing' | 'downloading' | 'extracting' | 'uploading' | 'completed' | 'failed' | 'cancelled';
   progress_percent: number;
@@ -33,7 +34,12 @@ export interface ManualClippingJobDetail extends ManualClippingJob {
 }
 
 const manualClippingService = {
-  async createJob(videoUrl: string, clipsCount = 3, minDuration = 30, maxDuration = 120): Promise<{ job_id: string; status: string }> {
+  async createJob(
+    videoUrl: string,
+    clipsCount = 3,
+    minDuration = 30,
+    maxDuration = 120,
+  ): Promise<{ job_id: string; workflow_id?: string; status: string }> {
     const res = await api.post('/api/manual-clipping/jobs', {
       video_url: videoUrl,
       clips_count: clipsCount,

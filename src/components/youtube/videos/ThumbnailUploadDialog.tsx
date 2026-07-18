@@ -148,7 +148,7 @@ export function ThumbnailUploadDialog({ open, video, onClose }: ThumbnailUploadD
           disabled={!selectedFile || isUploadingThumbnail || !!error}
           startIcon={isUploadingThumbnail ? <CircularProgress size={16} /> : <CloudUploadIcon />}
         >
-          {isUploadingThumbnail ? 'Uploading...' : 'Upload'}
+          {isUploadingThumbnail ? 'Uploading thumbnail to YouTube' : 'Upload'}
         </Button>
       </DialogActions>
     </Dialog>

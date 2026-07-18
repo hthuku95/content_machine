@@ -32,7 +32,7 @@ export function ViewsChart({ data, title = 'Views Over Time' }: ViewsChartProps)
               <YAxis />
               <Tooltip
                 labelFormatter={(label) => `Date: ${label}`}
-                formatter={(value: number) => [value.toLocaleString(), 'Views']}
+                formatter={(value?: number) => [(value ?? 0).toLocaleString(), 'Views']}
               />
               <Legend />
               <Line

@@ -89,7 +89,7 @@ export function ConnectedChannelsPage() {
             startIcon={isConnecting ? <CircularProgress size={20} /> : <AddIcon />}
             onClick={() => {
               console.log('[ConnectedChannelsPage] Action: Connect new channel');
-              connectChannel();
+              connectChannel(undefined);
             }}
             disabled={isConnecting}
           >
@@ -125,7 +125,7 @@ export function ConnectedChannelsPage() {
           <Button
             variant="contained"
             startIcon={isConnecting ? <CircularProgress size={20} /> : <AddIcon />}
-            onClick={() => connectChannel()}
+            onClick={() => connectChannel(undefined)}
             disabled={isConnecting}
           >
             {isConnecting ? 'Connecting...' : 'Connect Channel'}
@@ -228,7 +228,7 @@ export function ConnectedChannelsPage() {
                         startIcon={<RefreshIcon />}
                         onClick={() => {
                           console.log('[ConnectedChannelsPage] Action: Reconnect channel');
-                          connectChannel();
+                          connectChannel(undefined);
                         }}
                         sx={{ minWidth: 'auto' }}
                       >
@@ -307,7 +307,7 @@ export function ConnectedChannelsPage() {
           <Button
             onClick={() => {
               console.log('[ConnectedChannelsPage] Action: Bulk reconnect');
-              connectChannel();
+              connectChannel(undefined);
               setBulkReconnectDialogOpen(false);
             }}
             variant="contained"

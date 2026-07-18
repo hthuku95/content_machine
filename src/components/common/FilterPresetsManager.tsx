@@ -14,7 +14,6 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Chip,
   Typography,
   Divider,
 } from '@mui/material';

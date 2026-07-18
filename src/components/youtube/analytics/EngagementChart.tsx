@@ -34,7 +34,7 @@ export function EngagementChart({ data, title = 'Engagement Metrics' }: Engageme
               <YAxis />
               <Tooltip
                 labelFormatter={(label) => `Date: ${label}`}
-                formatter={(value: number) => value.toLocaleString()}
+                formatter={(value?: number) => (value ?? 0).toLocaleString()}
               />
               <Legend />
               <Bar dataKey="likes" fill="#4caf50" name="Likes" />

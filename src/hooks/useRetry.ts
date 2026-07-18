@@ -92,7 +92,7 @@ export function useRetry<T extends (...args: any[]) => Promise<any>>(
  */
 export function useBatchRetry<T extends (...args: any[]) => Promise<any>>(
   asyncFn: T,
-  options: RetryOptions = {}
+  _options: RetryOptions = {}
 ) {
   const [state, setState] = useState<{
     isRetrying: boolean;

@@ -5,6 +5,7 @@ export interface SourceChannel {
   user_id: string;
   channel_id: string;
   channel_title: string;
+  channel_name?: string;
   channel_url: string;
   is_active: boolean;
   created_at: string;
@@ -35,6 +36,8 @@ export interface ChannelLinkage {
   // Populated fields (when fetched from API with JOINs)
   source_channel_name?: string;
   destination_channel_name?: string;
+  source_channel?: SourceChannel;
+  destination_channel_title?: string;
   stats?: {
     clips_generated: number;
     clips_posted: number;
@@ -42,8 +45,8 @@ export interface ChannelLinkage {
 }
 
 export interface CreateLinkageRequest {
-  source_channel_id: string;
-  destination_channel_id: string;
+  source_channel_id: string | number;
+  destination_channel_id: string | number;
   min_clip_duration_seconds: number;
   max_clip_duration_seconds: number;
   clips_per_video: number;
@@ -64,6 +67,7 @@ export interface ClippingJob {
   linkage_id: string;
   source_video_id: string;
   source_video_title: string;
+  workflow_id?: string | null;
   status: JobStatus;
   progress: number; // 0-100
   current_step: string | null;

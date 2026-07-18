@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -63,6 +62,11 @@ export function ClipComparisonCard({
     return 'default';
   };
 
+  const getProgressColor = (percentage: number): 'success' | 'warning' | 'error' | 'inherit' => {
+    const color = getPerformanceColor(percentage);
+    return color === 'default' ? 'inherit' : color;
+  };
+
   return (
     <Card>
       <CardContent>
@@ -111,7 +115,7 @@ export function ClipComparisonCard({
           <LinearProgress
             variant="determinate"
             value={Math.min(viewsPercentage, 200)}
-            color={getPerformanceColor(viewsPercentage)}
+            color={getProgressColor(viewsPercentage)}
             sx={{ height: 8, borderRadius: 1 }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
@@ -142,7 +146,7 @@ export function ClipComparisonCard({
           <LinearProgress
             variant="determinate"
             value={Math.min(likesPercentage, 200)}
-            color={getPerformanceColor(likesPercentage)}
+            color={getProgressColor(likesPercentage)}
             sx={{ height: 8, borderRadius: 1 }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
@@ -173,7 +177,7 @@ export function ClipComparisonCard({
           <LinearProgress
             variant="determinate"
             value={Math.min(engagementPercentage, 200)}
-            color={getPerformanceColor(engagementPercentage)}
+            color={getProgressColor(engagementPercentage)}
             sx={{ height: 8, borderRadius: 1 }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>

@@ -1,4 +1,5 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
 import { Box, Typography, Button, Paper, Alert } from '@mui/material';
 import { Error as ErrorIcon, Refresh as RefreshIcon, Home as HomeIcon } from '@mui/icons-material';
 
@@ -24,7 +25,7 @@ export class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<State> {
+  static getDerivedStateFromError(_error: Error): Partial<State> {
     return { hasError: true };
   }
 
@@ -90,7 +91,7 @@ export class ErrorBoundary extends Component<Props, State> {
               We encountered an unexpected error. Don't worry, your data is safe.
             </Typography>
 
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <Alert severity="error" sx={{ mb: 3, textAlign: 'left' }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Error: {this.state.error.message}

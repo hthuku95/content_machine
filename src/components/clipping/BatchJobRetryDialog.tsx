@@ -179,7 +179,7 @@ export function BatchJobRetryDialog({
 
       <DialogActions>
         <Button onClick={onClose} disabled={!canClose}>
-          {isRetrying ? 'Please wait...' : 'Close'}
+          {isRetrying ? 'Retry in progress...' : 'Close'}
         </Button>
         {!isRetrying && statuses.every(s => s.status === 'pending') && (
           <Button

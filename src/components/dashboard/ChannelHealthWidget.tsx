@@ -22,7 +22,7 @@ import { PATHS } from '@/routes/paths';
 import { formatDistanceToNow } from 'date-fns';
 
 export function ChannelHealthWidget() {
-  const { channels, isLoading, dataUpdatedAt } = useConnectedChannels();
+  const { channels, isLoading } = useConnectedChannels();
 
   if (isLoading) {
     return (
@@ -41,8 +41,8 @@ export function ChannelHealthWidget() {
   const healthyChannels = activeChannels.filter((ch) => !ch.requires_reauth);
 
   const hasIssues = needsReauthChannels.length > 0;
-  const lastChecked = dataUpdatedAt
-    ? formatDistanceToNow(dataUpdatedAt, { addSuffix: true })
+  const lastChecked = channels[0]?.connected_at
+    ? formatDistanceToNow(new Date(channels[0].connected_at), { addSuffix: true })
     : 'Never';
 
   return (

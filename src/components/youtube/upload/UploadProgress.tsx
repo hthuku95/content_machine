@@ -40,13 +40,13 @@ export function UploadProgress({ progress }: UploadProgressProps) {
   const getStatusText = () => {
     switch (progress.status) {
       case 'uploading':
-        return 'Uploading...';
+        return 'Uploading video to YouTube';
       case 'processing':
-        return 'Processing...';
+        return 'YouTube is processing the upload';
       case 'completed':
-        return 'Upload Complete!';
+        return 'Upload completed';
       case 'error':
-        return 'Upload Failed';
+        return 'Upload ended with an error';
       default:
         return '';
     }
@@ -96,7 +96,7 @@ export function UploadProgress({ progress }: UploadProgressProps) {
           <Alert severity="error" sx={{ mt: 2 }}>
             <Typography variant="body2" gutterBottom>
               <strong>Upload failed:</strong>{' '}
-              {progress.error_message || 'Please try again.'}
+              {progress.error_message || 'No error detail was returned by the upload flow.'}
             </Typography>
 
             {progress.error_code === 401 && (
@@ -105,7 +105,7 @@ export function UploadProgress({ progress }: UploadProgressProps) {
                   variant="outlined"
                   size="small"
                   color="error"
-                  onClick={() => navigate(PATHS.YOUTUBE.CHANNELS)}
+                  onClick={() => navigate(PATHS.CHANNELS.CONNECTED)}
                 >
                   Reconnect YouTube Channel
                 </Button>

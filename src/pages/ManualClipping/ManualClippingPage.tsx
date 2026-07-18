@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
-  Box, Typography, TextField, Button, Grid, Card, CardContent,
+  Box, Typography, TextField, Button, GridLegacy as Grid, Card, CardContent,
   CardMedia, Chip, CircularProgress, Alert, Slider, Divider,
   LinearProgress, IconButton, Tooltip,
 } from '@mui/material';
@@ -8,7 +9,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import manualClippingService, { ManualClippingJob, ManualClippingJobDetail } from '../../services/manualClipping.service';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import manualClippingService from '../../services/manualClipping.service';
+import type { ManualClippingJob, ManualClippingJobDetail } from '../../services/manualClipping.service';
+import { PATHS } from '../../routes/paths';
 
 const ACTIVE_STATUSES = ['pending', 'analyzing', 'downloading', 'extracting', 'uploading'];
 
@@ -71,6 +75,13 @@ function JobRow({ job, onCancel, onLoadClips }: {
   const isActive = ACTIVE_STATUSES.includes(job.status);
   const platform = job.video_platform === 'twitch' ? 'TWITCH' : 'YOUTUBE';
   const platformColor = job.video_platform === 'twitch' ? '#9147ff' : '#ff4444';
+  const workflowChatSearch = job.workflow_id
+    ? new URLSearchParams({
+        workflow_id: job.workflow_id,
+        prompt: 'Give me the exact progress, blockers, and latest persisted workflow events for this manual clipping job.',
+        autosend: '1',
+      }).toString()
+    : null;
 
   return (
     <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
@@ -96,6 +107,17 @@ function JobRow({ job, onCancel, onLoadClips }: {
           )}
         </Box>
         <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
+          {workflowChatSearch && (
+            <Button
+              size="small"
+              variant="outlined"
+              component={RouterLink}
+              to={`${PATHS.AGENT_CHAT}?${workflowChatSearch}`}
+              startIcon={<SmartToyIcon />}
+            >
+              Ask AI
+            </Button>
+          )}
           {job.status === 'completed' && (
             <Button size="small" variant="outlined" startIcon={<DownloadIcon />} onClick={() => onLoadClips(job.id)}>
               Clips

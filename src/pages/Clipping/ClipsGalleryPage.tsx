@@ -14,7 +14,6 @@ import { ClipCard } from '@/components/clipping/ClipCard';
 import { ClipsFilterPanel, type ClipFilters } from '@/components/clipping/ClipsFilterPanel';
 import { useClips } from '@/hooks/useClips';
 import { useLinkages } from '@/hooks/useLinkages';
-import type { UploadStatus } from '@/types/clipping.types';
 
 export function ClipsGalleryPage() {
   console.log('[ClipsGalleryPage] Component mounted');

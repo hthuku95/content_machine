@@ -24,7 +24,7 @@ export function CommentModerationPage() {
   // Fetch comments for selected video
   const { data: comments = [], isLoading: commentsLoading, error } = useComments(selectedVideoId, maxResults);
 
-  const { deleteComment, isDeleting } = useCommentActions(selectedVideoId);
+  const { deleteComment } = useCommentActions(selectedVideoId);
 
   const handleReply = (comment: YouTubeComment) => {
     setSelectedComment(comment);

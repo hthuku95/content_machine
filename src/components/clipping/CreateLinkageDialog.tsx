@@ -12,6 +12,7 @@ import {
   Slider,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
+import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { CreateLinkageRequest } from '@/types/clipping.types';
@@ -19,12 +20,20 @@ import { useSourceChannels } from '@/hooks/useSourceChannels';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services';
 
-const linkageSchema = z.object({
-  source_channel_id: z.number().int().positive('Source channel is required'),
-  destination_channel_id: z.number().int().positive('Destination channel is required'),
-  min_clip_duration_seconds: z.number().min(10).max(300),
-  max_clip_duration_seconds: z.number().min(10).max(300),
-  clips_per_video: z.number().min(1).max(10),
+type CreateLinkageFormValues = {
+  source_channel_id: number;
+  destination_channel_id: number;
+  min_clip_duration_seconds: number;
+  max_clip_duration_seconds: number;
+  clips_per_video: number;
+};
+
+const linkageSchema: z.ZodType<CreateLinkageFormValues> = z.object({
+  source_channel_id: z.coerce.number().int().positive('Source channel is required'),
+  destination_channel_id: z.coerce.number().int().positive('Destination channel is required'),
+  min_clip_duration_seconds: z.coerce.number().min(10).max(300),
+  max_clip_duration_seconds: z.coerce.number().min(10).max(300),
+  clips_per_video: z.coerce.number().min(1).max(10),
 });
 
 interface CreateLinkageDialogProps {
@@ -60,8 +69,8 @@ export function CreateLinkageDialog({
     formState: { errors },
     reset,
     watch,
-  } = useForm<CreateLinkageRequest>({
-    resolver: zodResolver(linkageSchema),
+  } = useForm<CreateLinkageFormValues>({
+    resolver: zodResolver(linkageSchema as never) as Resolver<CreateLinkageFormValues>,
     defaultValues: {
       min_clip_duration_seconds: 30,
       max_clip_duration_seconds: 60,
@@ -71,7 +80,7 @@ export function CreateLinkageDialog({
 
   const minDuration = watch('min_clip_duration_seconds');
 
-  const onSubmit = (data: CreateLinkageRequest) => {
+  const onSubmit = (data: CreateLinkageFormValues) => {
     onCreate(data);
     reset();
   };
@@ -86,7 +95,7 @@ export function CreateLinkageDialog({
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Create Channel Linkage</DialogTitle>
-      <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data as CreateLinkageFormValues))}>
         <DialogContent>
           <Typography variant="body2" color="text.secondary" paragraph>
             Create a linkage between a source channel and your destination channel. Clips will be
@@ -114,7 +123,7 @@ export function CreateLinkageDialog({
             ) : (
               sourceChannels.map((channel) => (
                 <MenuItem key={channel.id} value={channel.id}>
-                  {channel.channel_name}
+                  {channel.channel_name || channel.channel_title}
                 </MenuItem>
               ))
             )}

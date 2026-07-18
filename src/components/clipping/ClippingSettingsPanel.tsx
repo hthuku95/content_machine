@@ -160,7 +160,7 @@ export function ClippingSettingsPanel() {
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 Email notifications
-                <Chip label="Coming Soon" size="small" color="info" />
+                <Chip label="Unavailable on this workspace" size="small" color="default" />
               </Box>
             }
             disabled

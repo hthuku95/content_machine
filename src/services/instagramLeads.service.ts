@@ -20,7 +20,7 @@ export interface InstagramLead {
   contact_status: 'new' | 'contacted' | 'replied' | 'converted' | 'skipped';
   score?: number | null;
   score_reason?: string | null;
-  service_type?: 'clipping' | 'animations' | 'thumbnails' | 'ugc' | 'product_mockup' | 'landing_page' | 'full_stack' | null;
+  service_type?: 'clipping' | 'kick_auto_clipper' | 'landing_page' | 'education' | 'manim_explainer' | 'whiteboard_animation' | 'kinetic_typography' | 'animated_infographic' | 'algorithm_viz' | 'investor_pitch' | 'year_in_review' | 'isometric_explainer' | null;
   sample_delivery_id?: string | null;
 }
 

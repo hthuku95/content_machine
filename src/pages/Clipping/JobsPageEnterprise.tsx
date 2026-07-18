@@ -33,7 +33,6 @@ import { useSelection } from '@/hooks/useSelection';
 import { useKeyboardShortcuts, commonShortcuts, useKeyboardShortcutsHelp } from '@/hooks/useKeyboardShortcuts';
 import { useFilterPresets, commonPresets } from '@/hooks/useFilterPresets';
 import { exportJobs } from '@/utils/export';
-import type { JobStatus } from '@/types/clipping.types';
 
 export function JobsPageEnterprise() {
   const [filters, setFilters] = useState<JobFilters>({});

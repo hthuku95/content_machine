@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { Paper, InputBase, IconButton, CircularProgress } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 

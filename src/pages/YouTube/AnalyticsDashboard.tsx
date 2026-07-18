@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Typography, Container, Paper, Grid, FormControl, InputLabel, Select, MenuItem, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Container, Paper, GridLegacy as Grid, FormControl, InputLabel, Select, MenuItem, CircularProgress, Alert } from '@mui/material';
 import { Visibility as VisibilityIcon, ThumbUp as ThumbUpIcon, Comment as CommentIcon, Share as ShareIcon } from '@mui/icons-material';
 import { format, subDays } from 'date-fns';
 import { useConnectedChannels } from '@/hooks/useConnectedChannels';

@@ -22,6 +22,26 @@ export interface AgentMessage {
 
 export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'disconnected' | 'error';
 
+function normalizeAgentContent(content: unknown): string {
+  if (typeof content !== 'string') {
+    return typeof content === 'undefined' || content === null ? '' : String(content);
+  }
+
+  const trimmed = content.trim();
+  if (!trimmed.startsWith('{')) return content;
+
+  try {
+    const parsed = JSON.parse(trimmed) as { content?: unknown };
+    if (typeof parsed.content === 'string') {
+      return parsed.content;
+    }
+  } catch {
+    return content;
+  }
+
+  return content;
+}
+
 // ─── Session jobs polling ─────────────────────────────────────────────────────
 
 async function pollSessionJobs(sessionId: string): Promise<AgentMessage[]> {
@@ -53,14 +73,14 @@ async function pollSessionJobs(sessionId: string): Promise<AgentMessage[]> {
         msgs.push({
           id: `job-${job.id}`,
           type: 'result',
-          content: job.result,
+          content: normalizeAgentContent(job.result),
           timestamp: new Date(job.updated_at),
         });
       } else if (job.status === 'failed' && job.error) {
         msgs.push({
           id: `job-err-${job.id}`,
           type: 'error',
-          content: `Task failed: ${job.error}`,
+          content: normalizeAgentContent(job.error),
           timestamp: new Date(job.updated_at),
         });
       }
@@ -75,10 +95,11 @@ async function pollSessionJobs(sessionId: string): Promise<AgentMessage[]> {
 
 interface UseAgentWebSocketOptions {
   sessionId: string;
+  workflowId?: string;
   onMessage?: (msg: AgentMessage) => void;
 }
 
-export function useAgentWebSocket({ sessionId, onMessage }: UseAgentWebSocketOptions) {
+export function useAgentWebSocket({ sessionId, workflowId, onMessage }: UseAgentWebSocketOptions) {
   const [status, setStatus] = useState<ConnectionStatus>('idle');
   const [messages, setMessages] = useState<AgentMessage[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
@@ -139,7 +160,8 @@ export function useAgentWebSocket({ sessionId, onMessage }: UseAgentWebSocketOpt
       return;
     }
     const tokenParam = authToken ? `&token=${encodeURIComponent(authToken)}` : '';
-    const url = `${wsBaseUrl}/ws?session=${sessionId}${tokenParam}`;
+    const workflowParam = workflowId ? `&workflow_id=${encodeURIComponent(workflowId)}` : '';
+    const url = `${wsBaseUrl}/ws?session=${sessionId}${workflowParam}${tokenParam}`;
     const ws = new WebSocket(url);
     wsRef.current = ws;
 
@@ -161,33 +183,33 @@ export function useAgentWebSocket({ sessionId, onMessage }: UseAgentWebSocketOpt
           addMessage({
             ...base,
             type: 'progress',
-            content: (data.message ?? data.content) as string,
+            content: normalizeAgentContent(data.message ?? data.content),
             percentage: data.percentage != null
               ? Math.round((data.percentage as number) * 100)
               : undefined,
           });
         } else if (data.type === 'thinking') {
           // Background-job ACK or tool-call update
-          addMessage({ ...base, type: 'thinking', content: data.content as string });
+          addMessage({ ...base, type: 'thinking', content: normalizeAgentContent(data.content) });
         } else if (data.type === 'background_job_status') {
           // Sent on reconnect when a task is still running
-          addMessage({ ...base, type: 'background_job_status', content: data.content as string });
+          addMessage({ ...base, type: 'background_job_status', content: normalizeAgentContent(data.content) });
         } else if (data.type === 'result' || data.type === 'message') {
           // 'message' is what the backend actually sends for completed responses
           const msgId = data.job_id ? `job-${data.job_id as string}` : base.id;
           if (!seenJobIds.current.has(msgId)) {
             seenJobIds.current.add(msgId);
-            addMessage({ ...base, id: msgId, type: 'result', content: data.content as string });
+            addMessage({ ...base, id: msgId, type: 'result', content: normalizeAgentContent(data.content) });
           }
         } else if (data.type === 'error') {
-          addMessage({ ...base, type: 'error', content: (data.message ?? data.content) as string });
+          addMessage({ ...base, type: 'error', content: normalizeAgentContent(data.message ?? data.content) });
         }
       } catch {
         // Non-JSON text (rare) — treat as plain result
         addMessage({
           id: crypto.randomUUID(),
           type: 'result',
-          content: event.data as string,
+          content: normalizeAgentContent(event.data),
           timestamp: new Date(),
         });
       }
@@ -208,7 +230,7 @@ export function useAgentWebSocket({ sessionId, onMessage }: UseAgentWebSocketOpt
         }, 3000);
       }
     };
-  }, [sessionId, wsBaseUrl, addMessage, startPolling, stopPolling]);
+  }, [sessionId, workflowId, wsBaseUrl, addMessage, startPolling, stopPolling]);
 
   const disconnect = useCallback(() => {
     shouldReconnectRef.current = false;

@@ -17,7 +17,6 @@ import { JobsFilterPanel, type JobFilters } from '@/components/clipping/JobsFilt
 import { useJobPolling } from '@/hooks/useJobPolling';
 import { useJobs } from '@/hooks/useJobs';
 import { useLinkages } from '@/hooks/useLinkages';
-import type { JobStatus } from '@/types/clipping.types';
 
 export function JobsPage() {
   console.log('[JobsPage] Component mounted');

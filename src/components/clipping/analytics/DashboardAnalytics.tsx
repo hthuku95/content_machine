@@ -10,7 +10,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Chip,
 } from '@mui/material';
 import { TrendingUp as TrendingIcon } from '@mui/icons-material';

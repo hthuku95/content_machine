@@ -13,15 +13,23 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
+import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect } from 'react';
 import type { ChannelLinkage, UpdateLinkageRequest } from '@/types/clipping.types';
 
-const updateLinkageSchema = z.object({
-  min_clip_duration_seconds: z.number().min(10).max(300),
-  max_clip_duration_seconds: z.number().min(10).max(300),
-  clips_per_video: z.number().min(1).max(10),
+type UpdateLinkageFormValues = {
+  min_clip_duration_seconds: number;
+  max_clip_duration_seconds: number;
+  clips_per_video: number;
+  is_active: boolean;
+};
+
+const updateLinkageSchema: z.ZodType<UpdateLinkageFormValues> = z.object({
+  min_clip_duration_seconds: z.coerce.number().min(10).max(300),
+  max_clip_duration_seconds: z.coerce.number().min(10).max(300),
+  clips_per_video: z.coerce.number().min(1).max(10),
   is_active: z.boolean(),
 }).refine(data => data.max_clip_duration_seconds >= data.min_clip_duration_seconds, {
   message: 'Max duration must be >= min duration',
@@ -50,8 +58,8 @@ export function EditLinkageDialog({
     formState: { errors },
     reset,
     watch,
-  } = useForm<UpdateLinkageRequest>({
-    resolver: zodResolver(updateLinkageSchema),
+  } = useForm<UpdateLinkageFormValues>({
+    resolver: zodResolver(updateLinkageSchema as never) as Resolver<UpdateLinkageFormValues>,
   });
 
   // Update form when linkage changes
@@ -68,7 +76,7 @@ export function EditLinkageDialog({
 
   const minDuration = watch('min_clip_duration_seconds');
 
-  const onSubmit = (data: UpdateLinkageRequest) => {
+  const onSubmit = (data: UpdateLinkageFormValues) => {
     if (linkage) {
       onUpdate(linkage.id, data);
       onClose();
@@ -86,7 +94,7 @@ export function EditLinkageDialog({
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Edit Linkage Settings</DialogTitle>
-      <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data as UpdateLinkageFormValues))}>
         <DialogContent>
           <Typography variant="body2" color="text.secondary" paragraph>
             Update the settings for this linkage. Source and destination channels cannot be changed.
@@ -99,7 +107,7 @@ export function EditLinkageDialog({
                 Source Channel
               </Typography>
               <Typography variant="body2" fontWeight={500}>
-                {linkage.source_channel?.channel_title || 'Unknown'}
+                {linkage.source_channel?.channel_title || linkage.source_channel_name || 'Unknown'}
               </Typography>
             </Box>
             <Box>
@@ -107,7 +115,7 @@ export function EditLinkageDialog({
                 Destination Channel
               </Typography>
               <Typography variant="body2" fontWeight={500}>
-                {linkage.destination_channel_title || 'Unknown'}
+                {linkage.destination_channel_title || linkage.destination_channel_name || 'Unknown'}
               </Typography>
             </Box>
           </Box>

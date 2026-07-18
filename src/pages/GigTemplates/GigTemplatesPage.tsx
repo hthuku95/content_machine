@@ -1,14 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Box, Typography, Grid, Card, CardContent, CardHeader,
-  Chip, Button, Divider, Tooltip, IconButton, CircularProgress,
+  Box, Typography, GridLegacy as Grid, Card, CardContent, CardHeader,
+  Chip, Button, Tooltip, IconButton, CircularProgress,
   Table, TableBody, TableCell, TableHead, TableRow, Paper,
   Snackbar, Alert, Skeleton,
 } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { gigTemplatesService, GigTemplate, GigSample } from '@/services/gigTemplates.service';
+import { gigTemplatesService } from '@/services/gigTemplates.service';
+import type { GigTemplate, GigSample } from '@/services/gigTemplates.service';
 
 // ─── Tier badge colors ────────────────────────────────────────────────────────
 const TIER_COLORS = {
@@ -276,9 +277,9 @@ export function GigTemplatesPage() {
     <Box sx={{ p: 3 }}>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h5" fontWeight={700} color="white">Gig Templates</Typography>
+          <Typography variant="h5" fontWeight={700} color="white">Service Offer Templates</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Copy-paste ready Fiverr & People Per Hour gig info. Generate AI sample videos for your portfolio.
+            Copy-paste ready outreach, marketplace, and sales-page packages for the current VideoSync services. Generate proof samples for your portfolio.
           </Typography>
         </Box>
         <Button variant="outlined" size="small" onClick={loadTemplates} disabled={loading}

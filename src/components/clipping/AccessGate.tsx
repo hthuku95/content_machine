@@ -57,8 +57,8 @@ export function AccessGate({ children }: AccessGateProps) {
           <Typography variant="body2" color="text.secondary">
             If you believe you should have access, please contact support.
           </Typography>
-          <Button variant="contained" sx={{ mt: 2 }} disabled>
-            Request Access (Coming Soon)
+          <Button variant="contained" sx={{ mt: 2 }} href="mailto:support@videosync.video">
+            Request Access From Support
           </Button>
         </Paper>
       </Box>

@@ -7,7 +7,7 @@ import {
   Button,
   Breadcrumbs,
   Link,
-  Grid,
+  GridLegacy as Grid,
   IconButton,
   Tooltip,
   Snackbar,

@@ -151,7 +151,7 @@ export function UploadCaptionDialog({ open, videoId, videoTitle, onClose }: Uplo
             disabled={isUploading || !language || !captionFile}
             startIcon={isUploading ? <CircularProgress size={16} /> : <CloudUploadIcon />}
           >
-            {isUploading ? 'Uploading...' : 'Upload Caption'}
+            {isUploading ? 'Uploading caption track to YouTube' : 'Upload Caption'}
           </Button>
         </DialogActions>
       </Box>
