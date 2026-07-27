@@ -35,11 +35,13 @@ export const socialService = {
     return resp.data.profile;
   },
 
-  async getConnectUrl(platform: string, profileId: string): Promise<string> {
-    const resp = await api.get<{ success: boolean; url: string }>(
-      `/api/social/connect-url?platform=${platform}&profile_id=${profileId}`
-    );
-    return resp.data.url;
+  async getConnectUrl(platform: string, profileId: string, redirectUrl?: string): Promise<string> {
+    let url = `/api/social/connect-url?platform=${platform}&profile_id=${profileId}`;
+    if (redirectUrl) {
+      url += `&redirect_url=${encodeURIComponent(redirectUrl)}`;
+    }
+    const resp = await api.get<{ success: boolean; authUrl: string }>(url);
+    return resp.data.authUrl;
   },
 
   async listAccounts(): Promise<SocialAccount[]> {

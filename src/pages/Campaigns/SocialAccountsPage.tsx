@@ -50,13 +50,22 @@ export default function SocialAccountsPage() {
     }
   }
 
-  function handleConnect(platform: string) {
+  async function handleConnect(platform: string) {
     const profileId = profiles[0]?.id;
     if (!profileId) {
       setError('Create a profile first');
       return;
     }
-    window.open(`/api/social/connect-url?platform=${platform}&profile_id=${profileId}`, '_blank');
+    try {
+      const authUrl = await socialService.getConnectUrl(
+        platform,
+        profileId,
+        `${window.location.origin}/social/accounts`,
+      );
+      window.open(authUrl, '_blank', 'width=600,height=700');
+    } catch (e: any) {
+      setError(e?.response?.data?.error || e?.message || 'Failed to get connect URL');
+    }
   }
 
   return (
