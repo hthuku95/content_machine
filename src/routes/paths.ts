@@ -63,6 +63,9 @@ export const PATHS = {
   // Instagram Lead Finder (whitelisted users — for cold DM outreach)
   INSTAGRAM_LEADS: '/instagram-leads',
 
+  // Referral program
+  REFERRALS: '/referrals',
+
   // Portfolio samples (shareable proof for outbound sales)
   PORTFOLIO_SAMPLES: '/portfolio-samples',
 

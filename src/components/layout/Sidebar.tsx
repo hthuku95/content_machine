@@ -41,6 +41,7 @@ import {
   CollectionsBookmark as PortfolioIcon,
   PhotoCamera as InstagramIcon,
   Campaign as CampaignIcon,
+  MonetizationOn as ReferralIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
@@ -198,6 +199,13 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             label="Instagram Leads"
             active={isActive(PATHS.INSTAGRAM_LEADS)}
             onClick={() => handleNavigation(PATHS.INSTAGRAM_LEADS)}
+            collapsed={isCollapsed}
+          />
+          <NavItem
+            icon={<ReferralIcon />}
+            label="Referrals"
+            active={isActive(PATHS.REFERRALS)}
+            onClick={() => handleNavigation(PATHS.REFERRALS)}
             collapsed={isCollapsed}
           />
           <NavItem

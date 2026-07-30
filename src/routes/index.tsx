@@ -32,6 +32,7 @@ import { GigTemplatesPage } from '@/pages/GigTemplates/GigTemplatesPage';
 import ManualClippingPage from '@/pages/ManualClipping/ManualClippingPage';
 import { InstagramLeadsPage } from '@/pages/InstagramLeads/InstagramLeadsPage';
 import { PortfolioSamplesPage } from '@/pages/PortfolioSamples/PortfolioSamplesPage';
+import { ReferralsPage } from '@/pages/Referrals/ReferralsPage';
 import CampaignsPage from '@/pages/Campaigns/CampaignsPage';
 import NewCampaignPage from '@/pages/Campaigns/NewCampaignPage';
 import CampaignDetailPage from '@/pages/Campaigns/CampaignDetailPage';
@@ -215,6 +216,15 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <PortfolioSamplesPage />
+          </ErrorBoundary>
+        ),
+      },
+      // Referral program route
+      {
+        path: PATHS.REFERRALS,
+        element: (
+          <ErrorBoundary>
+            <ReferralsPage />
           </ErrorBoundary>
         ),
       },
