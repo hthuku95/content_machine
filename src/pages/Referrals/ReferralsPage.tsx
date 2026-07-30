@@ -161,7 +161,7 @@ export function ReferralsPage() {
 
           {commissions.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 4 }}>
-              <MonetizationOnIcon sx={{ fontSize: 40, color: '#5c5470', mb: 1 }} />
+              <MonetizationOnIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
               <Typography color="text.secondary">No commissions yet.</Typography>
               <Typography variant="caption" color="text.disabled">
                 Share your referral link to start earning.

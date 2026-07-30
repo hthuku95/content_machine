@@ -158,7 +158,7 @@ export function PortfolioSamplesPage() {
       {message && <Alert severity="success" sx={{ mb: 2 }}>{message}</Alert>}
 
       {/* Generate button */}
-      <Card sx={{ mb: 3, background: theme => theme.palette.mode === 'dark' ? '#2a2438' : undefined }}>
+      <Card sx={{ mb: 3, bgcolor: 'background.default' }}>
         <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
             <Typography variant="h6" fontWeight={600}>Generate All Samples</Typography>

@@ -146,7 +146,7 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
       <CardContent>
 
         {/* Pricing tiers */}
-        <Typography variant="caption" sx={{ color: '#666680', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           Pricing Tiers
         </Typography>
         <Table size="small" sx={{ mt: 1, mb: 2 }}>
@@ -167,7 +167,7 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
                            sx={{ border: `1px solid ${TIER_COLORS[t.key].border}`, bgcolor: TIER_COLORS[t.key].bg, borderRadius: 1 }}>
                   <Typography variant="h6" fontWeight={800} color="white">${t.price}</Typography>
                   <Typography variant="caption" color="text.disabled">{t.days}-day delivery</Typography>
-                  <Typography variant="caption" display="block" sx={{ mt: 0.5, fontSize: '0.65rem', color: '#9999bb', lineHeight: 1.4 }}>
+                  <Typography variant="caption" display="block" sx={{ mt: 0.5, fontSize: '0.65rem', color: 'text.secondary', lineHeight: 1.4 }}>
                     {t.includes}
                   </Typography>
                 </TableCell>
@@ -177,7 +177,7 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
         </Table>
 
         {/* Gig titles */}
-        <Typography variant="caption" sx={{ color: '#666680', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           Gig Titles
         </Typography>
         <Box sx={{ mt: 1, mb: 2, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
@@ -193,19 +193,19 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
         </Box>
 
         {/* Keywords */}
-        <Typography variant="caption" sx={{ color: '#666680', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           Keywords
         </Typography>
         <Box sx={{ mt: 1, mb: 2, display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
           {(template.keywords || []).map(kw => (
             <Chip key={kw} label={kw} size="small"
-                  sx={{ bgcolor: '#1a1a2e', border: '1px solid #2a2a4a', color: '#9999cc', fontSize: '0.65rem', height: 20 }} />
+                  sx={{ bgcolor: '#1a1a2e', border: '1px solid #2a2a4a', color: 'text.secondary', fontSize: '0.65rem', height: 20 }} />
           ))}
         </Box>
 
         {/* Description */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
-          <Typography variant="caption" sx={{ color: '#666680', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Gig Description
           </Typography>
           <CopyButton text={template.description} label="Copy Description" />
@@ -219,7 +219,7 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
 
         {/* Sample videos */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Typography variant="caption" sx={{ color: '#666680', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Sample Videos ({sampleCount}/5)
           </Typography>
           <Button size="small" variant="contained" startIcon={generating || hasRunning ? <CircularProgress size={12} color="inherit" /> : <AutoFixHighIcon sx={{ fontSize: 14 }} />}

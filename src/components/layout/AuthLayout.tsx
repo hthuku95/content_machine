@@ -46,7 +46,7 @@ export function AuthLayout() {
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Typography
             variant="h5"
-            sx={{ fontWeight: 700, color: '#dbd8e3', letterSpacing: '-0.02em' }}
+            sx={{ fontWeight: 700, color: 'text.secondary', letterSpacing: '-0.02em' }}
           >
             Content Machine
           </Typography>
