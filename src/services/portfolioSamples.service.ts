@@ -38,10 +38,22 @@ export interface PortfolioTarget {
   visual_direction?: string;
 }
 
+export interface DfyServiceDef {
+  slug: string;
+  name: string;
+  price_mo: number;
+  brief: string;
+  style: string;
+  description: string;
+  duration_seconds: number;
+  source_url: string;
+}
+
 export interface PortfolioSamplesResponse {
   success: boolean;
   samples: PortfolioSample[];
   targets?: PortfolioTarget[];
+  dfy_services?: DfyServiceDef[];
   error?: string;
 }
 
@@ -89,16 +101,16 @@ const normalizeSample = (sample: PortfolioSample): PortfolioSample => ({
 });
 
 export const portfolioSamplesService = {
-  list: async (): Promise<PortfolioSamplesResponse> => {
-    const { data } = await api.get('/api/portfolio-samples');
+  listDfy: async (): Promise<PortfolioSamplesResponse> => {
+    const { data } = await api.get('/api/portfolio-samples/dfy');
     return {
       ...data,
       samples: Array.isArray(data.samples) ? data.samples.map(normalizeSample) : [],
     };
   },
 
-  generateCryptoSaas: async (): Promise<GeneratePortfolioSamplesResponse> => {
-    const { data } = await api.post('/api/portfolio-samples/crypto-saas', {});
+  generateDfy: async (): Promise<GeneratePortfolioSamplesResponse> => {
+    const { data } = await api.post('/api/portfolio-samples/dfy', {});
     return {
       ...data,
       samples: Array.isArray(data.samples) ? data.samples.map(normalizeSample) : [],
