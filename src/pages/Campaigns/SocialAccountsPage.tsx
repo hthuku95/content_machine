@@ -31,7 +31,12 @@ export default function SocialAccountsPage() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  async function syncAndLoad() {
+    await socialService.syncMyAccounts();
+    await load();
+  }
+
+  useEffect(() => { syncAndLoad(); }, []);
 
   async function handleCreateProfile() {
     if (!profileName) return;
@@ -59,6 +64,10 @@ export default function SocialAccountsPage() {
         `${window.location.origin}/social/accounts`,
       );
       window.open(authUrl, '_blank', 'width=600,height=700');
+      // After the OAuth popup, Zernio redirects back to /social/accounts which
+      // reloads the page and re-syncs. Also sync here in case the popup is
+      // blocked and the user returns manually.
+      setTimeout(() => syncAndLoad(), 5000);
     } catch (e: any) {
       setError(e?.response?.data?.error || e?.message || 'Failed to get connect URL');
     }
@@ -101,7 +110,7 @@ export default function SocialAccountsPage() {
               {profiles.map(p => (
                 <TableRow key={p.id}>
                   <TableCell>{p.name}</TableCell>
-                  <TableCell>{new Date(p.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell>{p.created_at ? new Date(p.created_at).toLocaleDateString() : '—'}</TableCell>
                   <TableCell align="right">
                     <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('youtube')}>Connect YouTube</Button>
                     <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('tiktok')}>Connect TikTok</Button>
@@ -141,7 +150,7 @@ export default function SocialAccountsPage() {
                   <TableCell>
                     <Chip label={a.status || 'active'} size="small" color={a.status === 'expired' ? 'error' : 'success'} />
                   </TableCell>
-                  <TableCell>{new Date(a.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell>{a.created_at ? new Date(a.created_at).toLocaleDateString() : '—'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

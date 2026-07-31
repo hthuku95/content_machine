@@ -218,7 +218,7 @@ export function ReferralsPage() {
         {[
           { step: '1', title: 'Share your link', desc: 'Send your referral link to content creators, businesses, and streamers who need video content.' },
           { step: '2', title: 'They sign up', desc: 'When someone clicks your link and signs up, they\'re tagged as your referral.' },
-          { step: '3', title: 'They purchase', desc: 'When a referred prospect purchases any of our 12 DFY services, you earn commission.' },
+          { step: '3', title: 'They purchase', desc: 'When a referred prospect purchases any of our 12 Managed Campaigns, you earn commission.' },
           { step: '4', title: 'Get paid', desc: '40% of the first month\'s payment is credited to your account as commission.' },
         ].map((item) => (
           <Box key={item.step} sx={{ display: 'flex', gap: 2 }}>

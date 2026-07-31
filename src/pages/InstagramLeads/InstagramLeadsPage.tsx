@@ -5,7 +5,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableRow, Paper,
   IconButton, Tooltip, Dialog, DialogTitle, DialogContent,
   DialogActions, Select, MenuItem, FormControl, InputLabel,
-  InputAdornment, Divider, Tabs, Tab, LinearProgress,
+  InputAdornment, Divider, Tabs, Tab, LinearProgress, ListSubheader,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import TagIcon from '@mui/icons-material/Tag';
@@ -26,22 +26,115 @@ const STATUS_COLORS: Record<string, 'default' | 'primary' | 'success' | 'warning
   skipped:   'error',
 };
 
-const NICHE_OPTIONS = [
-  { value: 'content creator',   label: 'Content Creator' },
-  { value: 'youtuber',          label: 'YouTuber' },
-  { value: 'podcaster',         label: 'Podcaster' },
-  { value: 'online educator',   label: 'Online Educator / Course Creator' },
-  { value: 'fitness coach',     label: 'Fitness Coach' },
-  { value: 'business coach',    label: 'Business Coach' },
-  { value: 'gaming streamer',   label: 'Gaming / Streamer' },
-  { value: 'lifestyle blogger', label: 'Lifestyle Blogger' },
-  { value: 'real estate',       label: 'Real Estate Agent' },
-  { value: 'motivational speaker', label: 'Motivational Speaker' },
-  // Niches for the newer service types — landing-page + product mockup
-  { value: 'saas founder',      label: 'SaaS Founder / Indie Hacker' },
-  { value: 'shopify store',     label: 'Shopify / Ecommerce Store' },
-  { value: 'app developer',     label: 'Mobile App Developer' },
-  { value: 'hardware startup',  label: 'Hardware / Kickstarter Creator' },
+/// Niche options grouped by the 12 Managed Campaign services we sell. Each
+/// service has its own target-creator niche names, so picking a niche tells the
+/// AI which audience to hunt for that specific offer.
+const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ value: string; label: string }> }> = [
+  {
+    service: 'clipping',
+    label: '🎬 Clipping',
+    niches: [
+      { value: 'podcast clip channel', label: 'Podcast Clip Pages' },
+      { value: 'youtuber clip channel', label: 'YouTuber / Streamer Clip Pages' },
+      { value: 'talk show clip', label: 'Talk Show / Interview Clips' },
+      { value: 'motivational clip', label: 'Motivational / Speech Clips' },
+    ],
+  },
+  {
+    service: 'kick_auto_clipper',
+    label: '⚡ Kick Auto-Clipper',
+    niches: [
+      { value: 'kick clipper', label: 'Kick Clipping Channels' },
+      { value: 'gaming streamer clip', label: 'Gaming Streamer Clip Pages' },
+      { value: 'streamer highlight', label: 'Streamer Highlights' },
+    ],
+  },
+  {
+    service: 'landing_page',
+    label: '🚀 Landing Page Hero',
+    niches: [
+      { value: 'saas founder', label: 'SaaS Founders' },
+      { value: 'shopify store', label: 'Shopify / Ecommerce' },
+      { value: 'local business', label: 'Local Business Owners' },
+      { value: 'consultant', label: 'Consultants / Agencies' },
+      { value: 'app developer', label: 'App Developers' },
+      { value: 'real estate', label: 'Real Estate' },
+    ],
+  },
+  {
+    service: 'education',
+    label: '📚 Education',
+    niches: [
+      { value: 'online educator', label: 'Online Educators / Course Creators' },
+      { value: 'math tutor', label: 'Math / STEM Tutors' },
+      { value: 'finance educator', label: 'Finance / Investing Educators' },
+    ],
+  },
+  {
+    service: 'manim_explainer',
+    label: '🎞️ Manim Explainer',
+    niches: [
+      { value: 'tech explainer', label: 'Tech / Science Explainers' },
+      { value: 'programming educator', label: 'Programming Educators' },
+    ],
+  },
+  {
+    service: 'whiteboard_animation',
+    label: '✏️ Whiteboard Animation',
+    niches: [
+      { value: 'corporate trainer', label: 'Corporate Trainers' },
+      { value: 'business coach', label: 'Business Coaches' },
+    ],
+  },
+  {
+    service: 'kinetic_typography',
+    label: '🔤 Kinetic Typography',
+    niches: [
+      { value: 'lyric quote account', label: 'Lyric / Quote Accounts' },
+      { value: 'motivational speaker', label: 'Motivational Speakers' },
+    ],
+  },
+  {
+    service: 'animated_infographic',
+    label: '📊 Animated Infographic',
+    niches: [
+      { value: 'data journalist', label: 'Data / Finance Journalists' },
+      { value: 'marketing educator', label: 'Marketing Educators' },
+    ],
+  },
+  {
+    service: 'algorithm_viz',
+    label: '💻 Algorithm Viz',
+    niches: [
+      { value: 'coding educator', label: 'Coding Educators' },
+      { value: 'interview prep', label: 'Interview Prep Accounts' },
+    ],
+  },
+  {
+    service: 'investor_pitch',
+    label: '📈 Investor Pitch',
+    niches: [
+      { value: 'startup founder', label: 'Startup Founders' },
+      { value: 'indie hacker', label: 'Indie Hackers' },
+      { value: 'venture creator', label: 'Venture / Pitch Content' },
+    ],
+  },
+  {
+    service: 'year_in_review',
+    label: '📅 Year in Review',
+    niches: [
+      { value: 'creator recap', label: 'Creators Running Recaps' },
+      { value: 'influencer', label: 'Influencers / Personal Brands' },
+    ],
+  },
+  {
+    service: 'isometric_explainer',
+    label: '🏗️ Isometric Explainer',
+    niches: [
+      { value: 'product designer', label: 'Product / UX Explainers' },
+      { value: '3d artist', label: '3D / Motion Artists' },
+    ],
+  },
 ];
 
 /// Service types the whitelisted user can pitch. Mirrors the Rust scorer
@@ -242,7 +335,7 @@ export function InstagramLeadsPage() {
   const [tab, setTab] = useState(0); // 0 = Auto-Discover, 1 = Manual Search, 2 = All Leads, 3 = Top Leads
 
   // Auto-discover state
-  const [niche, setNiche] = useState('content creator');
+  const [niche, setNiche] = useState(NICHE_GROUPS[0].niches[0].value);
   const [maxPostsPerHashtag, setMaxPostsPerHashtag] = useState(30);
   const [discovering, setDiscovering] = useState(false);
   const [discoverResult, setDiscoverResult] = useState<{ hashtags: string[]; jobs: number; message: string } | null>(null);
@@ -506,6 +599,25 @@ export function InstagramLeadsPage() {
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Chip label={`${leads.length} leads`} size="small" sx={{ bgcolor: 'background.default', color: 'text.secondary' }} />
           <Chip label={`${topLeads.length} top-scored`} size="small" color="success" />
+          {leads.length > 0 && (
+            <Button
+              size="small"
+              color="error"
+              variant="outlined"
+              onClick={async () => {
+                if (!window.confirm('Delete ALL Instagram leads for your account? This cannot be undone.')) return;
+                const res = await instagramLeadsService.clearLeads();
+                if (res.success) {
+                  showSnack(`Deleted ${res.deleted ?? 0} leads`, 'success');
+                  loadLeads(); loadTopLeads();
+                } else {
+                  showSnack(res.error ?? 'Failed to clear leads', 'error');
+                }
+              }}
+            >
+              Clear All
+            </Button>
+          )}
         </Box>
       </Box>
 
@@ -542,8 +654,15 @@ export function InstagramLeadsPage() {
                     label="Target Niche"
                     onChange={e => setNiche(e.target.value)}
                   >
-                    {NICHE_OPTIONS.map(o => (
-                      <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>
+                    {NICHE_GROUPS.map(group => (
+                      <div key={group.service}>
+                        <ListSubheader sx={{ color: 'primary.main', fontWeight: 700, bgcolor: 'transparent', fontSize: 12, lineHeight: '32px' }}>
+                          {group.label}
+                        </ListSubheader>
+                        {group.niches.map(n => (
+                          <MenuItem key={n.value} value={n.value} sx={{ pl: 4 }}>{n.label}</MenuItem>
+                        ))}
+                      </div>
                     ))}
                   </Select>
                 </FormControl>
@@ -594,7 +713,7 @@ export function InstagramLeadsPage() {
             <CardContent>
               <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 1.5 }}>How it works</Typography>
               {[
-                ['1. Pick a niche', 'Choose which type of creator you\'re targeting (YouTubers, podcasters, coaches, etc.)'],
+                ['1. Pick a niche', 'Choose which Managed Campaign to sell — niches are grouped by the 12 services (Clipping, Kick Auto-Clipper, Landing Page, Education, Manim, etc.)'],
                 ['2. AI selects hashtags', 'The AI picks 4 high-signal hashtags where your ideal clients actively post'],
                 ['3. PhantomBuster scrapes', 'PB finds creators posting under those hashtags — runs in background (5–10 min)'],
                 ['4. Auto-import + scoring', 'Results auto-import every 5 min. AI scores each lead 0–100 for client likelihood'],
@@ -754,7 +873,7 @@ export function InstagramLeadsPage() {
               🔁 The workflow
             </Typography>
             <Box component="ol" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
-              <li><strong>Auto-Discover</strong> (recommended): pick your niche (podcaster, SaaS founder, etc.) → AI picks the 3–4 best hashtags → launches PhantomBuster searches in background.</li>
+              <li><strong>Auto-Discover</strong> (recommended): pick a target niche — grouped by the 12 Managed Campaign services — then the AI picks the 3–4 best hashtags and launches PhantomBuster searches in background.</li>
               <li><strong>Manual Search</strong>: enter a specific hashtag if you already know what works (e.g. <code>#shopifystore</code>).</li>
               <li>Wait 3–10 min. PhantomBuster scrapes Instagram, imports leads here, AI scores each 0–100 against our service offerings and picks the best-fit service type.</li>
               <li>Open <strong>All Leads</strong> or <strong>Top Leads</strong>. Click any row → DM dialog opens.</li>
@@ -935,3 +1054,4 @@ export function InstagramLeadsPage() {
     </Box>
   );
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   

@@ -112,6 +112,12 @@ export const instagramLeadsService = {
     return data;
   },
 
+  /** Delete ALL leads for the current user (e.g. start fresh from a mistrusted import). */
+  clearLeads: async (): Promise<{ success: boolean; deleted?: number; error?: string }> => {
+    const { data } = await api.delete('/api/instagram/leads');
+    return data;
+  },
+
   /** Generate a cold DM script for a lead */
   generateDm: async (id: string, niche?: string): Promise<DmResponse> => {
     const { data } = await api.post(

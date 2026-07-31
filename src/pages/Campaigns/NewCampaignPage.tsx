@@ -62,15 +62,16 @@ export default function NewCampaignPage() {
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    socialService.getMyProfile().then(profile => {
+    (async () => {
+      const profile = await socialService.getMyProfile();
       if (profile) {
         setZernioProfileId(profile.id);
-        socialService.listAccounts().then(accs => {
-          setAccounts(accs);
-          setSelectedAccounts(accs.map(a => a.id));
-        });
+        await socialService.syncMyAccounts();
+        const accs = await socialService.listAccounts();
+        setAccounts(accs);
+        setSelectedAccounts(accs.map(a => a.id));
       }
-    });
+    })();
   }, []);
 
   function addSlot() {

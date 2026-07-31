@@ -48,4 +48,14 @@ export const socialService = {
     const resp = await api.get<{ success: boolean; accounts: SocialAccount[] }>('/api/social/my-accounts');
     return resp.data.accounts || [];
   },
+
+  /** Re-pull the user's connected accounts from Zernio into the local cache. */
+  async syncMyAccounts(): Promise<{ success: boolean; error?: string }> {
+    try {
+      const resp = await api.post<{ success: boolean; error?: string }>('/api/social/sync-accounts');
+      return resp.data;
+    } catch (e: any) {
+      return { success: false, error: e?.response?.data?.error || 'Failed to sync accounts' };
+    }
+  },
 };

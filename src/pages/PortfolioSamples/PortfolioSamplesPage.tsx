@@ -85,7 +85,7 @@ export function PortfolioSamplesPage() {
 
   const generateSamples = async () => {
     setGenerating(true);
-    setMessage('Queueing all DFY service samples...');
+    setMessage('Queueing all Managed Campaign samples...');
     setError(null);
     try {
       const response = await portfolioSamplesService.generateDfy();
@@ -137,7 +137,7 @@ export function PortfolioSamplesPage() {
             Portfolio Samples
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Share these samples as proof-of-work in DMs and emails. All 12 DFY services shown below.
+            Share these samples as proof-of-work in DMs and emails. All 12 Managed Campaigns shown below.
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -161,7 +161,7 @@ export function PortfolioSamplesPage() {
           <Box>
             <Typography variant="h6" fontWeight={600}>Generate All Samples</Typography>
             <Typography variant="body2" color="text.secondary">
-              Queues any missing DFY service samples for generation. Existing samples are skipped.
+              Queues any missing Managed Campaign samples for generation. Existing samples are skipped.
             </Typography>
           </Box>
           <Button
@@ -192,7 +192,7 @@ export function PortfolioSamplesPage() {
             <TableRow>
               <TableCell colSpan={5} align="center">
                 <Typography color="text.secondary" sx={{ py: 4 }}>
-                  No DFY services loaded.
+                  No Managed Campaign services loaded.
                 </Typography>
               </TableCell>
             </TableRow>
