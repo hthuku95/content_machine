@@ -27,6 +27,7 @@ export interface RegisterRequest {
   username: string;
   password: string;
   confirm_password: string;
+  referred_by?: string;
 }
 
 export interface AuthResponse {

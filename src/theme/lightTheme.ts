@@ -7,10 +7,13 @@ export const lightTheme = createTheme({
       main: '#352f44',
       light: '#5c5470',
       dark: '#2a2438',
+      contrastText: '#ffffff',
     },
     secondary: {
       main: '#5c5470',
       light: '#dbd8e3',
+      dark: '#2a2438',
+      contrastText: '#ffffff',
     },
     background: {
       default: '#f0edf7',
@@ -19,6 +22,13 @@ export const lightTheme = createTheme({
     text: {
       primary: '#2a2438',
       secondary: '#5c5470',
+      disabled: 'rgba(42,36,56,0.45)',
+    },
+    divider: 'rgba(42,36,56,0.12)',
+    action: {
+      hover: 'rgba(53,47,68,0.06)',
+      selected: 'rgba(53,47,68,0.1)',
+      disabled: 'rgba(42,36,56,0.35)',
     },
     success: {
       main: '#4caf50',
@@ -115,6 +125,29 @@ export const lightTheme = createTheme({
       styleOverrides: {
         paper: {
           borderRight: '1px solid rgba(42,36,56,0.1)',
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          borderBottom: '1px solid rgba(42,36,56,0.1)',
+        },
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            backgroundColor: 'rgba(53,47,68,0.04)',
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(53,47,68,0.08)',
         },
       },
     },

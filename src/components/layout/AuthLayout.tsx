@@ -1,5 +1,7 @@
 import { Box, Container, Paper, Typography } from '@mui/material';
 import { Outlet } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import { darkTheme } from '@/theme';
 
 export function AuthLayout() {
   return (
@@ -42,32 +44,36 @@ export function AuthLayout() {
         }}
       />
 
-      <Container maxWidth="xs" sx={{ position: 'relative', zIndex: 1 }}>
-        <Box sx={{ textAlign: 'center', mb: 3 }}>
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: 700, color: 'text.secondary', letterSpacing: '-0.02em' }}
-          >
-            Content Machine
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(219,216,227,0.55)', mt: 0.5 }}>
-            Enterprise Content Automation
-          </Typography>
-        </Box>
+      {/* Force dark theme tokens inside the branded auth card so text is
+          always readable regardless of the app's light/dark preference. */}
+      <ThemeProvider theme={darkTheme}>
+        <Container maxWidth="xs" sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 700, color: 'text.secondary', letterSpacing: '-0.02em' }}
+            >
+              Content Machine
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(219,216,227,0.55)', mt: 0.5 }}>
+              Enterprise Content Automation
+            </Typography>
+          </Box>
 
-        <Paper
-          elevation={0}
-          sx={{
-            p: { xs: 3, sm: 4 },
-            background: 'rgba(53,47,68,0.75)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(219,216,227,0.12)',
-            borderRadius: 3,
-          }}
-        >
-          <Outlet />
-        </Paper>
-      </Container>
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 3, sm: 4 },
+              background: 'rgba(53,47,68,0.75)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(219,216,227,0.12)',
+              borderRadius: 3,
+            }}
+          >
+            <Outlet />
+          </Paper>
+        </Container>
+      </ThemeProvider>
     </Box>
   );
 }

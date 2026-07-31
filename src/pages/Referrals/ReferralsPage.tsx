@@ -78,7 +78,9 @@ export function ReferralsPage() {
     );
   }
 
-  const refUrl = code ? `${window.location.origin}/ref/${code.code}` : null;
+  // Referral links MUST point at videosync.video (not content-machine) so the
+  // public GET /ref/{code} route redirects to the landing page with ?ref={code}.
+  const refUrl = code ? `https://videosync.video/ref/${code.code}` : null;
 
   return (
     <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
@@ -91,7 +93,7 @@ export function ReferralsPage() {
       </Typography>
 
       {/* Referral Code Card */}
-      <Card sx={{ mb: 3, background: theme => theme.palette.mode === 'dark' ? '#2a2438' : undefined }}>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
             Your Referral Link
@@ -145,7 +147,7 @@ export function ReferralsPage() {
       </Card>
 
       {/* Commissions Table */}
-      <Card sx={{ background: theme => theme.palette.mode === 'dark' ? '#2a2438' : undefined }}>
+      <Card>
         <CardContent>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h6" fontWeight={600}>

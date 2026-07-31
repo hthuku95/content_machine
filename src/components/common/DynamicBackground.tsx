@@ -78,9 +78,12 @@ export function DynamicBackground({
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundImage: backgroundUrl
-          ? `url(${backgroundUrl})`
-          : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f1419 100%)',
+        backgroundImage: (theme) =>
+          backgroundUrl
+            ? `url(${backgroundUrl})`
+            : theme.palette.mode === 'dark'
+              ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f1419 100%)'
+              : 'linear-gradient(135deg, #f5f3fa 0%, #ece8f3 50%, #ffffff 100%)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',

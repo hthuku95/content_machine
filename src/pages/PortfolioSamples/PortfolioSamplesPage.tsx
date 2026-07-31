@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   Chip,
   CircularProgress,
@@ -27,7 +26,6 @@ import {
   OpenInNew as OpenIcon,
   Refresh as RefreshIcon,
   CheckCircle as CheckIcon,
-  HourglassEmpty as PendingIcon,
   Error as ErrorIcon,
 } from '@mui/icons-material';
 import { portfolioSamplesService, type PortfolioSample, type DfyServiceDef } from '@/services/portfolioSamples.service';

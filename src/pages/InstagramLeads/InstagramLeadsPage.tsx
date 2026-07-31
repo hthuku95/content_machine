@@ -71,7 +71,7 @@ function formatFollowers(n: number | null): string {
 
 function ScoreBadge({ score }: { score: number | null }) {
   if (score == null) return <Typography variant="caption" color="text.disabled">—</Typography>;
-  const color = score >= 80 ? '#4ade80' : score >= 60 ? '#facc15' : '#9ca3af';
+  const color = score >= 80 ? 'success.main' : score >= 60 ? 'warning.main' : 'text.disabled';
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
       <StarIcon sx={{ fontSize: 14, color }} />
@@ -119,14 +119,14 @@ function LeadsTable({
               onClick={() => onDmClick(lead)}
               sx={{
                 cursor: 'pointer',
-                '&:hover': { bgcolor: 'rgba(92,84,112,0.25)' },
+                '&:hover': { bgcolor: 'action.hover' },
               }}
             >
               <TableCell>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <Avatar
                     src={lead.profile_pic_url ?? undefined}
-                    sx={{ width: 32, height: 32, bgcolor: '#5c5470', fontSize: 14 }}
+                    sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: '#fff', fontSize: 14 }}
                   >
                     {lead.username?.[0]?.toUpperCase()}
                   </Avatar>
@@ -157,7 +157,7 @@ function LeadsTable({
               <TableCell>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                   {lead.hashtag_source && (
-                    <Chip label={`#${lead.hashtag_source}`} size="small" sx={{ bgcolor: '#2a2438', color: 'text.secondary', fontSize: 11 }} />
+                    <Chip label={`#${lead.hashtag_source}`} size="small" sx={{ bgcolor: 'background.default', color: 'text.secondary', fontSize: 11 }} />
                   )}
                   {lead.service_type && (
                     <Chip
@@ -178,7 +178,7 @@ function LeadsTable({
                       size="small"
                       sx={{
                         bgcolor: 'rgba(74,222,128,0.15)',
-                        color: '#4ade80',
+                        color: 'success.main',
                         fontSize: 10,
                         height: 18,
                       }}
@@ -504,7 +504,7 @@ export function InstagramLeadsPage() {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Chip label={`${leads.length} leads`} size="small" sx={{ bgcolor: '#2a2438', color: 'text.secondary' }} />
+          <Chip label={`${leads.length} leads`} size="small" sx={{ bgcolor: 'background.default', color: 'text.secondary' }} />
           <Chip label={`${topLeads.length} top-scored`} size="small" color="success" />
         </Box>
       </Box>
@@ -512,7 +512,7 @@ export function InstagramLeadsPage() {
       <Tabs
         value={tab}
         onChange={(_, v) => setTab(v)}
-        sx={{ mb: 3, borderBottom: 1, borderColor: '#5c5470' }}
+        sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab icon={<AutoAwesomeIcon fontSize="small" />} iconPosition="start" label="Auto-Discover" sx={{ minHeight: 40 }} />
         <Tab icon={<TagIcon fontSize="small" />} iconPosition="start" label="Manual Search" sx={{ minHeight: 40 }} />
@@ -524,10 +524,10 @@ export function InstagramLeadsPage() {
       {/* ── Auto-Discover tab ─────────────────────────────────────────────── */}
       {tab === 0 && (
         <Box>
-          <Card sx={{ mb: 3, bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+          <Card sx={{ mb: 3, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
             <CardContent>
               <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 0.5, color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 1 }}>
-                <AutoAwesomeIcon fontSize="small" sx={{ color: '#a78bfa' }} />
+                <AutoAwesomeIcon fontSize="small" sx={{ color: 'primary.main' }} />
                 AI-Powered Auto-Discovery
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -575,13 +575,13 @@ export function InstagramLeadsPage() {
               )}
 
               {discoverResult && (
-                <Box sx={{ mt: 2, p: 2, bgcolor: '#1a1825', borderRadius: 1, border: '1px solid #5c5470' }}>
-                  <Typography variant="body2" sx={{ color: '#4ade80', mb: 1 }}>
+                <Box sx={{ mt: 2, p: 2, bgcolor: 'background.default', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                  <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     ✅ {discoverResult.jobs} searches launched
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
                     {discoverResult.hashtags.map(h => (
-                      <Chip key={h} label={`#${h}`} size="small" sx={{ bgcolor: '#2a2438', color: '#a78bfa', fontSize: 11 }} />
+                      <Chip key={h} label={`#${h}`} size="small" sx={{ bgcolor: 'background.paper', color: 'primary.main', fontSize: 11 }} />
                     ))}
                   </Box>
                   <Typography variant="caption" color="text.secondary">{discoverResult.message}</Typography>
@@ -590,7 +590,7 @@ export function InstagramLeadsPage() {
             </CardContent>
           </Card>
 
-          <Card sx={{ bgcolor: '#2a2438', border: '1px solid #3a3050' }}>
+          <Card sx={{ bgcolor: 'background.default', border: '1px solid', borderColor: 'divider' }}>
             <CardContent>
               <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 1.5 }}>How it works</Typography>
               {[
@@ -601,7 +601,7 @@ export function InstagramLeadsPage() {
                 ['5. Generate & send DMs', 'Go to "Top Leads" tab → click the wand icon → copy personalised cold DM'],
               ].map(([title, desc]) => (
                 <Box key={title} sx={{ display: 'flex', gap: 1.5, mb: 1.5 }}>
-                  <Chip label={title} size="small" sx={{ bgcolor: '#352f44', color: 'text.secondary', fontSize: 11, flexShrink: 0 }} />
+                  <Chip label={title} size="small" sx={{ bgcolor: 'background.paper', color: 'text.secondary', fontSize: 11, flexShrink: 0 }} />
                   <Typography variant="caption" color="text.secondary" sx={{ pt: 0.3 }}>{desc}</Typography>
                 </Box>
               ))}
@@ -612,7 +612,7 @@ export function InstagramLeadsPage() {
 
       {/* ── Manual Search tab ─────────────────────────────────────────────── */}
       {tab === 1 && (
-        <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+        <Card sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
           <CardContent>
             <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, color: 'text.secondary' }}>
               Manual Hashtag Search
@@ -667,7 +667,7 @@ export function InstagramLeadsPage() {
 
       {/* ── All Leads tab ─────────────────────────────────────────────────── */}
       {tab === 2 && (
-        <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+        <Card sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
           <CardContent>
             {/* Inline how-to banner — answers "I don't know what to do next" */}
             <Box sx={{
@@ -718,10 +718,10 @@ export function InstagramLeadsPage() {
 
       {/* ── Top Leads tab ─────────────────────────────────────────────────── */}
       {tab === 3 && (
-        <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+        <Card sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <StarIcon sx={{ color: '#facc15', mr: 1 }} />
+              <StarIcon sx={{ color: 'warning.main', mr: 1 }} />
               <Typography variant="subtitle1" fontWeight={600} sx={{ color: 'text.secondary', flexGrow: 1 }}>
                 Top Leads — AI Score ≥ 60
               </Typography>
@@ -738,7 +738,7 @@ export function InstagramLeadsPage() {
 
       {/* ── How It Works tab ─────────────────────────────────────────────── */}
       {tab === 4 && (
-        <Card sx={{ bgcolor: '#352f44', border: '1px solid #5c5470' }}>
+        <Card sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
           <CardContent>
             <Typography variant="h6" fontWeight={700} sx={{ color: 'text.secondary', mb: 2 }}>
               📘 How Instagram Leads Work
@@ -748,7 +748,7 @@ export function InstagramLeadsPage() {
               This dashboard finds Instagram creators who match your offer and generates personalized cold DMs + portfolio samples so you can close them. Below is the full workflow and the list of services you can pitch.
             </Typography>
 
-            <Divider sx={{ my: 2, bgcolor: '#5c5470' }} />
+            <Divider sx={{ my: 2 }} />
 
             <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'text.secondary', mb: 1 }}>
               🔁 The workflow
@@ -765,7 +765,7 @@ export function InstagramLeadsPage() {
               <li>When they reply → change status to <em>replied</em>. When they pay → <em>converted</em>. The admin revenue ledger tracks your cut automatically.</li>
             </Box>
 
-            <Divider sx={{ my: 3, bgcolor: '#5c5470' }} />
+            <Divider sx={{ my: 3 }} />
 
             <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'text.secondary', mb: 1 }}>
               💼 What you can pitch — service menu
@@ -790,7 +790,7 @@ export function InstagramLeadsPage() {
               ))}
             </Box>
 
-            <Divider sx={{ my: 3, bgcolor: '#5c5470' }} />
+            <Divider sx={{ my: 3 }} />
 
             <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'text.secondary', mb: 1 }}>
               💰 How you get paid
@@ -801,7 +801,7 @@ export function InstagramLeadsPage() {
               <li>Leads are private to you — no other team member sees your pipeline. Attribution survives even if the admin re-scores or re-attaches samples.</li>
             </Box>
 
-            <Divider sx={{ my: 3, bgcolor: '#5c5470' }} />
+            <Divider sx={{ my: 3 }} />
 
             <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'text.secondary', mb: 1 }}>
               ⚡ Tips
@@ -819,10 +819,10 @@ export function InstagramLeadsPage() {
 
       {/* ── DM Dialog ──────────────────────────────────────────────────────── */}
       <Dialog open={dmDialog.open} onClose={() => setDmDialog(d => ({ ...d, open: false }))} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ bgcolor: '#2a2438', color: 'text.secondary' }}>
+        <DialogTitle sx={{ bgcolor: 'background.paper', color: 'text.secondary' }}>
           Cold DM — @{dmDialog.lead?.username}
         </DialogTitle>
-        <DialogContent sx={{ bgcolor: '#2a2438', pt: '12px !important' }}>
+        <DialogContent sx={{ bgcolor: 'background.paper', pt: '12px !important' }}>
           {/* Service-type override — the AI picks one when scoring the lead,
               but the user can flip it here before generating the DM. Updates
               the lead on the server so subsequent samples + DMs use the
@@ -836,7 +836,7 @@ export function InstagramLeadsPage() {
                 value={dmDialog.lead?.service_type ?? ''}
                 onChange={(e) => overrideServiceType(e.target.value as InstagramLead['service_type'])}
                 displayEmpty
-                sx={{ fontSize: 13, bgcolor: '#1a1825', color: 'text.secondary' }}
+                sx={{ fontSize: 13, bgcolor: 'background.default', color: 'text.secondary' }}
               >
                 <MenuItem value=""><em>— AI default —</em></MenuItem>
                 {SERVICE_TYPE_OPTIONS.map(s => (
@@ -856,8 +856,8 @@ export function InstagramLeadsPage() {
               component="pre"
               sx={{
                 whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontFamily: 'inherit',
-                fontSize: 14, color: 'text.secondary', bgcolor: '#1a1825', p: 2,
-                borderRadius: 1, border: '1px solid #5c5470', m: 0,
+                fontSize: 14, color: 'text.secondary', bgcolor: 'background.default', p: 2,
+                borderRadius: 1, border: '1px solid', borderColor: 'divider', m: 0,
               }}
             >
               {dmDialog.text}
@@ -868,7 +868,7 @@ export function InstagramLeadsPage() {
             </Typography>
           )}
         </DialogContent>
-        <DialogActions sx={{ bgcolor: '#2a2438', gap: 1, flexWrap: 'wrap' }}>
+        <DialogActions sx={{ bgcolor: 'background.paper', gap: 1, flexWrap: 'wrap' }}>
           <Button onClick={() => setDmDialog(d => ({ ...d, open: false }))} color="inherit">Close</Button>
           <Box sx={{ flexGrow: 1 }} />
           <Button
@@ -876,7 +876,7 @@ export function InstagramLeadsPage() {
             onClick={() => generateDm()}
             disabled={dmDialog.generating}
             variant="outlined"
-            sx={{ borderColor: '#5c5470', color: 'text.secondary' }}
+            sx={{ borderColor: 'divider', color: 'text.secondary' }}
           >
             {dmDialog.generating ? 'Generating outreach draft' : (dmDialog.text ? 'Regenerate' : 'Generate DM')}
           </Button>
@@ -900,7 +900,7 @@ export function InstagramLeadsPage() {
               startIcon={<ContentCopyIcon />}
               onClick={() => { navigator.clipboard.writeText(dmDialog.text); showSnack('DM copied!'); }}
               variant="outlined"
-              sx={{ borderColor: '#5c5470', color: 'text.secondary' }}
+              sx={{ borderColor: 'divider', color: 'text.secondary' }}
             >
               Copy only
             </Button>

@@ -5,11 +5,15 @@ export const darkTheme = createTheme({
     mode: 'dark',
     primary: {
       main: '#dbd8e3',
+      light: '#f5f3fa',
       dark: '#5c5470',
+      contrastText: '#2a2438',
     },
     secondary: {
       main: '#5c5470',
       light: '#dbd8e3',
+      dark: '#352f44',
+      contrastText: '#ffffff',
     },
     background: {
       default: '#2a2438',
@@ -18,11 +22,13 @@ export const darkTheme = createTheme({
     text: {
       primary: '#ffffff',
       secondary: '#dbd8e3',
+      disabled: 'rgba(219,216,227,0.4)',
     },
     divider: 'rgba(219,216,227,0.12)',
     action: {
       hover: 'rgba(219,216,227,0.06)',
       selected: 'rgba(219,216,227,0.12)',
+      disabled: 'rgba(219,216,227,0.3)',
     },
     success: {
       main: '#4ade80',
@@ -167,6 +173,45 @@ export const darkTheme = createTheme({
       styleOverrides: {
         icon: {
           color: '#dbd8e3',
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          borderBottom: '1px solid rgba(219,216,227,0.1)',
+        },
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            backgroundColor: 'rgba(219,216,227,0.04)',
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(219,216,227,0.08)',
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: '#3d3752',
+          color: '#ffffff',
+          fontSize: '0.75rem',
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundImage: 'none',
         },
       },
     },

@@ -12,17 +12,18 @@ import { gigTemplatesService } from '@/services/gigTemplates.service';
 import type { GigTemplate, GigSample } from '@/services/gigTemplates.service';
 
 // ─── Tier badge colors ────────────────────────────────────────────────────────
+// Labels use theme tokens so they read in both light and dark mode.
 const TIER_COLORS = {
-  basic:    { label: '#9999bb', border: '#3a3a5a', bg: '#13131e' },
-  standard: { label: '#60a5fa', border: '#2a4a7a', bg: '#13131e' },
-  premium:  { label: '#facc15', border: '#6a5a10', bg: '#13131e' },
+  basic:    { label: 'text.disabled' },
+  standard: { label: 'info.main' },
+  premium:  { label: 'warning.main' },
 };
 
 // ─── Sample video slot ────────────────────────────────────────────────────────
 function SampleSlot({ sample, onDelete }: { sample: GigSample | null; onDelete?: () => void }) {
   if (!sample) {
     return (
-      <Box sx={{ aspectRatio: '16/9', bgcolor: '#0d0d18', border: '1px dashed #2a2a3a', borderRadius: 1,
+      <Box sx={{ aspectRatio: '16/9', bgcolor: 'background.default', border: '1px dashed', borderColor: 'divider', borderRadius: 1,
                  display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography variant="caption" color="text.disabled">empty</Typography>
       </Box>
@@ -31,11 +32,11 @@ function SampleSlot({ sample, onDelete }: { sample: GigSample | null; onDelete?:
 
   const isImage = sample.filename?.endsWith('.png') || sample.filename?.endsWith('.jpg');
   const statusColor: Record<string, string> = {
-    completed: '#4ade80', running: '#60a5fa', pending: '#9999bb', failed: '#f87171',
+    completed: 'success.main', running: 'info.main', pending: 'text.disabled', failed: 'error.main',
   };
 
   return (
-    <Box sx={{ aspectRatio: '16/9', bgcolor: '#0d0d18', border: '1px solid #2a2a3a', borderRadius: 1,
+    <Box sx={{ aspectRatio: '16/9', bgcolor: 'background.default', border: '1px solid', borderColor: 'divider', borderRadius: 1,
                overflow: 'hidden', position: 'relative', '&:hover .sample-actions': { opacity: 1 } }}>
       {sample.status === 'completed' && sample.r2_url && (
         isImage
@@ -81,8 +82,8 @@ function CopyButton({ text, label = 'Copy' }: { text: string; label?: string }) 
   return (
     <Button size="small" variant="outlined" startIcon={<ContentCopyIcon sx={{ fontSize: 13 }} />}
             onClick={handleCopy}
-            sx={{ fontSize: '0.7rem', px: 1, py: 0.3, borderColor: copied ? '#4ade80' : '#3a3a5a',
-                 color: copied ? '#4ade80' : 'text.secondary', minWidth: 'unset', whiteSpace: 'nowrap' }}>
+            sx={{ fontSize: '0.7rem', px: 1, py: 0.3, borderColor: copied ? 'success.main' : 'divider',
+                 color: copied ? 'success.main' : 'text.secondary', minWidth: 'unset', whiteSpace: 'nowrap' }}>
       {copied ? '✓ Copied' : label}
     </Button>
   );
@@ -129,16 +130,16 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
   ] as const;
 
   return (
-    <Card sx={{ bgcolor: '#13131e', border: '1px solid #2a2a3a', borderRadius: 2 }}>
+    <Card sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
       <CardHeader
         title={
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Box>
-              <Typography variant="subtitle1" fontWeight={700} color="white">{template.display_name}</Typography>
+              <Typography variant="subtitle1" fontWeight={700} color="text.primary">{template.display_name}</Typography>
               <Typography variant="caption" color="text.secondary">{template.tagline}</Typography>
             </Box>
             <Chip label={template.service_type} size="small"
-                  sx={{ bgcolor: '#6c5ce722', color: '#a99ef7', fontSize: '0.65rem', height: 22 }} />
+                  sx={{ bgcolor: 'rgba(108,92,231,0.15)', color: 'primary.main', fontSize: '0.65rem', height: 22 }} />
           </Box>
         }
         sx={{ pb: 0, '& .MuiCardHeader-content': { width: '100%' } }}
@@ -164,8 +165,8 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
             <TableRow>
               {tiers.map(t => (
                 <TableCell key={t.key} align="center"
-                           sx={{ border: `1px solid ${TIER_COLORS[t.key].border}`, bgcolor: TIER_COLORS[t.key].bg, borderRadius: 1 }}>
-                  <Typography variant="h6" fontWeight={800} color="white">${t.price}</Typography>
+                           sx={{ border: `1px solid ${TIER_COLORS[t.key].label}`, bgcolor: 'background.default', borderRadius: 1 }}>
+                  <Typography variant="h6" fontWeight={800} color="text.primary">${t.price}</Typography>
                   <Typography variant="caption" color="text.disabled">{t.days}-day delivery</Typography>
                   <Typography variant="caption" display="block" sx={{ mt: 0.5, fontSize: '0.65rem', color: 'text.secondary', lineHeight: 1.4 }}>
                     {t.includes}
@@ -182,9 +183,9 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
         </Typography>
         <Box sx={{ mt: 1, mb: 2, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
           {(template.gig_titles || []).map((title, i) => (
-            <Box key={i} sx={{ display: 'flex', gap: 1, alignItems: 'center', bgcolor: '#0d0d18',
-                               border: '1px solid #2a2a3a', borderRadius: 1, px: 1.5, py: 1 }}>
-              <Typography variant="caption" sx={{ flex: 1, color: '#d0d0e8', fontSize: '0.75rem', lineHeight: 1.4 }}>
+            <Box key={i} sx={{ display: 'flex', gap: 1, alignItems: 'center', bgcolor: 'background.default',
+                               border: '1px solid', borderColor: 'divider', borderRadius: 1, px: 1.5, py: 1 }}>
+              <Typography variant="caption" sx={{ flex: 1, color: 'text.primary', fontSize: '0.75rem', lineHeight: 1.4 }}>
                 {title}
               </Typography>
               <CopyButton text={title} />
@@ -199,7 +200,7 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
         <Box sx={{ mt: 1, mb: 2, display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
           {(template.keywords || []).map(kw => (
             <Chip key={kw} label={kw} size="small"
-                  sx={{ bgcolor: '#1a1a2e', border: '1px solid #2a2a4a', color: 'text.secondary', fontSize: '0.65rem', height: 20 }} />
+                  sx={{ bgcolor: 'background.default', border: '1px solid', borderColor: 'divider', color: 'text.secondary', fontSize: '0.65rem', height: 20 }} />
           ))}
         </Box>
 
@@ -210,9 +211,9 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
           </Typography>
           <CopyButton text={template.description} label="Copy Description" />
         </Box>
-        <Paper variant="outlined" sx={{ bgcolor: '#0d0d18', border: '1px solid #2a2a3a', borderRadius: 1,
+        <Paper variant="outlined" sx={{ bgcolor: 'background.default', border: '1px solid', borderColor: 'divider', borderRadius: 1,
                                         p: 1.5, mb: 2, maxHeight: 140, overflowY: 'auto' }}>
-          <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap', color: '#b0b0cc', lineHeight: 1.7, fontSize: '0.72rem' }}>
+          <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap', color: 'text.secondary', lineHeight: 1.7, fontSize: '0.72rem' }}>
             {template.description}
           </Typography>
         </Paper>
@@ -277,13 +278,13 @@ export function GigTemplatesPage() {
     <Box sx={{ p: 3 }}>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="h5" fontWeight={700} color="white">Service Offer Templates</Typography>
+          <Typography variant="h5" fontWeight={700} color="text.primary">Service Offer Templates</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
             Copy-paste ready outreach, marketplace, and sales-page packages for the current VideoSync services. Generate proof samples for your portfolio.
           </Typography>
         </Box>
         <Button variant="outlined" size="small" onClick={loadTemplates} disabled={loading}
-                sx={{ borderColor: '#3a3a5a', color: 'text.secondary' }}>
+                sx={{ borderColor: 'divider', color: 'text.secondary' }}>
           ↻ Refresh
         </Button>
       </Box>
@@ -292,7 +293,7 @@ export function GigTemplatesPage() {
 
       {loading ? (
         <Grid container spacing={3}>
-          {[1,2,3,4].map(i => <Grid item xs={12} md={6} key={i}><Skeleton variant="rounded" height={500} sx={{ bgcolor: '#1a1a2e' }} /></Grid>)}
+          {[1,2,3,4].map(i => <Grid item xs={12} md={6} key={i}><Skeleton variant="rounded" height={500} sx={{ bgcolor: 'background.default' }} /></Grid>)}
         </Grid>
       ) : (
         <Grid container spacing={3}>

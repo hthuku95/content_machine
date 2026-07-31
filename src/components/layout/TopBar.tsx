@@ -70,7 +70,10 @@ export function TopBar({ onMenuClick }: TopBarProps) {
             fontWeight: 700,
             letterSpacing: '-0.02em',
             flexGrow: 1,
-            background: 'linear-gradient(135deg, #dbd8e3 0%, #ffffff 100%)',
+            background: (theme) =>
+              theme.palette.mode === 'dark'
+                ? 'linear-gradient(135deg, #dbd8e3 0%, #ffffff 100%)'
+                : 'linear-gradient(135deg, #2a2438 0%, #5c5470 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}

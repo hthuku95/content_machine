@@ -9,7 +9,7 @@ import {
   Link as MuiLink,
   CircularProgress,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { PATHS } from '@/routes/paths';
 import type { RegisterRequest } from '@/types/auth.types';
@@ -26,8 +26,11 @@ const registerSchema = z.object({
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
+const REF_LOCAL_STORAGE_KEY = 'cm_referral_ref';
+
 export function RegisterForm() {
   const { register: registerUser, isRegisterLoading } = useAuth();
+  const [searchParams] = useSearchParams();
 
   const {
     register,
@@ -37,11 +40,22 @@ export function RegisterForm() {
     resolver: zodResolver(registerSchema),
   });
 
+  const referredBy = () => {
+    const fromUrl = searchParams.get('ref')?.trim();
+    if (fromUrl) {
+      localStorage.setItem(REF_LOCAL_STORAGE_KEY, fromUrl);
+      return fromUrl;
+    }
+    return localStorage.getItem(REF_LOCAL_STORAGE_KEY)?.trim() || undefined;
+  };
+
   const onSubmit = (data: RegisterFormData) => {
     const { confirmPassword, ...rest } = data;
+    const ref = referredBy();
     const registerData: RegisterRequest = {
       ...rest,
       confirm_password: confirmPassword,
+      ...(ref ? { referred_by: ref } : {}),
     };
     registerUser(registerData);
   };

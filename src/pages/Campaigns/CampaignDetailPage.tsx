@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Button, Card, CardContent, Grid, Chip, Table,
   TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, Tooltip, Alert, LinearProgress,
+  IconButton, Tooltip, Alert,
 } from '@mui/material';
 import {
   ArrowBack, PlayArrow, Pause, Cancel, Refresh, OpenInNew,
@@ -38,16 +38,6 @@ export default function CampaignDetailPage() {
       console.error('Failed to load campaign', e);
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function fetchPosts() {
-    if (!id) return;
-    try {
-      const p = await campaignService.getPosts(id);
-      setPosts(p);
-    } catch (e) {
-      console.error('Failed to fetch posts', e);
     }
   }
 

@@ -17,10 +17,8 @@ export default function SocialAccountsPage() {
   const [profileName, setProfileName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(true);
 
   async function load() {
-    setLoading(true);
     try {
       const [p, a] = await Promise.all([
         socialService.listProfiles(),
@@ -30,8 +28,6 @@ export default function SocialAccountsPage() {
       setAccounts(a);
     } catch (e) {
       console.error('Failed to load social accounts', e);
-    } finally {
-      setLoading(false);
     }
   }
 

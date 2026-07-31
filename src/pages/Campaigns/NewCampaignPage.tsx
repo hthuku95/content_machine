@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, TextField, Button, Card, CardContent, MenuItem,
-  Grid, Chip, Alert, Snackbar, InputAdornment, IconButton,
+  Grid, Chip, Alert, Snackbar, IconButton,
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, ArrowBack } from '@mui/icons-material';
 import { campaignService, type CreateCampaignRequest } from '@/services/campaign.service';
