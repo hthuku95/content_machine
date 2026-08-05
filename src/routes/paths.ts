@@ -79,6 +79,14 @@ export const PATHS = {
   // Social Account Management (Zernio)
   SOCIAL_ACCOUNTS: '/social/accounts',
 
+  // Admin Dashboard (staff/superuser only)
+  ADMIN: {
+    OVERVIEW: '/admin',
+    DELIVERIES: '/admin/deliveries',
+    PROSPECTS: '/admin/prospects',
+    CAMPAIGNS: '/admin/campaigns',
+  },
+
   // Other
   NOT_FOUND: '/404',
 };

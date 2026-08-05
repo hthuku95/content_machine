@@ -42,12 +42,15 @@ import {
   PhotoCamera as InstagramIcon,
   Campaign as CampaignIcon,
   MonetizationOn as ReferralIcon,
+  AdminPanelSettings as AdminIcon,
+  People as PeopleIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PATHS } from '@/routes/paths';
 import { useUIStore } from '@/stores/uiStore';
+import { useAuthStore } from '@/stores/authStore';
 
 export const DRAWER_WIDTH = 240;
 export const DRAWER_WIDTH_COLLAPSED = 64;
@@ -128,6 +131,8 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
   const navigate = useNavigate();
   const location = useLocation();
   const { sidebarCollapsed, toggleSidebarCollapsed } = useUIStore();
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.is_staff || user?.is_superuser;
   const [clippingOpen, setClippingOpen] = useState(true);
   const [youtubeOpen, setYoutubeOpen] = useState(true);
 
@@ -231,6 +236,49 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
           />
         </List>
       </motion.div>
+
+      <Divider sx={{ my: 1 }} />
+
+      {/* ADMIN group (staff/superuser only) */}
+      {isAdmin && (
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2, delay: 0.025 }}
+        >
+          <SectionLabel label="Admin" collapsed={isCollapsed} />
+          <List disablePadding>
+            <NavItem
+              icon={<AdminIcon />}
+              label="Overview"
+              active={isActive(PATHS.ADMIN.OVERVIEW)}
+              onClick={() => handleNavigation(PATHS.ADMIN.OVERVIEW)}
+              collapsed={isCollapsed}
+            />
+            <NavItem
+              icon={<VideoLibraryIcon />}
+              label="Deliveries"
+              active={isActive(PATHS.ADMIN.DELIVERIES)}
+              onClick={() => handleNavigation(PATHS.ADMIN.DELIVERIES)}
+              collapsed={isCollapsed}
+            />
+            <NavItem
+              icon={<PeopleIcon />}
+              label="Prospects"
+              active={isActive(PATHS.ADMIN.PROSPECTS)}
+              onClick={() => handleNavigation(PATHS.ADMIN.PROSPECTS)}
+              collapsed={isCollapsed}
+            />
+            <NavItem
+              icon={<CampaignIcon />}
+              label="Campaigns"
+              active={isActive(PATHS.ADMIN.CAMPAIGNS)}
+              onClick={() => handleNavigation(PATHS.ADMIN.CAMPAIGNS)}
+              collapsed={isCollapsed}
+            />
+          </List>
+        </motion.div>
+      )}
 
       <Divider sx={{ my: 1 }} />
 

@@ -3,6 +3,7 @@ import { PATHS } from './paths';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { AdminRoute } from '@/components/auth/AdminRoute';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { DashboardPage } from '@/pages/Dashboard/DashboardPage';
 import { LoginPage } from '@/pages/Auth/LoginPage';
@@ -37,6 +38,10 @@ import CampaignsPage from '@/pages/Campaigns/CampaignsPage';
 import NewCampaignPage from '@/pages/Campaigns/NewCampaignPage';
 import CampaignDetailPage from '@/pages/Campaigns/CampaignDetailPage';
 import SocialAccountsPage from '@/pages/Campaigns/SocialAccountsPage';
+import { AdminOverviewPage } from '@/pages/Admin/AdminOverviewPage';
+import { AdminDeliveriesPage } from '@/pages/Admin/AdminDeliveriesPage';
+import { AdminProspectsPage } from '@/pages/Admin/AdminProspectsPage';
+import { AdminCampaignsPage } from '@/pages/Admin/AdminCampaignsPage';
 
 export const router = createBrowserRouter([
   // Auth routes (no sidebar/topbar)
@@ -260,6 +265,47 @@ export const router = createBrowserRouter([
           <ErrorBoundary>
             <SocialAccountsPage />
           </ErrorBoundary>
+        ),
+      },
+      // Admin Dashboard (staff/superuser only)
+      {
+        path: PATHS.ADMIN.OVERVIEW,
+        element: (
+          <AdminRoute>
+            <ErrorBoundary>
+              <AdminOverviewPage />
+            </ErrorBoundary>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: PATHS.ADMIN.DELIVERIES,
+        element: (
+          <AdminRoute>
+            <ErrorBoundary>
+              <AdminDeliveriesPage />
+            </ErrorBoundary>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: PATHS.ADMIN.PROSPECTS,
+        element: (
+          <AdminRoute>
+            <ErrorBoundary>
+              <AdminProspectsPage />
+            </ErrorBoundary>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: PATHS.ADMIN.CAMPAIGNS,
+        element: (
+          <AdminRoute>
+            <ErrorBoundary>
+              <AdminCampaignsPage />
+            </ErrorBoundary>
+          </AdminRoute>
         ),
       },
       // Settings routes
