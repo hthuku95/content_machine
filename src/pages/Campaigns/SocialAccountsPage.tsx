@@ -51,12 +51,7 @@ export default function SocialAccountsPage() {
     }
   }
 
-  async function handleConnect(platform: string) {
-    const profileId = profiles[0]?.id;
-    if (!profileId) {
-      setError('Create a profile first');
-      return;
-    }
+  async function handleConnect(platform: string, profileId: string) {
     try {
       const authUrl = await socialService.getConnectUrl(
         platform,
@@ -112,10 +107,10 @@ export default function SocialAccountsPage() {
                   <TableCell>{p.name}</TableCell>
                   <TableCell>{p.created_at ? new Date(p.created_at).toLocaleDateString() : '—'}</TableCell>
                   <TableCell align="right">
-                    <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('youtube')}>Connect YouTube</Button>
-                    <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('tiktok')}>Connect TikTok</Button>
-                    <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('instagram')}>Connect Instagram</Button>
-                    <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('twitter')}>Connect X</Button>
+                    <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('youtube', p.id)}>Connect YouTube</Button>
+                    <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('tiktok', p.id)}>Connect TikTok</Button>
+                    <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('instagram', p.id)}>Connect Instagram</Button>
+                    <Button size="small" startIcon={<LinkIcon />} onClick={() => handleConnect('twitter', p.id)}>Connect X</Button>
                   </TableCell>
                 </TableRow>
               ))}

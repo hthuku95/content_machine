@@ -55,6 +55,7 @@ export default function NewCampaignPage() {
     { time: '17:00', platform: 'tiktok' },
   ]);
   const [accounts, setAccounts] = useState<SocialAccount[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [zernioProfileId, setZernioProfileId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -63,16 +64,26 @@ export default function NewCampaignPage() {
 
   useEffect(() => {
     (async () => {
-      const profile = await socialService.getMyProfile();
-      if (profile) {
-        setZernioProfileId(profile.id);
+      const profiles = await socialService.listMyProfiles();
+      if (profiles.length > 0) {
+        setProfiles(profiles);
+        setZernioProfileId(profiles[0].id);
         await socialService.syncMyAccounts();
         const accs = await socialService.listAccounts();
         setAccounts(accs);
-        setSelectedAccounts(accs.map(a => a.id));
+        setSelectedAccounts(accs
+          .filter(a => a.profile_id === profiles[0].id)
+          .map(a => a.id));
       }
     })();
   }, []);
+
+  function onProfileChange(profileId: string) {
+    setZernioProfileId(profileId);
+    setSelectedAccounts(accounts
+      .filter(a => a.profile_id === profileId)
+      .map(a => a.id));
+  }
 
   function addSlot() {
     setSlots([...slots, { time: '12:00', platform: 'youtube' }]);
@@ -202,11 +213,22 @@ export default function NewCampaignPage() {
           </Grid>
 
           {/* Connected Social Accounts */}
+          {profiles.length > 0 && (
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} gutterBottom>Zernio Profile</Typography>
+              <TextField select value={zernioProfileId || ''} onChange={e => onProfileChange(e.target.value)} fullWidth size="small">
+                {profiles.map(p => (
+                  <MenuItem key={p.id} value={p.id}>{p.name || p.id}</MenuItem>
+                ))}
+              </TextField>
+            </Box>
+          )}
+
           {accounts.length > 0 && (
             <Box>
               <Typography variant="subtitle2" fontWeight={600} gutterBottom>Post to Accounts</Typography>
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {accounts.map(a => (
+                {accounts.filter(a => a.profile_id === zernioProfileId).map(a => (
                   <Chip
                     key={a.id}
                     label={`${a.platform}: ${a.account_name}`}

@@ -12,12 +12,18 @@ export interface SocialAccount {
   account_name: string;
   avatar_url?: string;
   status?: string;
+  profile_id?: string | null;
   created_at?: string;
 }
 
 export const socialService = {
   async listProfiles(): Promise<ZernioProfile[]> {
     const resp = await api.get<{ success: boolean; profiles: ZernioProfile[] }>('/api/social/profiles');
+    return resp.data.profiles || [];
+  },
+
+  async listMyProfiles(): Promise<ZernioProfile[]> {
+    const resp = await api.get<{ success: boolean; profiles: ZernioProfile[] }>('/api/social/my-profiles');
     return resp.data.profiles || [];
   },
 
@@ -41,6 +47,15 @@ export const socialService = {
       url += `&redirect_url=${encodeURIComponent(redirectUrl)}`;
     }
     const resp = await api.get<{ success: boolean; authUrl: string }>(url);
+    return resp.data.authUrl;
+  },
+
+  /** Resolves (or creates) the caller's default profile and returns an OAuth URL for it. */
+  async getMyConnectUrl(platform: string, redirectUrl?: string): Promise<string> {
+    const resp = await api.post<{ success: boolean; authUrl: string }>('/api/social/my-connect-url', {
+      platform,
+      redirect_url: redirectUrl,
+    });
     return resp.data.authUrl;
   },
 
