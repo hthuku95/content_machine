@@ -138,7 +138,7 @@ export function AdminProspectsPage() {
     setDialog((d) => ({ ...d, text: 'Generating…' }));
     try {
       const res = await adminService.generateOutreach(p.id, {
-        delivery_url: `https://videosync.video${p.sample_delivery_url}`,
+        delivery_url: `https://videosync.ink${p.sample_delivery_url}`,
       });
       if (res.success) {
         refreshRow(p.id, { x_dm_script: res.x_dm, email_script: res.email_script });
@@ -339,7 +339,7 @@ export function AdminProspectsPage() {
                     {p.sample_delivery_id ? (
                       <Chip
                         component="a"
-                        href={`https://videosync.video${p.sample_delivery_url}`}
+                        href={`https://videosync.ink${p.sample_delivery_url}`}
                         target="_blank"
                         rel="noopener"
                         label="Sample ✓"

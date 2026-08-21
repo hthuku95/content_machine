@@ -80,7 +80,7 @@ export function ReferralsPage() {
 
   // Referral links MUST point at videosync.video (not content-machine) so the
   // public GET /ref/{code} route redirects to the landing page with ?ref={code}.
-  const refUrl = code ? `https://videosync.video/ref/${code.code}` : null;
+  const refUrl = code ? `https://videosync.ink/ref/${code.code}` : null;
 
   return (
     <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
