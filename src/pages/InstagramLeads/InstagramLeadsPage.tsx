@@ -565,7 +565,7 @@ export function InstagramLeadsPage() {
     // Build full URL using current origin so it's pasteable into IG verbatim.
     const fullUrl = deliveryUrl.startsWith('http')
       ? deliveryUrl
-      : `${window.location.protocol}//videosync.video${deliveryUrl}`;
+      : `${window.location.protocol}//videosync.ink${deliveryUrl}`;
 
     const existing = dmDialog.text || lead.dm_script || '';
     const withLink = existing

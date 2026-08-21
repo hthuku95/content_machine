@@ -78,7 +78,7 @@ export function ReferralsPage() {
     );
   }
 
-  // Referral links MUST point at videosync.video (not content-machine) so the
+  // Referral links MUST point at videosync.ink (not content-machine) so the
   // public GET /ref/{code} route redirects to the landing page with ?ref={code}.
   const refUrl = code ? `https://videosync.ink/ref/${code.code}` : null;
 
