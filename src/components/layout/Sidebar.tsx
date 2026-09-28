@@ -276,6 +276,13 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
               onClick={() => handleNavigation(PATHS.ADMIN.CAMPAIGNS)}
               collapsed={isCollapsed}
             />
+            <NavItem
+              icon={<AdminIcon />}
+              label="Service Switches"
+              active={isActive(PATHS.ADMIN.SERVICE_FLAGS)}
+              onClick={() => handleNavigation(PATHS.ADMIN.SERVICE_FLAGS)}
+              collapsed={isCollapsed}
+            />
           </List>
         </motion.div>
       )}

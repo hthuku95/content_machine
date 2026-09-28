@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useServiceFlags } from '@/hooks/useServiceFlags';
 import {
   Alert,
   Box,
@@ -62,6 +63,8 @@ export function PortfolioSamplesPage() {
   const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Runtime switches: tag paused services so generation 503s never surprise.
+  const { isEnabled } = useServiceFlags();
 
   const loadSamples = async () => {
     setError(null);
@@ -209,6 +212,9 @@ export function PortfolioSamplesPage() {
                     <Typography variant="caption" color="text.secondary">
                       {svc.slug}
                     </Typography>
+                    {!isEnabled(svc.slug) && (
+                      <Chip label="Paused" size="small" sx={{ ml: 1, height: 18, fontSize: 10 }} />
+                    )}
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight={600}>

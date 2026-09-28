@@ -69,6 +69,16 @@ export interface AutoDiscoverResponse {
   error?: string;
 }
 
+export interface MethodBResponse {
+  success: boolean;
+  category?: string;
+  streamers?: Array<{ slug: string; viewers: number }>;
+  jobs?: Array<{ job_id: string; hashtag: string; streamer: string; container_id: string }>;
+  errors?: string[];
+  message?: string;
+  error?: string;
+}
+
 export const instagramLeadsService = {
   /** AI picks hashtags for a niche and auto-launches PB searches */
   autoDiscover: async (params: {
@@ -77,6 +87,19 @@ export const instagramLeadsService = {
     hashtag_count?: number;
   }): Promise<AutoDiscoverResponse> => {
     const { data } = await api.post('/api/instagram/leads/auto-discover', params);
+    return data;
+  },
+
+  /**
+   * Method B: top Kick streamers → deterministic clipper-handle tag searches
+   * ({slug}, {slug}clips, {slug}highlights). Detected creators pre-attached,
+   * zero LLM detection cost.
+   */
+  kickMethodB: async (params: {
+    niche?: string;
+    max_posts_per_hashtag?: number;
+  }): Promise<MethodBResponse> => {
+    const { data } = await api.post('/api/instagram/leads/kick-method-b', params);
     return data;
   },
 

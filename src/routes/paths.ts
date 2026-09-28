@@ -85,6 +85,7 @@ export const PATHS = {
     DELIVERIES: '/admin/deliveries',
     PROSPECTS: '/admin/prospects',
     CAMPAIGNS: '/admin/campaigns',
+    SERVICE_FLAGS: '/admin/service-flags',
   },
 
   // Other

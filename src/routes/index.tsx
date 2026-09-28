@@ -42,6 +42,7 @@ import { AdminOverviewPage } from '@/pages/Admin/AdminOverviewPage';
 import { AdminDeliveriesPage } from '@/pages/Admin/AdminDeliveriesPage';
 import { AdminProspectsPage } from '@/pages/Admin/AdminProspectsPage';
 import { AdminCampaignsPage } from '@/pages/Admin/AdminCampaignsPage';
+import { AdminServiceFlagsPage } from '@/pages/Admin/AdminServiceFlagsPage';
 
 export const router = createBrowserRouter([
   // Auth routes (no sidebar/topbar)
@@ -304,6 +305,16 @@ export const router = createBrowserRouter([
           <AdminRoute>
             <ErrorBoundary>
               <AdminCampaignsPage />
+            </ErrorBoundary>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: PATHS.ADMIN.SERVICE_FLAGS,
+        element: (
+          <AdminRoute>
+            <ErrorBoundary>
+              <AdminServiceFlagsPage />
             </ErrorBoundary>
           </AdminRoute>
         ),

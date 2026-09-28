@@ -7,6 +7,7 @@ import {
 import { Add as AddIcon, Delete as DeleteIcon, ArrowBack } from '@mui/icons-material';
 import { campaignService, type CreateCampaignRequest } from '@/services/campaign.service';
 import { socialService, type SocialAccount } from '@/services/social.service';
+import { useServiceFlags } from '@/hooks/useServiceFlags';
 import { PATHS } from '@/routes/paths';
 
 const SERVICE_OPTIONS = [
@@ -49,6 +50,10 @@ export default function NewCampaignPage() {
   const [startDate, setStartDate] = useState(todayStr());
   const [endDate, setEndDate] = useState(futureStr(30));
   const [postsPerDay, setPostsPerDay] = useState(3);
+  // Runtime switches: only enabled services can be launched (disabled slots
+  // would sit pending forever). Fail-open while flags load.
+  const { isEnabled } = useServiceFlags();
+  const visibleServices = SERVICE_OPTIONS.filter(o => isEnabled(o.value));
   const [slots, setSlots] = useState<Slot[]>([
     { time: '08:00', platform: 'youtube' },
     { time: '12:00', platform: 'youtube' },
@@ -154,7 +159,7 @@ export default function NewCampaignPage() {
         <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Service Type */}
           <TextField select label="Service Type" value={serviceType} onChange={e => setServiceType(e.target.value)} required fullWidth>
-            {SERVICE_OPTIONS.map(o => (
+            {visibleServices.map(o => (
               <MenuItem key={o.value} value={o.value}>
                 <Box>
                   <Typography variant="body2" fontWeight={600}>{o.label}</Typography>

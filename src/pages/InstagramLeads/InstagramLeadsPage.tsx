@@ -17,6 +17,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StarIcon from '@mui/icons-material/Star';
 import { instagramLeadsService } from '@/services/instagramLeads.service';
 import type { InstagramLead } from '@/services/instagramLeads.service';
+import { useServiceFlags } from '@/hooks/useServiceFlags';
 
 const STATUS_COLORS: Record<string, 'default' | 'primary' | 'success' | 'warning' | 'error'> = {
   new:       'default',
@@ -334,11 +335,17 @@ function LeadsTable({
 export function InstagramLeadsPage() {
   const [tab, setTab] = useState(0); // 0 = Auto-Discover, 1 = Manual Search, 2 = All Leads, 3 = Top Leads
 
+  // Runtime service switches — menus show only enabled services (fail-open
+  // while loading so a slow flags fetch never hides working features).
+  const { isEnabled } = useServiceFlags();
+
   // Auto-discover state
   const [niche, setNiche] = useState(NICHE_GROUPS[0].niches[0].value);
   const [maxPostsPerHashtag, setMaxPostsPerHashtag] = useState(30);
   const [discovering, setDiscovering] = useState(false);
   const [discoverResult, setDiscoverResult] = useState<{ hashtags: string[]; jobs: number; message: string } | null>(null);
+  const [methodBRunning, setMethodBRunning] = useState(false);
+  const [methodBResult, setMethodBResult] = useState<{ streamers: number; jobs: number; message: string } | null>(null);
 
   // Manual search state
   const [hashtag, setHashtag] = useState('');
@@ -395,6 +402,30 @@ export function InstagramLeadsPage() {
     const t = setInterval(() => { loadLeads(); loadTopLeads(); }, 60_000);
     return () => clearInterval(t);
   }, [loadLeads, loadTopLeads]);
+
+  const handleMethodB = async () => {
+    setMethodBRunning(true);
+    setMethodBResult(null);
+    try {
+      const res = await instagramLeadsService.kickMethodB({
+        max_posts_per_hashtag: maxPostsPerHashtag,
+      });
+      if (res.success) {
+        setMethodBResult({
+          streamers: res.streamers?.length ?? 0,
+          jobs: res.jobs?.length ?? 0,
+          message: res.message ?? 'Method B launched!',
+        });
+        showSnack(`Method B launched ${res.jobs?.length ?? 0} searches across ${res.streamers?.length ?? 0} Kick streamers`, 'info');
+      } else {
+        showSnack(res.error ?? 'Method B failed', 'error');
+      }
+    } catch (err: any) {
+      showSnack(err?.response?.data?.error ?? 'Method B failed', 'error');
+    } finally {
+      setMethodBRunning(false);
+    }
+  };
 
   const handleAutoDiscover = async () => {
     setDiscovering(true);
@@ -654,7 +685,7 @@ export function InstagramLeadsPage() {
                     label="Target Niche"
                     onChange={e => setNiche(e.target.value)}
                   >
-                    {NICHE_GROUPS.map(group => (
+                    {NICHE_GROUPS.filter(group => isEnabled(group.service)).map(group => (
                       <div key={group.service}>
                         <ListSubheader sx={{ color: 'primary.main', fontWeight: 700, bgcolor: 'transparent', fontSize: 12, lineHeight: '32px' }}>
                           {group.label}
@@ -684,6 +715,15 @@ export function InstagramLeadsPage() {
                 >
                   {discovering ? 'Launching…' : 'Auto-Discover Leads'}
                 </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={methodBRunning ? <CircularProgress size={16} color="inherit" /> : <PeopleIcon />}
+                  onClick={handleMethodB}
+                  disabled={methodBRunning || !isEnabled('kick_auto_clipper')}
+                  title="Top Kick streamers → their IG clippers (zero LLM detection cost)"
+                >
+                  {methodBRunning ? 'Launching…' : 'Method B: Kick → IG Clippers'}
+                </Button>
               </Box>
 
               {discovering && (
@@ -693,6 +733,14 @@ export function InstagramLeadsPage() {
                 </Box>
               )}
 
+              {methodBResult && (
+                <Box sx={{ mt: 2, p: 2, bgcolor: 'background.default', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                  <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
+                    ✅ Method B: {methodBResult.jobs} searches across {methodBResult.streamers} Kick streamers
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">{methodBResult.message}</Typography>
+                </Box>
+              )}
               {discoverResult && (
                 <Box sx={{ mt: 2, p: 2, bgcolor: 'background.default', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
@@ -873,7 +921,8 @@ export function InstagramLeadsPage() {
               🔁 The workflow
             </Typography>
             <Box component="ol" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
-              <li><strong>Auto-Discover</strong> (recommended): pick a target niche — grouped by the 12 Managed Campaign services — then the AI picks the 3–4 best hashtags and launches PhantomBuster searches in background.</li>
+              <li><strong>Auto-Discover</strong> (recommended): pick a target niche — grouped by our clipping services (Clipping, Kick Auto-Clipper) — then the AI picks the 3–4 best hashtags and launches PhantomBuster searches in background.</li>
+              <li><strong>Method B</strong>: start from live top Kick streamers and hunt their IG clippers directly — detected creators pre-attached, no extra AI cost.</li>
               <li><strong>Manual Search</strong>: enter a specific hashtag if you already know what works (e.g. <code>#shopifystore</code>).</li>
               <li>Wait 3–10 min. PhantomBuster scrapes Instagram, imports leads here, AI scores each 0–100 against our service offerings and picks the best-fit service type.</li>
               <li>Open <strong>All Leads</strong> or <strong>Top Leads</strong>. Click any row → DM dialog opens.</li>
@@ -893,7 +942,7 @@ export function InstagramLeadsPage() {
               The AI picks one per lead based on their bio, but you can override before generating the DM. Pricing shown is what we suggest — adjust per-deal.
             </Typography>
             <Box sx={{ display: 'grid', gap: 1.5 }}>
-              {SERVICE_TYPE_OPTIONS.map(s => (
+              {SERVICE_TYPE_OPTIONS.filter(s => isEnabled(s.value)).map(s => (
                 <Box key={s.value} sx={{
                   p: 2, borderRadius: 1.5,
                   bgcolor: 'rgba(42,36,56,0.5)',
@@ -958,7 +1007,7 @@ export function InstagramLeadsPage() {
                 sx={{ fontSize: 13, bgcolor: 'background.default', color: 'text.secondary' }}
               >
                 <MenuItem value=""><em>— AI default —</em></MenuItem>
-                {SERVICE_TYPE_OPTIONS.map(s => (
+                {SERVICE_TYPE_OPTIONS.filter(s => isEnabled(s.value)).map(s => (
                   <MenuItem key={s.value} value={s.value}>
                     <Box>
                       <Typography variant="body2" fontWeight={600}>{s.label}</Typography>
