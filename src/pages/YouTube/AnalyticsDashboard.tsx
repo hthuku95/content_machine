@@ -11,10 +11,8 @@ import { DateRangePicker } from '@/components/youtube/analytics/DateRangePicker'
 import type { AnalyticsDateRange } from '@/types/analytics.types';
 
 export function AnalyticsDashboard() {
-  console.log('[AnalyticsDashboard] Component mounted');
 
   const { channels, isLoading: channelsLoading } = useConnectedChannels();
-  console.log('[AnalyticsDashboard] Channels loaded:', { count: channels.length, isLoading: channelsLoading });
 
   const [selectedChannelId, setSelectedChannelId] = useState<number>(0);
   const [dateRange, setDateRange] = useState<AnalyticsDateRange>({
@@ -29,7 +27,6 @@ export function AnalyticsDashboard() {
   }
 
   if (analytics) {
-    console.log('[AnalyticsDashboard] Analytics loaded:', analytics);
   }
 
   // Generate mock chart data from analytics
@@ -83,9 +80,7 @@ export function AnalyticsDashboard() {
                   value={selectedChannelId}
                   onChange={(e) => {
                     const newChannelId = Number(e.target.value);
-                    console.log('[AnalyticsDashboard] Action: Channel selected', newChannelId);
                     setSelectedChannelId(newChannelId);
-                    console.log('[AnalyticsDashboard] State updated: selectedChannelId', newChannelId);
                   }}
                   label="Select Channel"
                 >

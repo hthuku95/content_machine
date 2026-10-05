@@ -16,7 +16,6 @@ import { useClips } from '@/hooks/useClips';
 import { useLinkages } from '@/hooks/useLinkages';
 
 export function ClipsGalleryPage() {
-  console.log('[ClipsGalleryPage] Component mounted');
 
   const [filters, setFilters] = useState<ClipFilters>({});
 
@@ -42,11 +41,9 @@ export function ClipsGalleryPage() {
     Object.values(apiFilters).some(v => v !== undefined) ? apiFilters : undefined
   );
 
-  console.log('[ClipsGalleryPage] Clips loaded:', { count: clips.length, isLoading, hasNextPage });
 
   // Apply client-side search and sort
   const displayedClips = useMemo(() => {
-    console.log('[ClipsGalleryPage] Filtering and sorting clips:', filters);
     let result = [...clips];
 
     // Search filter
@@ -66,7 +63,6 @@ export function ClipsGalleryPage() {
     }
     // Default 'latest' is already sorted by creation time from API
 
-    console.log('[ClipsGalleryPage] Displayed clips count:', result.length);
     return result;
   }, [clips, filters.search, filters.sortBy]);
 
@@ -115,7 +111,6 @@ export function ClipsGalleryPage() {
                 <Button
                   variant="outlined"
                   onClick={() => {
-                    console.log('[ClipsGalleryPage] Action: Load more clips');
                     fetchNextPage();
                   }}
                   disabled={isFetchingNextPage}

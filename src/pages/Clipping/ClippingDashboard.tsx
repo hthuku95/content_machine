@@ -19,7 +19,6 @@ import { AnalyticsExportDialog } from '@/components/clipping/AnalyticsExportDial
 import { ClipRecommendations } from '@/components/clipping/analytics/ClipRecommendations';
 
 export function ClippingDashboard() {
-  console.log('[ClippingDashboard] Component mounted');
 
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
@@ -27,11 +26,6 @@ export function ClippingDashboard() {
   const { jobs } = useJobPolling();
   const { clips } = useClips({ limit: 10 });
 
-  console.log('[ClippingDashboard] Data loaded:', {
-    linkagesCount: linkages.length,
-    jobsCount: jobs.length,
-    clipsCount: clips.length
-  });
 
   const activeLinkages = linkages.filter((l) => l.is_active).length;
   const activeJobs = jobs.filter((j) => j.status === 'processing' || j.status === 'pending').length;
@@ -58,9 +52,7 @@ export function ClippingDashboard() {
               size="small"
               startIcon={<DownloadIcon />}
               onClick={() => {
-                console.log('[ClippingDashboard] Action: Open export dialog');
                 setExportDialogOpen(true);
-                console.log('[ClippingDashboard] State updated: Export dialog opened');
               }}
             >
               Export Data
@@ -70,7 +62,6 @@ export function ClippingDashboard() {
               size="small"
               startIcon={<RefreshIcon />}
               onClick={() => {
-                console.log('[ClippingDashboard] Action: Refresh page');
                 window.location.reload();
               }}
             >

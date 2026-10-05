@@ -6,13 +6,11 @@ import { PATHS } from '@/routes/paths';
 import toast from 'react-hot-toast';
 
 export function OAuthCallbackPage() {
-  console.log('[OAuthCallbackPage] Component mounted');
 
   const navigate = useNavigate();
   const { setLoading } = useAuthStore();
 
   useEffect(() => {
-    console.log('[OAuthCallbackPage] Processing OAuth callback');
 
     // Read token and user from URL hash (passed by backend after OAuth)
     const hash = window.location.hash.substring(1); // Remove the '#'
@@ -20,12 +18,10 @@ export function OAuthCallbackPage() {
     const token = params.get('token');
     const userStr = params.get('user');
 
-    console.log('[OAuthCallbackPage] OAuth params:', { hasToken: !!token, hasUser: !!userStr });
 
     if (token && userStr) {
       try {
         const user = JSON.parse(decodeURIComponent(userStr));
-        console.log('[OAuthCallbackPage] User data parsed:', user);
 
         const { setAuth } = useAuthStore.getState();
 
@@ -34,13 +30,11 @@ export function OAuthCallbackPage() {
         localStorage.setItem('auth_user', JSON.stringify(user));
 
         setAuth(token, user);
-        console.log('[OAuthCallbackPage] State updated: User authenticated');
 
         toast.success('Successfully signed in with Google!');
 
         // Clear the hash from URL before navigating
         window.location.hash = '';
-        console.log('[OAuthCallbackPage] Action: Navigate to dashboard');
         navigate(PATHS.DASHBOARD);
       } catch (error) {
         console.error('[OAuthCallbackPage] Error: Failed to parse user data', error);

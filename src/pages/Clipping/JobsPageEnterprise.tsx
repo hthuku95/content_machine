@@ -285,10 +285,9 @@ export function JobsPageEnterprise() {
             setBatchRetryDialogOpen(false);
             selection.clearSelection();
           }}
-          onRetry={async (jobIds) => {
+          onRetry={async () => {
             // In a real implementation, this would call the retry API
             // For now, we just simulate it
-            console.log('Retrying jobs:', jobIds);
           }}
         />
 

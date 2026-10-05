@@ -1,4 +1,4 @@
-import type { PaletteOptions, Palette } from '@mui/material/styles';
+import type { PaletteOptions } from '@mui/material/styles';
 
 /**
  * Shared brand tokens (Group A1 enterprise polish).

@@ -19,7 +19,6 @@ import { useJobs } from '@/hooks/useJobs';
 import { useLinkages } from '@/hooks/useLinkages';
 
 export function JobsPage() {
-  console.log('[JobsPage] Component mounted');
 
   const [filters, setFilters] = useState<JobFilters>({});
 
@@ -29,11 +28,6 @@ export function JobsPage() {
   // Use polling hook for real-time updates
   const { jobs: pollingJobs, isLoading: isPollingLoading, isPolling } = useJobPolling();
 
-  console.log('[JobsPage] Jobs loaded:', {
-    pollingJobsCount: pollingJobs.length,
-    isPolling,
-    filters
-  });
 
   // Use regular hook with API filters
   const apiFilters = {
@@ -52,13 +46,11 @@ export function JobsPage() {
 
   // Apply client-side search filter
   const displayedJobs = useMemo(() => {
-    console.log('[JobsPage] Filtering jobs:', { search: filters.search, totalJobs: jobs.length });
     if (!filters.search) return jobs;
     const searchLower = filters.search.toLowerCase();
     const filtered = jobs.filter(job =>
       job.source_video_title.toLowerCase().includes(searchLower)
     );
-    console.log('[JobsPage] Filtered jobs:', filtered.length);
     return filtered;
   }, [jobs, filters.search]);
 

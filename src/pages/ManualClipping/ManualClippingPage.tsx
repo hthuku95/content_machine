@@ -13,6 +13,7 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import manualClippingService from '../../services/manualClipping.service';
 import type { ManualClippingJob, ManualClippingJobDetail } from '../../services/manualClipping.service';
 import { PATHS } from '../../routes/paths';
+import { PLATFORM_COLORS } from '@/theme/brand';
 
 const ACTIVE_STATUSES = ['pending', 'analyzing', 'downloading', 'extracting', 'uploading'];
 
@@ -74,7 +75,8 @@ function JobRow({ job, onCancel, onLoadClips }: {
 }) {
   const isActive = ACTIVE_STATUSES.includes(job.status);
   const platform = job.video_platform === 'twitch' ? 'TWITCH' : 'YOUTUBE';
-  const platformColor = job.video_platform === 'twitch' ? '#9147ff' : '#ff4444';
+  // Platform brand colors are documented theme exceptions (see theme/brand.ts).
+  const platformColor = job.video_platform === 'twitch' ? PLATFORM_COLORS.twitch : PLATFORM_COLORS.youtube;
   const workflowChatSearch = job.workflow_id
     ? new URLSearchParams({
         workflow_id: job.workflow_id,
@@ -96,7 +98,7 @@ function JobRow({ job, onCancel, onLoadClips }: {
           </Box>
           <Typography variant="caption" color="text.secondary">
             {new Date(job.created_at).toLocaleString()}
-            {job.error_message && <span style={{ color: '#ef4444', marginLeft: 8 }}>{job.error_message}</span>}
+            {job.error_message && <Typography component="span" variant="caption" color="error.main" sx={{ ml: 1 }}>{job.error_message}</Typography>}
           </Typography>
           {isActive && (
             <LinearProgress
@@ -203,9 +205,9 @@ export default function ManualClippingPage() {
   }
 
   const platformHint = videoUrl.includes('twitch.tv')
-    ? '🎮 Twitch VOD — will be downloaded then analyzed'
+    ? 'Twitch VOD — will be downloaded then analyzed'
     : videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')
-    ? '▶ YouTube — AI analyzes directly via URL'
+    ? 'YouTube — AI analyzes directly via URL'
     : '';
 
   return (

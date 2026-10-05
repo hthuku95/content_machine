@@ -30,7 +30,6 @@ import { useConnectedChannels } from '@/hooks/useConnectedChannels';
 import { format } from 'date-fns';
 
 export function ConnectedChannelsPage() {
-  console.log('[ConnectedChannelsPage] Component mounted');
 
   const [disconnectDialogOpen, setDisconnectDialogOpen] = useState(false);
   const [channelToDisconnect, setChannelToDisconnect] = useState<number | null>(null);
@@ -39,26 +38,21 @@ export function ConnectedChannelsPage() {
   const { channels, isLoading, disconnectChannel, connectChannel, isConnecting, isDisconnecting } =
     useConnectedChannels();
 
-  console.log('[ConnectedChannelsPage] Channels loaded:', { count: channels.length, isLoading });
 
   // Calculate channels needing reauth
   const channelsNeedingReauth = channels.filter((ch) => ch.is_active && ch.requires_reauth);
   const hasReauthIssues = channelsNeedingReauth.length > 0;
 
   const handleDisconnectClick = (id: number) => {
-    console.log('[ConnectedChannelsPage] Action: Disconnect channel', id);
     setChannelToDisconnect(id);
     setDisconnectDialogOpen(true);
-    console.log('[ConnectedChannelsPage] State updated: Disconnect dialog opened');
   };
 
   const handleDisconnectConfirm = () => {
     if (channelToDisconnect) {
-      console.log('[ConnectedChannelsPage] Action: Confirm disconnect', channelToDisconnect);
       disconnectChannel(channelToDisconnect);
       setDisconnectDialogOpen(false);
       setChannelToDisconnect(null);
-      console.log('[ConnectedChannelsPage] State updated: Disconnect dialog closed');
     }
   };
 
@@ -88,7 +82,6 @@ export function ConnectedChannelsPage() {
             variant="contained"
             startIcon={isConnecting ? <CircularProgress size={20} /> : <AddIcon />}
             onClick={() => {
-              console.log('[ConnectedChannelsPage] Action: Connect new channel');
               connectChannel(undefined);
             }}
             disabled={isConnecting}
@@ -227,7 +220,6 @@ export function ConnectedChannelsPage() {
                         color="success"
                         startIcon={<RefreshIcon />}
                         onClick={() => {
-                          console.log('[ConnectedChannelsPage] Action: Reconnect channel');
                           connectChannel(undefined);
                         }}
                         sx={{ minWidth: 'auto' }}
@@ -306,7 +298,6 @@ export function ConnectedChannelsPage() {
           <Button onClick={() => setBulkReconnectDialogOpen(false)}>Cancel</Button>
           <Button
             onClick={() => {
-              console.log('[ConnectedChannelsPage] Action: Bulk reconnect');
               connectChannel(undefined);
               setBulkReconnectDialogOpen(false);
             }}

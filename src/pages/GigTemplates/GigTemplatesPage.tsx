@@ -52,7 +52,7 @@ function SampleSlot({ sample, onDelete }: { sample: GigSample | null; onDelete?:
       {/* Status bar */}
       <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, bgcolor: 'rgba(0,0,0,0.65)',
                  px: 0.75, py: 0.25, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="caption" sx={{ fontSize: '0.6rem', color: statusColor[sample.status] || '#999' }}>
+        <Typography variant="caption" sx={{ fontSize: '0.6rem', color: statusColor[sample.status] || 'text.disabled' }}>
           {sample.status}
         </Typography>
       </Box>
@@ -60,7 +60,7 @@ function SampleSlot({ sample, onDelete }: { sample: GigSample | null; onDelete?:
       <Box className="sample-actions" sx={{ position: 'absolute', top: 4, right: 4, opacity: 0, transition: 'opacity 0.15s', display: 'flex', gap: 0.5 }}>
         {onDelete && (
           <Tooltip title="Delete sample">
-            <IconButton size="small" sx={{ bgcolor: 'rgba(220,38,38,0.8)', color: '#fff', p: 0.4 }}
+            <IconButton size="small" sx={{ bgcolor: 'error.main', color: 'error.contrastText', p: 0.4 }}
                         onClick={onDelete}>
               <DeleteOutlineIcon sx={{ fontSize: 12 }} />
             </IconButton>
@@ -226,7 +226,7 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
           <Button size="small" variant="contained" startIcon={generating || hasRunning ? <CircularProgress size={12} color="inherit" /> : <AutoFixHighIcon sx={{ fontSize: 14 }} />}
                   disabled={!canGenerate}
                   onClick={handleGenerate}
-                  sx={{ fontSize: '0.72rem', bgcolor: '#6c5ce7', '&:hover': { bgcolor: '#5a4bd1' }, '&:disabled': { opacity: 0.5 } }}>
+                  sx={{ fontSize: '0.72rem', bgcolor: 'brand.main', '&:hover': { bgcolor: 'brand.dark' }, '&:disabled': { opacity: 0.5 } }}>
             {generating || hasRunning ? 'Rendering…' : '+ Generate Sample'}
           </Button>
         </Box>

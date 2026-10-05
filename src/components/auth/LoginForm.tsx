@@ -20,7 +20,6 @@ const loginSchema = z.object({
 });
 
 export function LoginForm() {
-  console.log('[LoginForm] Component mounted');
   const { login, isLoginLoading } = useAuth();
 
   const {
@@ -32,7 +31,6 @@ export function LoginForm() {
   });
 
   const onSubmit = (data: LoginRequest) => {
-    console.log('[LoginForm] Submitting login form:', { email: data.email });
     login(data);
   };
 
