@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, TextField, Button, Card, CardContent,
   Chip, CircularProgress, Snackbar, Alert, Avatar,
-  Table, TableBody, TableCell, TableHead, TableRow, Paper,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   IconButton, Tooltip, Dialog, DialogTitle, DialogContent,
   DialogActions, Select, MenuItem, FormControl, InputLabel,
   InputAdornment, Divider, Tabs, Tab, LinearProgress, ListSubheader,
@@ -214,8 +214,8 @@ function LeadsTable({
   }
 
   return (
-    <Paper sx={{ overflow: 'auto', bgcolor: 'transparent' }}>
-      <Table size="small">
+    <TableContainer component={Paper} sx={{ bgcolor: 'transparent' }}>
+      <Table size="small" stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell sx={{ color: 'text.secondary' }}>Creator</TableCell>
@@ -349,7 +349,7 @@ function LeadsTable({
           ))}
         </TableBody>
       </Table>
-    </Paper>
+    </TableContainer>
   );
 }
 
@@ -1081,10 +1081,7 @@ export function InstagramLeadsPage() {
               onClick={generateSample}
               disabled={dmDialog.generating}
               variant="outlined"
-              sx={{
-                borderColor: '#facc15', color: '#facc15',
-                '&:hover': { borderColor: '#fde047', bgcolor: 'rgba(250,204,21,0.08)' },
-              }}
+              color="warning"
               title="Auto-generate a sample (thumbnail/animation/clip) tailored to this lead's service tag, then add the public link to the DM."
             >
               + Attach sample
@@ -1106,8 +1103,8 @@ export function InstagramLeadsPage() {
               onClick={sendAndOpen}
               variant="contained"
               sx={{
-                bgcolor: '#7a4cff', color: '#fff',
-                '&:hover': { bgcolor: '#6a3def' },
+                bgcolor: 'brand.main', color: 'brand.contrastText',
+                '&:hover': { bgcolor: 'brand.dark' },
                 fontWeight: 700,
               }}
             >
