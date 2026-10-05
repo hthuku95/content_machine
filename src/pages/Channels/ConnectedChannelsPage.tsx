@@ -209,7 +209,7 @@ export function ConnectedChannelsPage() {
                       </Typography>
                       {needsReauth && channel.reauth_reason && (
                         <Typography variant="caption" color="error" display="block" sx={{ mt: 0.5 }}>
-                          ⚠️ {channel.reauth_reason}
+                          Reconnection required: {channel.reauth_reason}
                         </Typography>
                       )}
                     </Box>
@@ -250,7 +250,7 @@ export function ConnectedChannelsPage() {
             Are you sure you want to disconnect this YouTube channel?
           </DialogContentText>
           <DialogContentText sx={{ mt: 2, color: 'warning.main', fontWeight: 'bold' }}>
-            ⚠️ Warning: This will also delete all clipping linkages for this channel.
+            Warning: This will also delete all clipping linkages for this channel.
           </DialogContentText>
           <DialogContentText sx={{ mt: 1, fontSize: '0.875rem' }}>
             Note: If you just need to refresh the connection, use the "Reconnect" button instead, which preserves all linkages.
