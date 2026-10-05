@@ -2,7 +2,6 @@ import {
   Box,
   Container,
   Typography,
-  GridLegacy as Grid,
   Card,
   CardContent,
   CardActions,
@@ -36,26 +35,23 @@ import { Link as RouterLink } from 'react-router-dom';
 import { PATHS } from '@/routes/paths';
 import { useAuth } from '@/hooks/useAuth';
 import { ChannelHealthWidget } from '@/components/dashboard/ChannelHealthWidget';
+import { ResponsiveGrid } from '@/components/common/ResponsiveGrid';
 
 export function DashboardPage() {
-  console.log('[DashboardPage] Component mounted');
-
   const { user } = useAuth();
-  console.log('[DashboardPage] User loaded:', user);
 
   const features = [
     {
       icon: <ContentCutIcon sx={{ fontSize: 48 }} />,
-      title: 'YouTube Clipping',
-      description: 'Automatically extract and republish viral clips from monitored channels',
-      iconColor: 'error.main',
-      btnColor: 'error' as const,
+      title: 'Clip Campaigns',
+      description: 'Daily short-form clips from Kick, Twitch, and YouTube sources — captioned, branded, auto-posted',
+      iconColor: 'brand.main',
       link: PATHS.CLIPPING.OVERVIEW,
       benefits: [
-        'Monitor source channels for new content',
-        'AI-powered viral moment detection',
-        'Automated clipping and editing',
-        'Scheduled posting to your channels',
+        'Kick streamer VODs → viral highlights',
+        'Twitch streams → daily short-form clips',
+        'AI captions, branding, and thumbnails',
+        'Auto-posting across connected accounts',
       ],
     },
     {
@@ -63,7 +59,6 @@ export function DashboardPage() {
       title: 'YouTube Management',
       description: 'Complete YouTube video management with uploads, metadata editing, and scheduling',
       iconColor: 'info.main',
-      btnColor: 'info' as const,
       link: PATHS.YOUTUBE.UPLOADS,
       benefits: [
         'Resumable chunked video uploads',
@@ -77,7 +72,6 @@ export function DashboardPage() {
       title: 'Analytics & Insights',
       description: 'Track performance with real-time analytics and engagement metrics',
       iconColor: 'success.main',
-      btnColor: 'success' as const,
       link: PATHS.YOUTUBE.ANALYTICS,
       benefits: [
         'View counts and watch time',
@@ -145,7 +139,7 @@ export function DashboardPage() {
             paragraph
             sx={{ maxWidth: 800, mx: 'auto', fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}
           >
-            Your AI-Powered YouTube Content Automation Platform
+            Your AI Content Operations Platform
           </Typography>
           {user && (
             <Chip
@@ -158,26 +152,31 @@ export function DashboardPage() {
 
         {/* What We Do */}
         <Paper
-          sx={{
+          sx={(theme) => ({
             p: { xs: 3, md: 4 },
             mb: 4,
-            background: 'linear-gradient(135deg, #2a2438 0%, #5c5470 100%)',
-            color: 'white',
-            border: '1px solid rgba(219,216,227,0.12)',
-          }}
+            background:
+              theme.palette.mode === 'dark'
+                ? 'linear-gradient(135deg, #2a2438 0%, #5c5470 100%)'
+                : 'linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%)',
+            color: 'text.primary',
+            border: '1px solid',
+            borderColor: 'divider',
+          })}
         >
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
             What We Do
           </Typography>
           <Typography variant="body1" paragraph>
-            Content Machine is an intelligent YouTube content automation platform that helps creators grow their
-            channels by leveraging AI to find, extract, and republish viral content. Monitor popular channels, let our
-            AI identify trending moments, and automatically publish clips to your own channels.
+            Content Machine runs daily clip campaigns for clipping businesses: our AI watches Kick
+            and Twitch streams, finds viral moments, edits them with captions and branding, and
+            posts them to connected social accounts — plus full YouTube channel management and
+            analytics in the same workspace.
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 3 }}>
-            <Chip icon={<AutoAwesomeIcon />} label="AI-Powered" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
-            <Chip icon={<SpeedIcon />} label="Automated" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
-            <Chip icon={<SecurityIcon />} label="Secure OAuth" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
+            <Chip icon={<AutoAwesomeIcon />} label="AI-Powered" sx={{ bgcolor: 'action.selected', color: 'text.primary' }} />
+            <Chip icon={<SpeedIcon />} label="Automated" sx={{ bgcolor: 'action.selected', color: 'text.primary' }} />
+            <Chip icon={<SecurityIcon />} label="Secure OAuth" sx={{ bgcolor: 'action.selected', color: 'text.primary' }} />
           </Box>
         </Paper>
 
@@ -191,10 +190,9 @@ export function DashboardPage() {
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
             Core Features
           </Typography>
-          <Grid container spacing={4}>
+          <ResponsiveGrid spacing={4} columns={{ xs: 1, md: 3 }}>
             {features.map((feature, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <Card key={index} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Box sx={{ color: feature.iconColor, mb: 2 }}>{feature.icon}</Box>
                     <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
@@ -222,7 +220,7 @@ export function DashboardPage() {
                     <Button
                       fullWidth
                       variant="contained"
-                      color={feature.btnColor}
+                      color="primary"
                       component={RouterLink}
                       to={feature.link}
                     >
@@ -230,9 +228,8 @@ export function DashboardPage() {
                     </Button>
                   </CardActions>
                 </Card>
-              </Grid>
             ))}
-          </Grid>
+          </ResponsiveGrid>
         </Box>
 
         {/* How It Works */}
@@ -240,19 +237,19 @@ export function DashboardPage() {
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
             How It Works
           </Typography>
-          <Grid container spacing={3}>
+          <ResponsiveGrid spacing={3} columns={{ xs: 1, sm: 2, md: 4 }}>
             {howItWorks.map((step, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <Paper
-                  sx={{
-                    p: 3,
-                    textAlign: 'center',
-                    height: '100%',
-                    position: 'relative',
-                    border: '2px solid',
-                    borderColor: 'primary.main',
-                  }}
-                >
+              <Paper
+                key={index}
+                sx={{
+                  p: 3,
+                  textAlign: 'center',
+                  height: '100%',
+                  position: 'relative',
+                  border: '2px solid',
+                  borderColor: 'primary.main',
+                }}
+              >
                   <Box
                     sx={{
                       position: 'absolute',
@@ -260,7 +257,7 @@ export function DashboardPage() {
                       left: '50%',
                       transform: 'translateX(-50%)',
                       bgcolor: 'primary.main',
-                      color: 'white',
+                      color: 'primary.contrastText',
                       width: 40,
                       height: 40,
                       borderRadius: '50%',
@@ -280,10 +277,9 @@ export function DashboardPage() {
                   <Typography variant="body2" color="text.secondary">
                     {step.description}
                   </Typography>
-                </Paper>
-              </Grid>
+              </Paper>
             ))}
-          </Grid>
+          </ResponsiveGrid>
         </Box>
 
         {/* All Capabilities */}
@@ -291,16 +287,14 @@ export function DashboardPage() {
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
             All Capabilities
           </Typography>
-          <Grid container spacing={2}>
+          <ResponsiveGrid spacing={2} columns={{ xs: 1, sm: 2, md: 3 }}>
             {capabilities.map((capability, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ color: 'primary.main' }}>{capability.icon}</Box>
-                  <Typography variant="body1">{capability.label}</Typography>
-                </Paper>
-              </Grid>
+              <Paper key={index} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ color: 'primary.main' }}>{capability.icon}</Box>
+                <Typography variant="body1">{capability.label}</Typography>
+              </Paper>
             ))}
-          </Grid>
+          </ResponsiveGrid>
         </Box>
 
         {/* Getting Started */}
@@ -327,8 +321,7 @@ export function DashboardPage() {
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
             Quick Links
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={3}>
+          <ResponsiveGrid spacing={2} columns={{ xs: 1, sm: 2, md: 4 }}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -338,8 +331,6 @@ export function DashboardPage() {
               >
                 Upload Video
               </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -349,8 +340,6 @@ export function DashboardPage() {
               >
                 Clipping Linkages
               </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -360,8 +349,6 @@ export function DashboardPage() {
               >
                 View Analytics
               </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -371,8 +358,7 @@ export function DashboardPage() {
               >
                 Browse Clips
               </Button>
-            </Grid>
-          </Grid>
+          </ResponsiveGrid>
         </Paper>
       </Box>
     </Container>
