@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   Box, Typography, Button, Chip, CircularProgress, Snackbar, Alert,
-  Table, TableBody, TableCell, TableHead, TableRow, Paper, IconButton,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton,
   Tooltip, Dialog, DialogTitle, DialogContent, DialogActions,
   FormControl, InputLabel, Select, MenuItem, Avatar, Divider,
 } from '@mui/material';
@@ -17,6 +17,7 @@ import { adminService } from '@/services/admin.service';
 import type { Prospect } from '@/types/admin.types';
 import { SERVICE_LABELS, PROSPECT_CONTACT_STATUSES, PROSPECT_PLATFORMS } from '@/constants/adminServices';
 import { getErrorMessage } from '@/utils/errors';
+import { PAGE_MAX_WIDTH } from '@/theme/brand';
 
 function formatNum(n: number | null): string {
   if (!n) return '—';
@@ -217,7 +218,7 @@ export function AdminProspectsPage() {
   };
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1500, mx: 'auto' }}>
+    <Box sx={{ p: 3, maxWidth: PAGE_MAX_WIDTH, mx: 'auto' }}>
       <Box sx={{ mb: 3 }}>
         <Typography variant="h5" fontWeight={700} sx={{ color: 'text.secondary' }}>
           Prospects
@@ -232,21 +233,21 @@ export function AdminProspectsPage() {
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       <Box sx={{ mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-        <FormControl size="small" sx={{ width: 150 }}>
+        <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 150 } }}>
           <InputLabel>Platform</InputLabel>
           <Select label="Platform" value={filterPlatform} onChange={(e) => setFilterPlatform(e.target.value)}>
             <MenuItem value="">All</MenuItem>
             {PROSPECT_PLATFORMS.map((p) => <MenuItem key={p} value={p}>{p}</MenuItem>)}
           </Select>
         </FormControl>
-        <FormControl size="small" sx={{ width: 150 }}>
+        <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 150 } }}>
           <InputLabel>Status</InputLabel>
           <Select label="Status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
             <MenuItem value="">All</MenuItem>
             {PROSPECT_CONTACT_STATUSES.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
           </Select>
         </FormControl>
-        <FormControl size="small" sx={{ width: 170 }}>
+        <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 170 } }}>
           <InputLabel>Prospect type</InputLabel>
           <Select label="Prospect type" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
             <MenuItem value="">All</MenuItem>
@@ -262,8 +263,8 @@ export function AdminProspectsPage() {
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress /></Box>
       ) : (
-        <Paper sx={{ overflow: 'auto', bgcolor: 'transparent' }}>
-          <Table size="small">
+        <TableContainer component={Paper} sx={{ bgcolor: 'transparent' }}>
+          <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
                 <TableCell sx={{ color: 'text.secondary' }}>Creator</TableCell>
@@ -288,7 +289,7 @@ export function AdminProspectsPage() {
                 <TableRow key={p.id} hover>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: '#fff', fontSize: 14 }}>
+                      <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: 'secondary.contrastText', fontSize: 14 }}>
                         {p.display_name?.[0]?.toUpperCase()}
                       </Avatar>
                       <Box>
@@ -304,7 +305,7 @@ export function AdminProspectsPage() {
                   <TableCell><Chip label={p.platform} size="small" variant="outlined" sx={{ fontSize: 10, height: 18 }} /></TableCell>
                   <TableCell>
                     {p.service_type ? (
-                      <Chip label={SERVICE_LABELS[p.service_type] || p.service_type} size="small" sx={{ bgcolor: 'rgba(122,76,255,0.15)', color: '#a78bfa', fontSize: 10, height: 18 }} />
+                      <Chip label={SERVICE_LABELS[p.service_type] || p.service_type} size="small" sx={{ bgcolor: 'serviceChip.bg', color: 'serviceChip.color', fontSize: 10, height: 18 }} />
                     ) : <Typography variant="caption" color="text.disabled">—</Typography>}
                   </TableCell>
                   <TableCell>
@@ -372,7 +373,7 @@ export function AdminProspectsPage() {
               ))}
             </TableBody>
           </Table>
-        </Paper>
+        </TableContainer>
       )}
 
       {/* Prospect action dialog */}
@@ -380,7 +381,7 @@ export function AdminProspectsPage() {
         <DialogTitle sx={{ color: 'text.secondary' }}>
           {dialog.mode === 'dm' ? `Cold DM — ${dialog.prospect?.display_name}` : `Outreach — ${dialog.prospect?.display_name}`}
         </DialogTitle>
-        <DialogContent sx={{ bgcolor: 'background.paper', pt: '12px !important' }}>
+        <DialogContent>
           {dialog.mode === 'dm' ? (
             <>
               <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
@@ -439,7 +440,7 @@ export function AdminProspectsPage() {
             variant="contained"
             disabled={!dialog.prospect?.sample_delivery_url}
             onClick={handleOutreach}
-            sx={{ bgcolor: 'primary.main', color: '#fff', fontWeight: 700 }}
+            sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', fontWeight: 700 }}
           >
             Generate outreach
           </Button>

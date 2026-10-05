@@ -16,6 +16,7 @@ import { adminService } from '@/services/admin.service';
 import { PATHS } from '@/routes/paths';
 import { useAuthStore } from '@/stores/authStore';
 import { ADMIN_SERVICE_CHIPS, type AdminServiceChip } from '@/constants/adminServices';
+import { PAGE_MAX_WIDTH } from '@/theme/brand';
 
 function StatCard({
   icon, label, value, accent,
@@ -26,7 +27,7 @@ function StatCard({
         <Box
           sx={{
             width: 44, height: 44, borderRadius: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            bgcolor: accent ?? 'rgba(122,76,255,0.12)', color: accent ? '#fff' : 'primary.main',
+            bgcolor: accent ? `${accent}22` : 'serviceChip.bg', color: accent ?? 'serviceChip.color',
           }}
         >
           {icon}
@@ -106,7 +107,7 @@ export function AdminOverviewPage() {
   }
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
+    <Box sx={{ p: 3, maxWidth: PAGE_MAX_WIDTH, mx: 'auto' }}>
       <Box sx={{ mb: 3 }}>
         <Typography variant="h5" fontWeight={700} sx={{ color: 'text.secondary' }}>
           Admin Overview
@@ -123,10 +124,10 @@ export function AdminOverviewPage() {
           <StatCard icon={<PeopleIcon />} label="Total users" value={stats?.total_users ?? 0} />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard icon={<PersonAddIcon />} label="Active users" value={stats?.active_users ?? 0} accent="rgba(74,222,128,0.15)" />
+          <StatCard icon={<PersonAddIcon />} label="Active users" value={stats?.active_users ?? 0} accent="#4ade80" />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard icon={<ForumIcon />} label="Chat sessions" value={stats?.total_chat_sessions ?? 0} accent="rgba(59,130,246,0.15)" />
+          <StatCard icon={<ForumIcon />} label="Chat sessions" value={stats?.total_chat_sessions ?? 0} accent="#3b82f6" />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard icon={<FileIcon />} label="Uploaded files" value={stats?.total_files ?? 0} />
@@ -176,9 +177,10 @@ export function AdminOverviewPage() {
             label={`${s.label} · $${s.price}`}
             size="small"
             sx={{
-              bgcolor: 'rgba(122,76,255,0.1)',
-              color: '#a78bfa',
-              border: '1px solid rgba(122,76,255,0.25)',
+              bgcolor: 'serviceChip.bg',
+              color: 'serviceChip.color',
+              border: '1px solid',
+              borderColor: 'divider',
             }}
           />
         ))}

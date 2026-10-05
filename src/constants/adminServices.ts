@@ -1,5 +1,5 @@
-// The 12 Managed Campaign services — single source of truth for admin UI labels/pricing.
-// Matches CLAUDE.md §17 and the Rust `ServiceType::from_normalized()` map.
+// The 13 Managed Campaign services — single source of truth for admin UI labels/pricing.
+// Matches the Rust `ServiceType::from_normalized()` map.
 
 export interface AdminServiceChip {
   value: string;
@@ -8,7 +8,9 @@ export interface AdminServiceChip {
 }
 
 export const ADMIN_SERVICE_CHIPS: AdminServiceChip[] = [
-  { value: 'clipping', label: 'Clipping', price: 297 },
+  { value: 'clipping', label: 'Clipping (legacy — parked)', price: 297 },
+  { value: 'youtube_clipping', label: 'YouTube Clipping', price: 297 },
+  { value: 'twitch_clipping', label: 'Twitch Clipping', price: 297 },
   { value: 'kick_auto_clipper', label: 'Kick Auto-Clipper', price: 297 },
   { value: 'landing_page', label: 'Landing Page Hero', price: 149 },
   { value: 'education', label: 'Education', price: 199 },

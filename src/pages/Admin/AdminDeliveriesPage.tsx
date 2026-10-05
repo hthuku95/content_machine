@@ -154,7 +154,7 @@ export function AdminDeliveriesPage() {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setCreateOpen(true)}
-            sx={{ bgcolor: '#7a4cff', '&:hover': { bgcolor: '#6a3def' } }}
+            sx={{ bgcolor: 'brand.main', '&:hover': { bgcolor: 'brand.dark' } }}
           >
             New Delivery
           </Button>
@@ -263,7 +263,7 @@ export function AdminDeliveriesPage() {
       {/* Create delivery dialog */}
       <Dialog open={createOpen} onClose={() => setCreateOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ color: 'text.secondary' }}>Create New Delivery</DialogTitle>
-        <DialogContent sx={{ bgcolor: 'background.paper', pt: '12px !important' }}>
+        <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
               label="Title"

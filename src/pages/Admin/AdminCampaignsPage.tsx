@@ -130,7 +130,7 @@ export function AdminCampaignsPage() {
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>{c.user_email}</Typography>
                     <Typography variant="caption" color="text.disabled">id {c.user_id}</Typography>
                   </TableCell>
-                  <TableCell><Chip label={SERVICE_LABELS[c.service_type] || c.service_type} size="small" sx={{ bgcolor: 'rgba(122,76,255,0.15)', color: '#a78bfa', fontSize: 10, height: 18 }} /></TableCell>
+                  <TableCell><Chip label={SERVICE_LABELS[c.service_type] || c.service_type} size="small" sx={{ bgcolor: 'serviceChip.bg', color: 'serviceChip.color', fontSize: 10, height: 18 }} /></TableCell>
                   <TableCell><Chip label={c.status} size="small" color={statusColor(c.status)} sx={{ fontSize: 10, height: 18 }} /></TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
