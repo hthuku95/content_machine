@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Box, Typography, Container, Paper, GridLegacy as Grid, FormControl, InputLabel, Select, MenuItem, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Container, Paper, FormControl, InputLabel, Select, MenuItem, CircularProgress, Alert } from '@mui/material';
+import { ResponsiveGrid } from '@/components/common/ResponsiveGrid';
 import { Visibility as VisibilityIcon, ThumbUp as ThumbUpIcon, Comment as CommentIcon, Share as ShareIcon } from '@mui/icons-material';
 import { format, subDays } from 'date-fns';
 import { useConnectedChannels } from '@/hooks/useConnectedChannels';
@@ -70,9 +71,8 @@ export function AnalyticsDashboard() {
           View channel performance and analytics
         </Typography>
 
-        <Grid container spacing={3}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Channel Selector */}
-          <Grid item xs={12}>
             <Paper sx={{ p: { xs: 1, sm: 2 } }}>
               <FormControl fullWidth disabled={channelsLoading}>
                 <InputLabel>Select Channel</InputLabel>
@@ -99,61 +99,48 @@ export function AnalyticsDashboard() {
                 </Alert>
               )}
             </Paper>
-          </Grid>
 
           {/* Date Range Picker */}
           {selectedChannelId > 0 && (
-            <Grid item xs={12}>
               <DateRangePicker
                 onDateRangeChange={setDateRange}
                 initialStartDate={dateRange.start_date}
                 initialEndDate={dateRange.end_date}
               />
-            </Grid>
           )}
 
           {/* Loading State */}
           {isLoading && (
-            <Grid item xs={12}>
               <Paper sx={{ p: 6, textAlign: 'center' }}>
                 <CircularProgress />
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                   Loading analytics data...
                 </Typography>
               </Paper>
-            </Grid>
           )}
 
           {/* Error State */}
           {error && (
-            <Grid item xs={12}>
               <Alert severity="error">
                 Failed to load analytics data. Please try again.
               </Alert>
-            </Grid>
           )}
 
           {/* Analytics Data */}
           {analytics && !isLoading && (
             <>
               {/* Metric Cards */}
-              <Grid item xs={12} sm={6} md={3}>
+              <ResponsiveGrid spacing={3} columns={{ xs: 1, sm: 2, md: 4 }}>
                 <MetricCard
                   title="Total Views"
                   value={analytics.metrics.views}
                   icon={<VisibilityIcon />}
                 />
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={3}>
                 <MetricCard
                   title="Watch Time"
                   value={`${Math.floor(analytics.metrics.watch_time_minutes / 60)}h`}
                   icon={<ThumbUpIcon />}
                 />
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={3}>
                 <MetricCard
                   title="Subscribers Gained"
                   value={analytics.metrics.subscribers_gained}
@@ -166,31 +153,25 @@ export function AnalyticsDashboard() {
                   }
                   icon={<CommentIcon />}
                 />
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={3}>
                 <MetricCard
                   title="Net Subscribers"
                   value={analytics.metrics.subscribers_gained - analytics.metrics.subscribers_lost}
                   icon={<ShareIcon />}
                 />
-              </Grid>
+              </ResponsiveGrid>
 
               {/* Views Chart */}
-              <Grid item xs={12} lg={6}>
+              <ResponsiveGrid spacing={3} columns={{ xs: 1, lg: 2 }}>
                 <ViewsChart data={chartData.views} />
-              </Grid>
 
               {/* Engagement Chart */}
-              <Grid item xs={12} lg={6}>
                 <EngagementChart data={chartData.engagement} />
-              </Grid>
+              </ResponsiveGrid>
             </>
           )}
 
           {/* Empty State */}
           {!selectedChannelId && !channelsLoading && channels.length > 0 && (
-            <Grid item xs={12}>
               <Paper sx={{ p: 6, textAlign: 'center' }}>
                 <Typography variant="h6" gutterBottom>
                   Select a Channel
@@ -199,9 +180,8 @@ export function AnalyticsDashboard() {
                   Choose a channel from the dropdown to view analytics
                 </Typography>
               </Paper>
-            </Grid>
           )}
-        </Grid>
+        </Box>
       </Box>
     </Container>
   );

@@ -11,7 +11,6 @@ import {
   LinearProgress,
   Breadcrumbs,
   Link,
-  GridLegacy as Grid,
   Card,
   CardContent,
   Divider,
@@ -267,9 +266,9 @@ export function JobDetailPage() {
         <JobErrorDisplay job={displayJob!} />
 
         {/* Main Content */}
-        <Grid container spacing={3}>
+        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' } }}>
           {/* Left Column - Details */}
-          <Grid item xs={12} md={8}>
+          <Box sx={{ minWidth: 0 }}>
             {/* Progress Card */}
             {displayJob!.status === 'processing' && (
               <Paper sx={{ p: 3, mb: 3 }}>
@@ -368,10 +367,10 @@ export function JobDetailPage() {
                 </ResponsiveGrid>
               </Box>
             )}
-          </Grid>
+          </Box>
 
           {/* Right Column - Info */}
-          <Grid item xs={12} md={4}>
+          <Box sx={{ minWidth: 0 }}>
             {/* Job Info Card */}
             <Card sx={{ mb: 3 }}>
               <CardContent>
@@ -506,8 +505,8 @@ export function JobDetailPage() {
                 </CardContent>
               </Card>
             )}
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Box>
     </AccessGate>
   );

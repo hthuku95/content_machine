@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   Box, Typography, Button, Card, CardContent,
   CircularProgress, Snackbar, Alert, Chip,
-  Table, TableBody, TableCell, TableHead, TableRow, Paper,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   IconButton, Tooltip, Divider,
 } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -170,7 +170,8 @@ export function ReferralsPage() {
               </Typography>
             </Box>
           ) : (
-            <Table component={Paper} variant="outlined" sx={{ '& td, & th': { px: 1.5, py: 1 } }}>
+            <TableContainer component={Paper} variant="outlined" sx={{ '& td, & th': { px: 1.5, py: 1 } }}>
+              <Table size="small" stickyHeader>
               <TableHead>
                 <TableRow>
                   <TableCell>Prospect</TableCell>
@@ -203,7 +204,8 @@ export function ReferralsPage() {
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+              </Table>
+            </TableContainer>
           )}
         </CardContent>
       </Card>

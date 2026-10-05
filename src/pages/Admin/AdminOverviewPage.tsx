@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  Box, Typography, Card, CardContent, GridLegacy as Grid, Chip, Alert, CircularProgress,
+  Box, Typography, Card, CardContent, Chip, Alert, CircularProgress,
 } from '@mui/material';
 import {
   People as PeopleIcon,
@@ -16,6 +16,7 @@ import { adminService } from '@/services/admin.service';
 import { PATHS } from '@/routes/paths';
 import { useAuthStore } from '@/stores/authStore';
 import { ADMIN_SERVICE_CHIPS, type AdminServiceChip } from '@/constants/adminServices';
+import { ResponsiveGrid } from '@/components/common/ResponsiveGrid';
 import { PAGE_MAX_WIDTH } from '@/theme/brand';
 
 function StatCard({
@@ -119,26 +120,20 @@ export function AdminOverviewPage() {
 
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Box sx={{ mb: 3 }}>
+      <ResponsiveGrid spacing={2} columns={{ xs: 1, sm: 2, md: 4 }}>
           <StatCard icon={<PeopleIcon />} label="Total users" value={stats?.total_users ?? 0} />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
           <StatCard icon={<PersonAddIcon />} label="Active users" value={stats?.active_users ?? 0} accent="#4ade80" />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
           <StatCard icon={<ForumIcon />} label="Chat sessions" value={stats?.total_chat_sessions ?? 0} accent="#3b82f6" />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
           <StatCard icon={<FileIcon />} label="Uploaded files" value={stats?.total_files ?? 0} />
-        </Grid>
-      </Grid>
+      </ResponsiveGrid>
+      </Box>
 
       <Typography variant="h6" fontWeight={700} sx={{ color: 'text.secondary', mb: 2 }}>
         Quick Links
       </Typography>
-      <Grid container spacing={2} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Box sx={{ mb: 4 }}>
+      <ResponsiveGrid spacing={2} columns={{ xs: 1, sm: 2, md: 3 }}>
           <QuickLinkCard
             title="Deliveries"
             desc="List all deliveries & sample packs, view R2 output, create landing-page renders."
@@ -146,8 +141,6 @@ export function AdminOverviewPage() {
             to={PATHS.ADMIN.DELIVERIES}
             count={String(deliveryCount)}
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
           <QuickLinkCard
             title="Prospects"
             desc="Search scored prospects, generate DM/outreach + free sample packs, send emails."
@@ -155,17 +148,15 @@ export function AdminOverviewPage() {
             to={PATHS.ADMIN.PROSPECTS}
             count={String(prospectCount)}
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
           <QuickLinkCard
             title="Campaigns"
-            desc="Manage active/paused campaign state for all 12 Managed Campaign services."
+            desc="Manage active/paused campaign state for all 13 Managed Campaign services."
             icon={<CampaignsIcon />}
             to={PATHS.ADMIN.CAMPAIGNS}
             count={String(campaignCount)}
           />
-        </Grid>
-      </Grid>
+      </ResponsiveGrid>
+      </Box>
 
       <Typography variant="h6" fontWeight={700} sx={{ color: 'text.secondary', mb: 2 }}>
         Managed Campaign Services

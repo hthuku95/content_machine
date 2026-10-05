@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Box, Typography, GridLegacy as Grid, Card, CardContent, CardHeader,
+  Box, Typography, Card, CardContent, CardHeader,
   Chip, Button, Tooltip, IconButton, CircularProgress,
   Table, TableBody, TableCell, TableHead, TableRow, Paper,
   Snackbar, Alert, Skeleton,
 } from '@mui/material';
+import { ResponsiveGrid } from '@/components/common/ResponsiveGrid';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -230,13 +231,11 @@ function TemplateCard({ template, onRefresh }: { template: GigTemplate; onRefres
             {generating || hasRunning ? 'Rendering…' : '+ Generate Sample'}
           </Button>
         </Box>
-        <Grid container spacing={1}>
+        <ResponsiveGrid spacing={1} columns={{ xs: 2, sm: 3, md: 5 }}>
           {slots.map((s, i) => (
-            <Grid item xs={12/5 * 5 > 12 ? 2.4 : 2.4} key={i} sx={{ width: '20%' }}>
-              <SampleSlot sample={s} onDelete={s ? () => handleDelete(s.id) : undefined} />
-            </Grid>
+            <SampleSlot key={i} sample={s} onDelete={s ? () => handleDelete(s.id) : undefined} />
           ))}
-        </Grid>
+        </ResponsiveGrid>
       </CardContent>
 
       <Snackbar open={!!snack} autoHideDuration={4000} onClose={() => setSnack('')}>
@@ -292,17 +291,15 @@ export function GigTemplatesPage() {
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       {loading ? (
-        <Grid container spacing={3}>
-          {[1,2,3,4].map(i => <Grid item xs={12} md={6} key={i}><Skeleton variant="rounded" height={500} sx={{ bgcolor: 'background.default' }} /></Grid>)}
-        </Grid>
+        <ResponsiveGrid spacing={3} columns={{ xs: 1, md: 2 }}>
+          {[1,2,3,4].map(i => <Skeleton key={i} variant="rounded" height={500} sx={{ bgcolor: 'background.default' }} />)}
+        </ResponsiveGrid>
       ) : (
-        <Grid container spacing={3}>
+        <ResponsiveGrid spacing={3} columns={{ xs: 1, md: 2 }}>
           {templates.map(t => (
-            <Grid item xs={12} md={6} key={t.id}>
-              <TemplateCard template={t} onRefresh={loadTemplates} />
-            </Grid>
+            <TemplateCard template={t} onRefresh={loadTemplates} key={t.id} />
           ))}
-        </Grid>
+        </ResponsiveGrid>
       )}
     </Box>
   );

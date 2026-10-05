@@ -12,6 +12,7 @@ import {
   Typography,
   Paper,
   Table,
+  TableContainer,
   TableBody,
   TableCell,
   TableHead,
@@ -180,7 +181,8 @@ export function PortfolioSamplesPage() {
       </Card>
 
       {/* Samples Table */}
-      <Table component={Paper} variant="outlined" sx={{ '& td, & th': { px: 1.5, py: 1.5 } }}>
+      <TableContainer component={Paper} variant="outlined" sx={{ '& td, & th': { px: 1.5, py: 1.5 } }}>
+        <Table size="small" stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell>Service</TableCell>
@@ -265,7 +267,8 @@ export function PortfolioSamplesPage() {
             })
           )}
         </TableBody>
-      </Table>
+        </Table>
+      </TableContainer>
 
       <Divider sx={{ my: 3 }} />
 

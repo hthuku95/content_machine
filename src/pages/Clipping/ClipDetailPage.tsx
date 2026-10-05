@@ -7,7 +7,6 @@ import {
   Button,
   Breadcrumbs,
   Link,
-  GridLegacy as Grid,
   IconButton,
   Tooltip,
   Snackbar,
@@ -201,9 +200,9 @@ export function ClipDetailPage() {
         </Box>
 
         {/* Main Content */}
-        <Grid container spacing={3}>
+        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' } }}>
           {/* Left Column - Video & Description */}
-          <Grid item xs={12} md={8}>
+          <Box sx={{ minWidth: 0 }}>
             {/* Video Player */}
             <Box sx={{ mb: 3 }}>
               <ClipVideoPlayer clip={clip} />
@@ -245,10 +244,10 @@ export function ClipDetailPage() {
                 </Box>
               )}
             </Paper>
-          </Grid>
+          </Box>
 
           {/* Right Column - Metadata */}
-          <Grid item xs={12} md={4}>
+          <Box sx={{ minWidth: 0 }}>
             <ClipMetadataCard clip={clip} />
 
             {/* Phase C+ Enhancement Status */}
@@ -317,8 +316,8 @@ export function ClipDetailPage() {
                 />
               </Box>
             )}
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
 
         {/* Copy Snackbar */}
         <Snackbar

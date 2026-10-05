@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
-  Box, Typography, TextField, Button, GridLegacy as Grid, Card, CardContent,
+  Box, Typography, TextField, Button, Card, CardContent,
   CardMedia, Chip, CircularProgress, Alert, Slider, Divider,
   LinearProgress, IconButton, Tooltip,
 } from '@mui/material';
@@ -13,6 +13,7 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import manualClippingService from '../../services/manualClipping.service';
 import type { ManualClippingJob, ManualClippingJobDetail } from '../../services/manualClipping.service';
 import { PATHS } from '../../routes/paths';
+import { ResponsiveGrid } from '@/components/common/ResponsiveGrid';
 import { PLATFORM_COLORS } from '@/theme/brand';
 
 const ACTIVE_STATUSES = ['pending', 'analyzing', 'downloading', 'extracting', 'uploading'];
@@ -249,32 +250,32 @@ export default function ManualClippingPage() {
 
           <Divider sx={{ my: 2 }} />
 
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
+          <ResponsiveGrid spacing={2} columns={{ xs: 1, sm: 3 }}>
+            <Box>
               <Typography variant="caption" color="text.secondary" gutterBottom display="block">
                 Clips to extract: <b>{clipsCount}</b>
               </Typography>
               <Slider value={clipsCount} min={1} max={5} step={1} marks onChange={(_, v) => setClipsCount(v as number)} size="small" />
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            </Box>
+            <Box>
               <Typography variant="caption" color="text.secondary" gutterBottom display="block">
                 Min length: <b>{minDuration}s</b>
               </Typography>
               <Slider value={minDuration} min={10} max={120} step={5} onChange={(_, v) => setMinDuration(v as number)} size="small" />
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            </Box>
+            <Box>
               <Typography variant="caption" color="text.secondary" gutterBottom display="block">
                 Max length: <b>{maxDuration}s</b>
               </Typography>
               <Slider value={maxDuration} min={30} max={300} step={10} onChange={(_, v) => setMaxDuration(v as number)} size="small" />
-            </Grid>
-          </Grid>
+            </Box>
+          </ResponsiveGrid>
         </CardContent>
       </Card>
 
       {/* Jobs list */}
       <Card>
-        <CardContent sx={{ pb: '8px !important' }}>
+        <CardContent sx={{ pb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
             <Typography variant="subtitle1" fontWeight={600}>Your Jobs</Typography>
             <IconButton size="small" onClick={loadJobs} title="Refresh"><RefreshIcon fontSize="small" /></IconButton>
@@ -292,13 +293,11 @@ export default function ManualClippingPage() {
                 <JobRow job={job} onCancel={handleCancel} onLoadClips={handleLoadClips} />
                 {expandedClips[job.id] && (
                   <Box sx={{ p: 2, bgcolor: 'background.default' }}>
-                    <Grid container spacing={1.5}>
+                    <ResponsiveGrid spacing={1.5} columns={{ xs: 2, sm: 3, md: 4 }}>
                       {expandedClips[job.id].clips.map(clip => (
-                        <Grid item xs={6} sm={4} md={3} key={clip.id}>
-                          <ClipCard clip={clip} />
-                        </Grid>
+                        <ClipCard key={clip.id} clip={clip} />
                       ))}
-                    </Grid>
+                    </ResponsiveGrid>
                   </Box>
                 )}
               </React.Fragment>
