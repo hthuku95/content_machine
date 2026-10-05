@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+import { brandPaletteDark } from './brand';
 
 export const darkTheme = createTheme({
   palette: {
@@ -42,6 +43,7 @@ export const darkTheme = createTheme({
     info: {
       main: '#60a5fa',
     },
+    ...brandPaletteDark,
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -212,6 +214,53 @@ export const darkTheme = createTheme({
       styleOverrides: {
         paper: {
           backgroundImage: 'none',
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          fontWeight: 600,
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          paddingTop: '12px !important',
+        },
+      },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          minHeight: 44,
+        },
+        indicator: {
+          height: 3,
+          borderRadius: 3,
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: 10,
+        },
+      },
+    },
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+          height: 6,
+        },
+      },
+    },
+    MuiSkeleton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
         },
       },
     },

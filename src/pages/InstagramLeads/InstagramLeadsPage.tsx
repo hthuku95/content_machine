@@ -13,6 +13,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PeopleIcon from '@mui/icons-material/People';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StarIcon from '@mui/icons-material/Star';
 import { instagramLeadsService } from '@/services/instagramLeads.service';
@@ -33,7 +34,7 @@ const STATUS_COLORS: Record<string, 'default' | 'primary' | 'success' | 'warning
 const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ value: string; label: string }> }> = [
   {
     service: 'clipping',
-    label: '🎬 Clipping (legacy — parked)',
+    label: 'Clipping (legacy — parked)',
     niches: [
       { value: 'podcast clip channel', label: 'Podcast Clip Pages' },
       { value: 'youtuber clip channel', label: 'YouTuber / Streamer Clip Pages' },
@@ -43,7 +44,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'youtube_clipping',
-    label: '📺 YouTube Clipping',
+    label: 'YouTube Clipping',
     niches: [
       { value: 'podcaster', label: 'Podcasters' },
       { value: 'video essayist', label: 'Video Essayists' },
@@ -52,7 +53,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'twitch_clipping',
-    label: '💜 Twitch Clipping',
+    label: 'Twitch Clipping',
     niches: [
       { value: 'twitch streamer', label: 'Twitch Streamers' },
       { value: 'gaming streamer', label: 'Gaming Streamers' },
@@ -61,7 +62,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'kick_auto_clipper',
-    label: '⚡ Kick Auto-Clipper',
+    label: 'Kick Auto-Clipper',
     niches: [
       { value: 'kick clipper', label: 'Kick Clipping Channels' },
       { value: 'gaming streamer clip', label: 'Gaming Streamer Clip Pages' },
@@ -70,7 +71,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'landing_page',
-    label: '🚀 Landing Page Hero',
+    label: 'Landing Page Hero',
     niches: [
       { value: 'saas founder', label: 'SaaS Founders' },
       { value: 'shopify store', label: 'Shopify / Ecommerce' },
@@ -82,7 +83,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'education',
-    label: '📚 Education',
+    label: 'Education',
     niches: [
       { value: 'online educator', label: 'Online Educators / Course Creators' },
       { value: 'math tutor', label: 'Math / STEM Tutors' },
@@ -91,7 +92,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'manim_explainer',
-    label: '🎞️ Manim Explainer',
+    label: 'Manim Explainer',
     niches: [
       { value: 'tech explainer', label: 'Tech / Science Explainers' },
       { value: 'programming educator', label: 'Programming Educators' },
@@ -99,7 +100,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'whiteboard_animation',
-    label: '✏️ Whiteboard Animation',
+    label: 'Whiteboard Animation',
     niches: [
       { value: 'corporate trainer', label: 'Corporate Trainers' },
       { value: 'business coach', label: 'Business Coaches' },
@@ -107,7 +108,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'kinetic_typography',
-    label: '🔤 Kinetic Typography',
+    label: 'Kinetic Typography',
     niches: [
       { value: 'lyric quote account', label: 'Lyric / Quote Accounts' },
       { value: 'motivational speaker', label: 'Motivational Speakers' },
@@ -115,7 +116,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'animated_infographic',
-    label: '📊 Animated Infographic',
+    label: 'Animated Infographic',
     niches: [
       { value: 'data journalist', label: 'Data / Finance Journalists' },
       { value: 'marketing educator', label: 'Marketing Educators' },
@@ -123,7 +124,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'algorithm_viz',
-    label: '💻 Algorithm Viz',
+    label: 'Algorithm Viz',
     niches: [
       { value: 'coding educator', label: 'Coding Educators' },
       { value: 'interview prep', label: 'Interview Prep Accounts' },
@@ -131,7 +132,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'investor_pitch',
-    label: '📈 Investor Pitch',
+    label: 'Investor Pitch',
     niches: [
       { value: 'startup founder', label: 'Startup Founders' },
       { value: 'indie hacker', label: 'Indie Hackers' },
@@ -140,7 +141,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'year_in_review',
-    label: '📅 Year in Review',
+    label: 'Year in Review',
     niches: [
       { value: 'creator recap', label: 'Creators Running Recaps' },
       { value: 'influencer', label: 'Influencers / Personal Brands' },
@@ -148,7 +149,7 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
   },
   {
     service: 'isometric_explainer',
-    label: '🏗️ Isometric Explainer',
+    label: 'Isometric Explainer',
     niches: [
       { value: 'product designer', label: 'Product / UX Explainers' },
       { value: '3d artist', label: '3D / Motion Artists' },
@@ -160,20 +161,20 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
 /// enum (src/handlers/prospects.rs) — the AI picks one automatically but
 /// the dropdown lets the user override per lead.
 const SERVICE_TYPE_OPTIONS: Array<{ value: NonNullable<InstagramLead['service_type']>; label: string; pitch: string }> = [
-  { value: 'clipping',             label: '🎬 Clipping (legacy — parked)',  pitch: '$297/mo — parked, use YouTube/Twitch options' },
-  { value: 'youtube_clipping',     label: '📺 YouTube Clipping',     pitch: '$297/mo — daily clips from YouTube videos, auto-posted to your socials' },
-  { value: 'twitch_clipping',      label: '💜 Twitch Clipping',      pitch: '$297/mo — daily clips from Twitch streams, auto-posted to your socials' },
-  { value: 'kick_auto_clipper',    label: '⚡ Kick Auto-Clipper',     pitch: '$297/mo — daily clips from Kick streamers, auto-posted to your socials' },
-  { value: 'education',           label: '📚 Education',             pitch: '$199/mo — daily Manim/LaTeX explainer videos, auto-posted to your socials' },
-  { value: 'landing_page',         label: '🚀 Landing Page Hero',    pitch: '$149/mo — daily animated hero videos from your URL, auto-posted to your socials' },
-  { value: 'manim_explainer',      label: '🎞️ Manim Explainer',     pitch: '$149/mo — daily Manim-animated explainers, auto-posted to your socials' },
-  { value: 'whiteboard_animation', label: '✏️ Whiteboard Animation', pitch: '$149/mo — daily whiteboard explainers, auto-posted to your socials' },
-  { value: 'kinetic_typography',   label: '🔤 Kinetic Typography',  pitch: '$149/mo — daily text-motion videos, auto-posted to your socials' },
-  { value: 'animated_infographic', label: '📊 Animated Infographic', pitch: '$149/mo — daily data viz videos, auto-posted to your socials' },
-  { value: 'algorithm_viz',        label: '💻 Algorithm Viz',        pitch: '$149/mo — daily algorithm visualization videos, auto-posted to your socials' },
-  { value: 'investor_pitch',       label: '📈 Investor Pitch',      pitch: '$149/mo — daily pitch deck videos, auto-posted to your socials' },
-  { value: 'year_in_review',       label: '📅 Year in Review',      pitch: '$149/mo — daily recap/wrapped-style videos, auto-posted to your socials' },
-  { value: 'isometric_explainer',  label: '🏗️ Isometric Explainer', pitch: '$149/mo — daily isometric 3D explainers, auto-posted to your socials' },
+  { value: 'clipping',             label: 'Clipping (legacy — parked)',  pitch: '$297/mo — parked, use YouTube/Twitch options' },
+  { value: 'youtube_clipping',     label: 'YouTube Clipping',     pitch: '$297/mo — daily clips from YouTube videos, auto-posted to your socials' },
+  { value: 'twitch_clipping',      label: 'Twitch Clipping',      pitch: '$297/mo — daily clips from Twitch streams, auto-posted to your socials' },
+  { value: 'kick_auto_clipper',    label: 'Kick Auto-Clipper',     pitch: '$297/mo — daily clips from Kick streamers, auto-posted to your socials' },
+  { value: 'education',           label: 'Education',             pitch: '$199/mo — daily Manim/LaTeX explainer videos, auto-posted to your socials' },
+  { value: 'landing_page',         label: 'Landing Page Hero',    pitch: '$149/mo — daily animated hero videos from your URL, auto-posted to your socials' },
+  { value: 'manim_explainer',      label: 'Manim Explainer',     pitch: '$149/mo — daily Manim-animated explainers, auto-posted to your socials' },
+  { value: 'whiteboard_animation', label: 'Whiteboard Animation', pitch: '$149/mo — daily whiteboard explainers, auto-posted to your socials' },
+  { value: 'kinetic_typography',   label: 'Kinetic Typography',  pitch: '$149/mo — daily text-motion videos, auto-posted to your socials' },
+  { value: 'animated_infographic', label: 'Animated Infographic', pitch: '$149/mo — daily data viz videos, auto-posted to your socials' },
+  { value: 'algorithm_viz',        label: 'Algorithm Viz',        pitch: '$149/mo — daily algorithm visualization videos, auto-posted to your socials' },
+  { value: 'investor_pitch',       label: 'Investor Pitch',      pitch: '$149/mo — daily pitch deck videos, auto-posted to your socials' },
+  { value: 'year_in_review',       label: 'Year in Review',      pitch: '$149/mo — daily recap/wrapped-style videos, auto-posted to your socials' },
+  { value: 'isometric_explainer',  label: 'Isometric Explainer', pitch: '$149/mo — daily isometric 3D explainers, auto-posted to your socials' },
 ];
 
 function formatFollowers(n: number | null): string {
@@ -240,7 +241,7 @@ function LeadsTable({
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <Avatar
                     src={lead.profile_pic_url ?? undefined}
-                    sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: '#fff', fontSize: 14 }}
+                    sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: 'secondary.contrastText', fontSize: 14 }}
                   >
                     {lead.username?.[0]?.toUpperCase()}
                   </Avatar>
@@ -248,7 +249,7 @@ function LeadsTable({
                     <Typography variant="body2" fontWeight={600}>
                       @{lead.username}
                       {lead.is_verified && (
-                        <Chip label="✓" size="small" sx={{ ml: 0.5, height: 16, fontSize: 10, bgcolor: '#2563eb' }} />
+                        <Chip label="✓" size="small" sx={{ ml: 0.5, height: 16, fontSize: 10, bgcolor: 'verifiedBadge.bg', color: 'verifiedBadge.color' }} />
                       )}
                     </Typography>
                     {lead.full_name && (
@@ -278,8 +279,8 @@ function LeadsTable({
                       label={lead.service_type.replace('_', ' ')}
                       size="small"
                       sx={{
-                        bgcolor: 'rgba(122,76,255,0.15)',
-                        color: '#a78bfa',
+                        bgcolor: 'serviceChip.bg',
+                        color: 'serviceChip.color',
                         fontSize: 10,
                         height: 18,
                         textTransform: 'capitalize',
@@ -325,12 +326,12 @@ function LeadsTable({
                     startIcon={<AutoFixHighIcon fontSize="small" />}
                     onClick={() => onDmClick(lead)}
                     sx={{
-                      bgcolor: lead.dm_script ? '#5c5470' : '#7a4cff',
-                      color: '#fff',
+                      bgcolor: lead.dm_script ? 'secondary.main' : 'brand.main',
+                      color: lead.dm_script ? 'secondary.contrastText' : 'brand.contrastText',
                       textTransform: 'none',
                       fontSize: 12,
                       px: 1.5,
-                      '&:hover': { bgcolor: lead.dm_script ? '#7a7090' : '#6a3def' },
+                      '&:hover': { bgcolor: lead.dm_script ? 'secondary.dark' : 'brand.dark' },
                     }}
                   >
                     {lead.dm_script ? 'View DM' : 'Generate DM'}
@@ -685,7 +686,7 @@ export function InstagramLeadsPage() {
         <Tab icon={<TagIcon fontSize="small" />} iconPosition="start" label="Manual Search" sx={{ minHeight: 40 }} />
         <Tab icon={<PeopleIcon fontSize="small" />} iconPosition="start" label={`All Leads (${leads.length})`} sx={{ minHeight: 40 }} />
         <Tab icon={<StarIcon fontSize="small" />} iconPosition="start" label={`Top Leads (${topLeads.length})`} sx={{ minHeight: 40 }} />
-        <Tab icon={<span style={{ fontSize: 14 }}>📘</span>} iconPosition="start" label="How It Works" sx={{ minHeight: 40 }} />
+        <Tab icon={<HelpOutlineIcon fontSize="small" />} iconPosition="start" label="How It Works" sx={{ minHeight: 40 }} />
       </Tabs>
 
       {/* ── Auto-Discover tab ─────────────────────────────────────────────── */}
@@ -702,7 +703,7 @@ export function InstagramLeadsPage() {
               </Typography>
 
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                <FormControl size="small" sx={{ minWidth: 260 }}>
+                <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 260 } }}>
                   <InputLabel>Target Niche</InputLabel>
                   <Select
                     value={niche}
@@ -727,7 +728,7 @@ export function InstagramLeadsPage() {
                   value={maxPostsPerHashtag}
                   onChange={e => setMaxPostsPerHashtag(Number(e.target.value))}
                   size="small"
-                  sx={{ width: 160 }}
+                  sx={{ width: { xs: '100%', sm: 160 } }}
                   inputProps={{ min: 10, max: 100, step: 10 }}
                 />
                 <Button
@@ -735,7 +736,7 @@ export function InstagramLeadsPage() {
                   startIcon={discovering ? <CircularProgress size={16} color="inherit" /> : <AutoAwesomeIcon />}
                   onClick={handleAutoDiscover}
                   disabled={discovering}
-                  sx={{ bgcolor: '#7c3aed', '&:hover': { bgcolor: '#6d28d9' } }}
+                  sx={{ bgcolor: 'brand.main', '&:hover': { bgcolor: 'brand.dark' } }}
                 >
                   {discovering ? 'Launching…' : 'Auto-Discover Leads'}
                 </Button>
@@ -839,7 +840,7 @@ export function InstagramLeadsPage() {
                 startIcon={searching ? <CircularProgress size={16} color="inherit" /> : <SearchIcon />}
                 onClick={handleSearch}
                 disabled={searching || !hashtag.trim()}
-                sx={{ bgcolor: '#5c5470', '&:hover': { bgcolor: '#7a7090' } }}
+                sx={{ bgcolor: 'secondary.main', '&:hover': { bgcolor: 'secondary.dark' } }}
               >
                 {searching ? 'Launching…' : 'Launch Search'}
               </Button>
@@ -863,14 +864,15 @@ export function InstagramLeadsPage() {
             {/* Inline how-to banner — answers "I don't know what to do next" */}
             <Box sx={{
               mb: 2, p: 2, borderRadius: 1,
-              bgcolor: 'rgba(122,76,255,0.08)',
-              border: '1px solid rgba(122,76,255,0.3)',
+              bgcolor: 'action.hover',
+              border: '1px solid',
+              borderColor: 'divider',
             }}>
               <Typography variant="body2" fontWeight={600} sx={{ color: 'text.secondary', mb: 0.5 }}>
                 Next step: turn these leads into paying clients
               </Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', lineHeight: 1.6 }}>
-                1. Click any row → DM is generated automatically (tailored to the lead's <b>service tag</b>: clipping / animation / thumbnail / UGC).<br />
+                1. Click any row → DM is generated automatically (tailored to the lead's <b>service tag</b>: Kick, Twitch, or YouTube clipping).<br />
                 2. Click <b>"+ Attach sample"</b> (yellow) → AI generates a portfolio piece for that exact lead, link auto-pasted into the DM.<br />
                 3. Click <b>"Copy DM &amp; Open Instagram"</b> → script copied, status → <i>contacted</i>, IG opens in a new tab.<br />
                 4. Paste the DM in Instagram. When they reply → <i>replied</i>; when they pay → <i>converted</i>.<br />
@@ -932,7 +934,7 @@ export function InstagramLeadsPage() {
         <Card sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
           <CardContent>
             <Typography variant="h6" fontWeight={700} sx={{ color: 'text.secondary', mb: 2 }}>
-              📘 How Instagram Leads Work
+              How Instagram Leads Work
             </Typography>
 
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.7 }}>
@@ -942,7 +944,7 @@ export function InstagramLeadsPage() {
             <Divider sx={{ my: 2 }} />
 
             <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'text.secondary', mb: 1 }}>
-              🔁 The workflow
+              The workflow
             </Typography>
             <Box component="ol" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
               <li><strong>Auto-Discover</strong> (recommended): pick a target niche — grouped by our clipping services (Clipping, Kick Auto-Clipper) — then the AI picks the 3–4 best hashtags and launches PhantomBuster searches in background.</li>
@@ -960,7 +962,7 @@ export function InstagramLeadsPage() {
             <Divider sx={{ my: 3 }} />
 
             <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'text.secondary', mb: 1 }}>
-              💼 What you can pitch — service menu
+              What you can pitch — service menu
             </Typography>
             <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mb: 2 }}>
               The AI picks one per lead based on their bio, but you can override before generating the DM. Pricing shown is what we suggest — adjust per-deal.
@@ -969,8 +971,9 @@ export function InstagramLeadsPage() {
               {SERVICE_TYPE_OPTIONS.filter(s => isEnabled(s.value)).map(s => (
                 <Box key={s.value} sx={{
                   p: 2, borderRadius: 1.5,
-                  bgcolor: 'rgba(42,36,56,0.5)',
-                  border: '1px solid rgba(92,84,112,0.3)',
+                  bgcolor: 'action.hover',
+                  border: '1px solid',
+                  borderColor: 'divider',
                 }}>
                   <Typography variant="body2" fontWeight={700} sx={{ color: 'text.secondary', mb: 0.5 }}>
                     {s.label}
@@ -985,7 +988,7 @@ export function InstagramLeadsPage() {
             <Divider sx={{ my: 3 }} />
 
             <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'text.secondary', mb: 1 }}>
-              💰 How you get paid
+              How you get paid
             </Typography>
             <Box component="ul" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
               <li>Your cut is <strong>50%</strong> of everything paid on your leads (admin sends USDC to your Base wallet; we'll share payout dates + address collection details separately).</li>
@@ -996,7 +999,7 @@ export function InstagramLeadsPage() {
             <Divider sx={{ my: 3 }} />
 
             <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'text.secondary', mb: 1 }}>
-              ⚡ Tips
+              Tips
             </Typography>
             <Box component="ul" sx={{ pl: 2.5, color: 'text.secondary', '& li': { mb: 1 } }}>
               <li>Top Leads (score ≥ 60) convert ~3× better than average — prioritize those.</li>

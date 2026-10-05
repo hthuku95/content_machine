@@ -8,24 +8,8 @@ import { Add as AddIcon, Delete as DeleteIcon, ArrowBack } from '@mui/icons-mate
 import { campaignService, type CreateCampaignRequest } from '@/services/campaign.service';
 import { socialService, type SocialAccount } from '@/services/social.service';
 import { useServiceFlags } from '@/hooks/useServiceFlags';
+import { SERVICE_OPTIONS } from '@/components/common/ServiceMenu';
 import { PATHS } from '@/routes/paths';
-
-const SERVICE_OPTIONS = [
-  { value: 'clipping', label: '🎬 Clipping (legacy)', desc: '$297/mo — parked, use YouTube/Twitch options' },
-  { value: 'youtube_clipping', label: '📺 YouTube Clipping', desc: '$297/mo — daily clips from YouTube videos' },
-  { value: 'twitch_clipping', label: '💜 Twitch Clipping', desc: '$297/mo — daily clips from Twitch streams' },
-  { value: 'kick_auto_clipper', label: '⚡ Kick Auto-Clipper', desc: '$297/mo — daily clips from Kick streamers' },
-  { value: 'education', label: '📚 Education', desc: '$199/mo — daily Manim explainer videos' },
-  { value: 'landing_page', label: '🚀 Landing Page Hero', desc: '$149/mo — daily animated hero videos' },
-  { value: 'manim_explainer', label: '🎞️ Manim Explainer', desc: '$149/mo — daily animated explainers' },
-  { value: 'whiteboard_animation', label: '✏️ Whiteboard Animation', desc: '$149/mo — daily whiteboard explainers' },
-  { value: 'kinetic_typography', label: '🔤 Kinetic Typography', desc: '$149/mo — daily text-motion videos' },
-  { value: 'animated_infographic', label: '📊 Animated Infographic', desc: '$149/mo — daily data viz videos' },
-  { value: 'algorithm_viz', label: '💻 Algorithm Viz', desc: '$149/mo — daily algorithm videos' },
-  { value: 'investor_pitch', label: '📈 Investor Pitch', desc: '$149/mo — daily pitch deck videos' },
-  { value: 'year_in_review', label: '📅 Year in Review', desc: '$149/mo — daily recap videos' },
-  { value: 'isometric_explainer', label: '🏗️ Isometric Explainer', desc: '$149/mo — daily isometric 3D videos' },
-];
 
 interface Slot {
   time: string;
@@ -163,9 +147,12 @@ export default function NewCampaignPage() {
           <TextField select label="Service Type" value={serviceType} onChange={e => setServiceType(e.target.value)} required fullWidth>
             {visibleServices.map(o => (
               <MenuItem key={o.value} value={o.value}>
-                <Box>
-                  <Typography variant="body2" fontWeight={600}>{o.label}</Typography>
-                  <Typography variant="caption" color="text.disabled">{o.desc}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <o.Icon fontSize="small" color="primary" />
+                  <Box>
+                    <Typography variant="body2" fontWeight={600}>{o.label}</Typography>
+                    <Typography variant="caption" color="text.disabled">{o.desc}</Typography>
+                  </Box>
                 </Box>
               </MenuItem>
             ))}
