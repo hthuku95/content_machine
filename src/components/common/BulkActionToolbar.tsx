@@ -56,7 +56,7 @@ export function BulkActionToolbar({
           display: 'flex',
           alignItems: 'center',
           gap: 2,
-          minWidth: 400,
+          minWidth: { xs: '100%', sm: 400 },
           borderRadius: 2,
           bgcolor: 'background.paper',
           border: '1px solid',

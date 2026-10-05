@@ -70,6 +70,9 @@ export function TopBar({ onMenuClick }: TopBarProps) {
             fontWeight: 700,
             letterSpacing: '-0.02em',
             flexGrow: 1,
+            // Fallback color first: if background-clip:text is unsupported the
+            // title still renders instead of going transparent/invisible.
+            color: 'text.primary',
             background: (theme) =>
               theme.palette.mode === 'dark'
                 ? 'linear-gradient(135deg, #dbd8e3 0%, #ffffff 100%)'

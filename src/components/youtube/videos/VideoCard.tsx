@@ -24,6 +24,7 @@ import {
   MoreVert as MoreVertIcon,
   Schedule as ScheduleIcon,
   Delete as DeleteIcon,
+  Movie as MovieIcon,
 } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
 import type { YouTubeVideo, VideoPrivacyStatus } from '@/types/video.types';
@@ -72,13 +73,28 @@ export function VideoCard({ video, onEdit, onDelete, onSchedule }: VideoCardProp
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ position: 'relative' }}>
-        <CardMedia
-          component="img"
-          height="180"
-          image={video.thumbnail_url || '/placeholder-video.png'}
-          alt={title}
-          sx={{ objectFit: 'cover' }}
-        />
+        {video.thumbnail_url ? (
+          <CardMedia
+            component="img"
+            height="180"
+            image={video.thumbnail_url}
+            alt={title}
+            sx={{ objectFit: 'cover' }}
+          />
+        ) : (
+          <Box
+            sx={{
+              height: 180,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              bgcolor: 'action.hover',
+              color: 'text.disabled',
+            }}
+          >
+            <MovieIcon sx={{ fontSize: 48 }} />
+          </Box>
+        )}
         <Chip
           label={privacyStatus.toUpperCase()}
           size="small"

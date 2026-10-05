@@ -12,7 +12,7 @@ export function NotFoundPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
+        minHeight: '60vh',
         textAlign: 'center',
         px: 2,
       }}

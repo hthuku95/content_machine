@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography, Box, useTheme } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format, parseISO } from 'date-fns';
 
@@ -13,6 +13,7 @@ export interface ViewsChartProps {
 }
 
 export function ViewsChart({ data, title = 'Views Over Time' }: ViewsChartProps) {
+  const theme = useTheme();
   const formattedData = data.map((point) => ({
     ...point,
     displayDate: format(parseISO(point.date), 'MMM d'),
@@ -38,7 +39,7 @@ export function ViewsChart({ data, title = 'Views Over Time' }: ViewsChartProps)
               <Line
                 type="monotone"
                 dataKey="views"
-                stroke="#1976d2"
+                stroke={theme.palette.brand.main}
                 strokeWidth={2}
                 dot={{ r: 4 }}
                 activeDot={{ r: 6 }}

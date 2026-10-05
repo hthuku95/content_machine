@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography, Box, useTheme } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format, parseISO } from 'date-fns';
 
@@ -15,6 +15,7 @@ export interface EngagementChartProps {
 }
 
 export function EngagementChart({ data, title = 'Engagement Metrics' }: EngagementChartProps) {
+  const theme = useTheme();
   const formattedData = data.map((point) => ({
     ...point,
     displayDate: format(parseISO(point.date), 'MMM d'),
@@ -37,9 +38,9 @@ export function EngagementChart({ data, title = 'Engagement Metrics' }: Engageme
                 formatter={(value?: number) => (value ?? 0).toLocaleString()}
               />
               <Legend />
-              <Bar dataKey="likes" fill="#4caf50" name="Likes" />
-              <Bar dataKey="comments" fill="#2196f3" name="Comments" />
-              <Bar dataKey="shares" fill="#ff9800" name="Shares" />
+              <Bar dataKey="likes" fill={theme.palette.success.main} name="Likes" />
+              <Bar dataKey="comments" fill={theme.palette.info.main} name="Comments" />
+              <Bar dataKey="shares" fill={theme.palette.warning.main} name="Shares" />
             </BarChart>
           </ResponsiveContainer>
         </Box>

@@ -11,6 +11,7 @@ import {
   TableHead,
   TableRow,
   Chip,
+  useTheme,
 } from '@mui/material';
 import { TrendingUp as TrendingIcon } from '@mui/icons-material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -23,6 +24,7 @@ interface DashboardAnalyticsProps {
 }
 
 export function DashboardAnalytics({ linkages, jobs, clips }: DashboardAnalyticsProps) {
+  const theme = useTheme();
   // Prepare linkage performance data
   const linkagePerformance = useMemo(() => {
     return linkages.map(linkage => {
@@ -102,8 +104,8 @@ export function DashboardAnalytics({ linkages, jobs, clips }: DashboardAnalytics
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="clips" fill="#8884d8" name="Total Clips" />
-                <Bar dataKey="uploaded" fill="#82ca9d" name="Uploaded" />
+                <Bar dataKey="clips" fill={theme.palette.brand.main} name="Total Clips" />
+                <Bar dataKey="uploaded" fill={theme.palette.success.main} name="Uploaded" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
