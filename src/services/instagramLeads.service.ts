@@ -85,6 +85,7 @@ export const instagramLeadsService = {
     niche?: string;
     max_posts_per_hashtag?: number;
     hashtag_count?: number;
+    service?: string;
   }): Promise<AutoDiscoverResponse> => {
     const { data } = await api.post('/api/instagram/leads/auto-discover', params);
     return data;

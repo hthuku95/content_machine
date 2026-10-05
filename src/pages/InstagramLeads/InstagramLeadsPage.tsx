@@ -33,12 +33,30 @@ const STATUS_COLORS: Record<string, 'default' | 'primary' | 'success' | 'warning
 const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ value: string; label: string }> }> = [
   {
     service: 'clipping',
-    label: '🎬 Clipping',
+    label: '🎬 Clipping (legacy — parked)',
     niches: [
       { value: 'podcast clip channel', label: 'Podcast Clip Pages' },
       { value: 'youtuber clip channel', label: 'YouTuber / Streamer Clip Pages' },
       { value: 'talk show clip', label: 'Talk Show / Interview Clips' },
       { value: 'motivational clip', label: 'Motivational / Speech Clips' },
+    ],
+  },
+  {
+    service: 'youtube_clipping',
+    label: '📺 YouTube Clipping',
+    niches: [
+      { value: 'podcaster', label: 'Podcasters' },
+      { value: 'video essayist', label: 'Video Essayists' },
+      { value: 'commentary channel', label: 'Commentary Channels' },
+    ],
+  },
+  {
+    service: 'twitch_clipping',
+    label: '💜 Twitch Clipping',
+    niches: [
+      { value: 'twitch streamer', label: 'Twitch Streamers' },
+      { value: 'gaming streamer', label: 'Gaming Streamers' },
+      { value: 'just chatting streamer', label: 'Just Chatting Streamers' },
     ],
   },
   {
@@ -142,7 +160,9 @@ const NICHE_GROUPS: Array<{ service: string; label: string; niches: Array<{ valu
 /// enum (src/handlers/prospects.rs) — the AI picks one automatically but
 /// the dropdown lets the user override per lead.
 const SERVICE_TYPE_OPTIONS: Array<{ value: NonNullable<InstagramLead['service_type']>; label: string; pitch: string }> = [
-  { value: 'clipping',             label: '🎬 Clipping',              pitch: '$297/mo — daily clips from long-form content, auto-posted to your socials' },
+  { value: 'clipping',             label: '🎬 Clipping (legacy — parked)',  pitch: '$297/mo — parked, use YouTube/Twitch options' },
+  { value: 'youtube_clipping',     label: '📺 YouTube Clipping',     pitch: '$297/mo — daily clips from YouTube videos, auto-posted to your socials' },
+  { value: 'twitch_clipping',      label: '💜 Twitch Clipping',      pitch: '$297/mo — daily clips from Twitch streams, auto-posted to your socials' },
   { value: 'kick_auto_clipper',    label: '⚡ Kick Auto-Clipper',     pitch: '$297/mo — daily clips from Kick streamers, auto-posted to your socials' },
   { value: 'education',           label: '📚 Education',             pitch: '$199/mo — daily Manim/LaTeX explainer videos, auto-posted to your socials' },
   { value: 'landing_page',         label: '🚀 Landing Page Hero',    pitch: '$149/mo — daily animated hero videos from your URL, auto-posted to your socials' },
@@ -430,11 +450,15 @@ export function InstagramLeadsPage() {
   const handleAutoDiscover = async () => {
     setDiscovering(true);
     setDiscoverResult(null);
+    // Service scope follows the selected niche's group: leads found here are
+    // scored for that service only (backend enforces ON + consistency).
+    const nicheService = NICHE_GROUPS.find(g => g.niches.some(n => n.value === niche))?.service;
     try {
       const res = await instagramLeadsService.autoDiscover({
         niche,
         max_posts_per_hashtag: maxPostsPerHashtag,
         hashtag_count: 4,
+        service: nicheService,
       });
       if (res.success) {
         setDiscoverResult({
