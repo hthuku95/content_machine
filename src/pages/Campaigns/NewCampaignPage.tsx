@@ -11,7 +11,9 @@ import { useServiceFlags } from '@/hooks/useServiceFlags';
 import { PATHS } from '@/routes/paths';
 
 const SERVICE_OPTIONS = [
-  { value: 'clipping', label: '🎬 Clipping', desc: '$297/mo — daily clips from long-form content' },
+  { value: 'clipping', label: '🎬 Clipping (legacy)', desc: '$297/mo — parked, use YouTube/Twitch options' },
+  { value: 'youtube_clipping', label: '📺 YouTube Clipping', desc: '$297/mo — daily clips from YouTube videos' },
+  { value: 'twitch_clipping', label: '💜 Twitch Clipping', desc: '$297/mo — daily clips from Twitch streams' },
   { value: 'kick_auto_clipper', label: '⚡ Kick Auto-Clipper', desc: '$297/mo — daily clips from Kick streamers' },
   { value: 'education', label: '📚 Education', desc: '$199/mo — daily Manim explainer videos' },
   { value: 'landing_page', label: '🚀 Landing Page Hero', desc: '$149/mo — daily animated hero videos' },
@@ -145,7 +147,7 @@ export default function NewCampaignPage() {
     }
   }
 
-  const needsSourceUrl = serviceType === 'clipping' || serviceType === 'kick_auto_clipper';
+  const needsSourceUrl = serviceType === 'clipping' || serviceType === 'kick_auto_clipper' || serviceType === 'youtube_clipping' || serviceType === 'twitch_clipping';
 
   return (
     <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
