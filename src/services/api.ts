@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { config } from '@/config/config';
 
-console.log('[API] Initializing axios instance with baseURL:', config.apiBaseUrl);
 
 // Create axios instance
 export const api = axios.create({
@@ -15,11 +14,6 @@ export const api = axios.create({
 // Add request logging interceptor
 api.interceptors.request.use(
   (config) => {
-    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
-      params: config.params,
-      data: config.data,
-      headers: config.headers,
-    });
     return config;
   },
   (error) => {
@@ -31,10 +25,6 @@ api.interceptors.request.use(
 // Add response logging interceptor
 api.interceptors.response.use(
   (response) => {
-    console.log(`[API Response] ${response.config.method?.toUpperCase()} ${response.config.url}`, {
-      status: response.status,
-      data: response.data,
-    });
     return response;
   },
   (error) => {

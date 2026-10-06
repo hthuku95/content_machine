@@ -22,6 +22,8 @@ export interface InstagramLead {
   score_reason?: string | null;
   service_type?: 'clipping' | 'youtube_clipping' | 'twitch_clipping' | 'kick_auto_clipper' | 'landing_page' | 'education' | 'manim_explainer' | 'whiteboard_animation' | 'kinetic_typography' | 'animated_infographic' | 'algorithm_viz' | 'investor_pitch' | 'year_in_review' | 'isometric_explainer' | null;
   sample_delivery_id?: string | null;
+  user_id?: number | null;
+  created_at?: string | null;
 }
 
 export interface SampleResponse {
@@ -131,6 +133,8 @@ export const instagramLeadsService = {
     min_followers?: number;
     limit?: number;
     offset?: number;
+    user_id?: number;
+    fresh_days?: number;
   }): Promise<LeadsListResponse> => {
     const { data } = await api.get('/api/instagram/leads', { params });
     return data;

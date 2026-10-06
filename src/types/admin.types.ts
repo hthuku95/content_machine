@@ -107,6 +107,7 @@ export interface Prospect {
   revenue_priority: number;
   referred_by: string | null;
   sourced_by: number | null;
+  sourced_by_email: string | null;
   created_at: string;
 }
 

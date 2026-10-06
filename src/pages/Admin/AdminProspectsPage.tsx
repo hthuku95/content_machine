@@ -4,6 +4,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton,
   Tooltip, Dialog, DialogTitle, DialogContent, DialogActions,
   FormControl, InputLabel, Select, MenuItem, Avatar, Divider,
+  Checkbox, FormControlLabel,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -16,6 +17,7 @@ import {
 import { adminService } from '@/services/admin.service';
 import type { Prospect } from '@/types/admin.types';
 import { SERVICE_LABELS, PROSPECT_CONTACT_STATUSES, PROSPECT_PLATFORMS } from '@/constants/adminServices';
+import { timeAgo } from '@/utils/time';
 import { getErrorMessage } from '@/utils/errors';
 import { PAGE_MAX_WIDTH } from '@/theme/brand';
 
@@ -44,6 +46,7 @@ export function AdminProspectsPage() {
   const [filterPlatform, setFilterPlatform] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterType, setFilterType] = useState('');
+  const [freshOnly, setFreshOnly] = useState(true);
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [dialog, setDialog] = useState<{ open: boolean; prospect: Prospect | null; mode: 'dm' | 'outreach' | 'sample'; text: string }>({
@@ -65,13 +68,14 @@ export function AdminProspectsPage() {
         platform: filterPlatform || undefined,
         contact_status: filterStatus || undefined,
         prospect_type: filterType || undefined,
+        fresh_days: freshOnly ? 14 : undefined,
       }));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load prospects');
     } finally {
       setLoading(false);
     }
-  }, [filterPlatform, filterStatus, filterType]);
+  }, [filterPlatform, filterStatus, filterType, freshOnly]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -257,6 +261,10 @@ export function AdminProspectsPage() {
         <Button size="small" variant="outlined" startIcon={<RefreshIcon />} onClick={load} disabled={loading}>
           Refresh
         </Button>
+        <FormControlLabel
+          control={<Checkbox size="small" checked={freshOnly} onChange={e => setFreshOnly(e.target.checked)} />}
+          label={<Typography variant="caption" color="text.secondary">New only (14d)</Typography>}
+        />
         <Chip label={`${prospects.length} prospects`} size="small" sx={{ bgcolor: 'background.default', color: 'text.secondary' }} />
       </Box>
 
@@ -269,8 +277,10 @@ export function AdminProspectsPage() {
               <TableRow>
                 <TableCell sx={{ color: 'text.secondary' }}>Creator</TableCell>
                 <TableCell sx={{ color: 'text.secondary' }}>Platform</TableCell>
-                <TableCell sx={{ color: 'text.secondary' }}>Service</TableCell>
-                <TableCell sx={{ color: 'text.secondary' }}>Score</TableCell>
+                  <TableCell sx={{ color: 'text.secondary' }}>Service</TableCell>
+                  <TableCell sx={{ color: 'text.secondary' }}>Owner</TableCell>
+                  <TableCell sx={{ color: 'text.secondary' }}>Added</TableCell>
+                  <TableCell sx={{ color: 'text.secondary' }}>Score</TableCell>
                 <TableCell sx={{ color: 'text.secondary' }}>Audience</TableCell>
                 <TableCell sx={{ color: 'text.secondary' }}>Status</TableCell>
                 <TableCell sx={{ color: 'text.secondary' }}>Sample</TableCell>
@@ -280,7 +290,7 @@ export function AdminProspectsPage() {
             <TableBody>
               {prospects.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} sx={{ textAlign: 'center', color: 'text.disabled', py: 4 }}>
+                  <TableCell colSpan={10} sx={{ textAlign: 'center', color: 'text.disabled', py: 4 }}>
                     No prospects found for these filters.
                   </TableCell>
                 </TableRow>
@@ -316,6 +326,16 @@ export function AdminProspectsPage() {
                         </Box>
                       );
                     })()}
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>
+                      {p.sourced_by_email ?? '—'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="caption" color="text.disabled" sx={{ whiteSpace: 'nowrap' }}>
+                      {timeAgo(p.created_at)}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     {p.ai_score != null ? (

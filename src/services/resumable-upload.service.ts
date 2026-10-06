@@ -12,7 +12,6 @@ export const resumableUploadService = {
   async initiateUpload(
     data: InitiateResumableUploadRequest
   ): Promise<ResumableUploadSession> {
-    console.log('[ResumableUploadService] Initiating upload session:', data);
     const response = await api.post<{
       success: boolean;
       upload_id: number;
@@ -20,7 +19,6 @@ export const resumableUploadService = {
       total_bytes: number;
     }>('/api/youtube/upload/resumable', data);
 
-    console.log('[ResumableUploadService] Upload session created:', response.data);
     return {
       upload_id: response.data.upload_id,
       session_url: response.data.session_url,
@@ -38,14 +36,6 @@ export const resumableUploadService = {
     endByte: number,
     totalBytes: number
   ): Promise<UploadProgress> {
-    console.log('[ResumableUploadService] Uploading chunk:', {
-      uploadId,
-      startByte,
-      endByte,
-      chunkSize: chunk.size,
-      totalBytes,
-      contentRange: `bytes ${startByte}-${endByte}/${totalBytes}`,
-    });
 
     const response = await api.put(
       `/api/youtube/upload/resumable/${uploadId}/chunk`,
@@ -58,7 +48,6 @@ export const resumableUploadService = {
       }
     );
 
-    console.log('[ResumableUploadService] Chunk upload response:', response.data);
     return response.data;
   },
 };

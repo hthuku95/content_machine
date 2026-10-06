@@ -27,6 +27,7 @@ export interface ListProspectsParams {
   prospect_type?: string;
   contact_status?: string;
   platform?: string;
+  fresh_days?: number;
 }
 
 export const adminService = {

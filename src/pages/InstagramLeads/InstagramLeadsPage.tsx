@@ -6,6 +6,7 @@ import {
   IconButton, Tooltip, Dialog, DialogTitle, DialogContent,
   DialogActions, Select, MenuItem, FormControl, InputLabel,
   InputAdornment, Divider, Tabs, Tab, LinearProgress, ListSubheader,
+  Checkbox, FormControlLabel,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import TagIcon from '@mui/icons-material/Tag';
@@ -17,6 +18,9 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StarIcon from '@mui/icons-material/Star';
 import { instagramLeadsService } from '@/services/instagramLeads.service';
+import { useAuthStore } from '@/stores/authStore';
+import { adminService } from '@/services/admin.service';
+import { timeAgo } from '@/utils/time';
 import type { InstagramLead } from '@/services/instagramLeads.service';
 import { useServiceFlags } from '@/hooks/useServiceFlags';
 
@@ -223,6 +227,7 @@ function LeadsTable({
             <TableCell sx={{ color: 'text.secondary' }}>Score</TableCell>
             <TableCell sx={{ color: 'text.secondary' }}>Hashtag</TableCell>
             <TableCell sx={{ color: 'text.secondary' }}>Status</TableCell>
+            <TableCell sx={{ color: 'text.secondary' }}>Added</TableCell>
             <TableCell sx={{ color: 'text.secondary' }} align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -318,6 +323,9 @@ function LeadsTable({
                   </Select>
                 </FormControl>
               </TableCell>
+              <TableCell onClick={e => e.stopPropagation()}>
+                <Typography variant="caption" color="text.disabled">{timeAgo(lead.created_at)}</Typography>
+              </TableCell>
               <TableCell align="right" onClick={e => e.stopPropagation()}>
                 <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end', alignItems: 'center' }}>
                   <Button
@@ -374,12 +382,23 @@ export function InstagramLeadsPage() {
   const [searching, setSearching] = useState(false);
   const [searchMsg, setSearchMsg] = useState<string | null>(null);
 
+  // Staff oversight: admins may inspect any helper's pipeline (backend gates this).
+  const staffUser = useAuthStore(st => st.user);
+  const isStaffViewer = !!(staffUser?.is_staff || staffUser?.is_superuser);
+  useEffect(() => {
+    if (!isStaffViewer) return;
+    adminService.listUsers({}).then(us => setTeamUsers(us.map(u => ({ id: u.id, email: u.email })))).catch(() => {});
+  }, [isStaffViewer]);
+
   // Leads state
   const [leads, setLeads] = useState<InstagramLead[]>([]);
   const [topLeads, setTopLeads] = useState<InstagramLead[]>([]);
   const [loading, setLoading] = useState(false);
   const [filterHashtag, setFilterHashtag] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [freshOnly, setFreshOnly] = useState(true);
+  const [viewUserId, setViewUserId] = useState<string>('');
+  const [teamUsers, setTeamUsers] = useState<Array<{ id: number; email: string }>>([]);
 
   // DM dialog state
   const [dmDialog, setDmDialog] = useState<{ open: boolean; lead: InstagramLead | null; generating: boolean; text: string }>({
@@ -400,6 +419,8 @@ export function InstagramLeadsPage() {
         hashtag:        filterHashtag || undefined,
         contact_status: filterStatus  || undefined,
         limit: 200,
+        fresh_days:     freshOnly ? 14 : undefined,
+        user_id:        viewUserId ? Number(viewUserId) : undefined,
       });
       if (res.success) setLeads(res.leads);
     } catch {
@@ -407,7 +428,7 @@ export function InstagramLeadsPage() {
     } finally {
       setLoading(false);
     }
-  }, [filterHashtag, filterStatus]);
+  }, [filterHashtag, filterStatus, freshOnly, viewUserId]);
 
   const loadTopLeads = useCallback(async () => {
     try {
@@ -883,6 +904,21 @@ export function InstagramLeadsPage() {
               <Typography variant="subtitle1" fontWeight={600} sx={{ color: 'text.secondary', flexGrow: 1 }}>
                 All Leads
               </Typography>
+              {isStaffViewer && (
+                <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 200 } }}>
+                  <InputLabel>Team member</InputLabel>
+                  <Select value={viewUserId} label="Team member" onChange={e => setViewUserId(e.target.value)}>
+                    <MenuItem value="">Everyone (team view)</MenuItem>
+                    {teamUsers.map(u => (
+                      <MenuItem key={u.id} value={String(u.id)}>{u.email}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+              <FormControlLabel
+                control={<Checkbox size="small" checked={freshOnly} onChange={e => setFreshOnly(e.target.checked)} />}
+                label={<Typography variant="caption" color="text.secondary">New only (14d)</Typography>}
+              />
               <TextField label="Filter hashtag" size="small" value={filterHashtag} onChange={e => setFilterHashtag(e.target.value)} sx={{ width: 160 }} />
               <FormControl size="small" sx={{ width: 160 }}>
                 <InputLabel>Status</InputLabel>

@@ -38,7 +38,6 @@ export const channelsService = {
 
       if (response.data.success && response.data.auth_url) {
         // Redirect to Google OAuth (user can select ANY Google account)
-        console.log('🔐 Redirecting to Google OAuth for YouTube connection...');
         window.location.href = response.data.auth_url;
       } else {
         throw new Error(response.data.message || 'Failed to get OAuth URL');

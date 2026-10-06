@@ -81,7 +81,6 @@ export const clippingService = {
       const response = await api.get<{ success: boolean; linkages: ChannelLinkage[] }>(
         '/api/clipping/linkages'
       );
-      console.log('[clippingService.listLinkages] Response:', response.data);
       // Ensure we always return an array, even if the API response is malformed
       const linkages = response.data?.linkages;
       if (!Array.isArray(linkages)) {
