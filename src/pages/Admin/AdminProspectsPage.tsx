@@ -251,7 +251,7 @@ export function AdminProspectsPage() {
           <InputLabel>Prospect type</InputLabel>
           <Select label="Prospect type" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
             <MenuItem value="">All</MenuItem>
-            {['creator', 'business', 'educator', 'streamer', 'clipper'].map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
+            {['creator', 'business', 'educator', 'streamer', 'clipper', 'twitch_clipper', 'kick_clipper'].map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
           </Select>
         </FormControl>
         <Button size="small" variant="outlined" startIcon={<RefreshIcon />} onClick={load} disabled={loading}>
@@ -307,6 +307,15 @@ export function AdminProspectsPage() {
                     {p.service_type ? (
                       <Chip label={SERVICE_LABELS[p.service_type] || p.service_type} size="small" sx={{ bgcolor: 'serviceChip.bg', color: 'serviceChip.color', fontSize: 10, height: 18 }} />
                     ) : <Typography variant="caption" color="text.disabled">—</Typography>}
+                    {(() => {
+                      const creators = ((p.contact_enrichment as any)?.detected_source_creators || []).filter(Boolean);
+                      if (!creators.length) return null;
+                      return (
+                        <Box sx={{ mt: 0.5 }}>
+                          <Chip label={`Clipper of @${creators[0]}${creators.length > 1 ? ` +${creators.length - 1}` : ''}`} size="small" sx={{ bgcolor: 'success.main', color: 'success.contrastText', fontSize: 10, height: 18 }} />
+                        </Box>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell>
                     {p.ai_score != null ? (
