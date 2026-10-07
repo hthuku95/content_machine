@@ -18,9 +18,22 @@ export interface ReferralCommission {
   created_at: string;
 }
 
+export interface AppReferralCode {
+  app: string;
+  app_name: string;
+  code: string;
+  ref_url: string;
+  landing_url: string;
+}
+
 export interface MyCodeResponse {
   success: boolean;
   code: ReferralCode | null;
+}
+
+export interface MyCodesResponse {
+  success: boolean;
+  codes: AppReferralCode[];
 }
 
 export interface MyCommissionsResponse {
@@ -32,6 +45,11 @@ export interface MyCommissionsResponse {
 export const referralService = {
   async getMyCodes(): Promise<MyCodeResponse> {
     const { data } = await api.get('/api/referrals/my-code');
+    return data;
+  },
+
+  async getMyAppCodes(): Promise<MyCodesResponse> {
+    const { data } = await api.get('/api/referrals/my-codes');
     return data;
   },
 

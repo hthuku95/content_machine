@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-  Box, Typography, Button, Card, CardContent,
+  Box, Typography, Card, CardContent,
   CircularProgress, Snackbar, Alert, Chip,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   IconButton, Tooltip, Divider,
@@ -8,7 +8,7 @@ import {
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import LinkIcon from '@mui/icons-material/Link';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import { referralService, type ReferralCode, type ReferralCommission } from '@/services/referral.service';
+import { referralService, type ReferralCommission } from '@/services/referral.service';
 
 function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
@@ -21,21 +21,20 @@ function statusChip(status: string) {
 
 export function ReferralsPage() {
   const [loading, setLoading] = useState(true);
-  const [code, setCode] = useState<ReferralCode | null>(null);
+  const [appCodes, setAppCodes] = useState<Array<{ app: string; app_name: string; code: string; ref_url: string; landing_url: string }>>([]);
   const [commissions, setCommissions] = useState<ReferralCommission[]>([]);
   const [totalEarned, setTotalEarned] = useState(0);
-  const [generating, setGenerating] = useState(false);
   const [snackbar, setSnackbar] = useState<{ message: string; severity: 'success' | 'error' } | null>(null);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [codeRes, commRes] = await Promise.all([
-        referralService.getMyCodes(),
+      const [codesRes, commRes] = await Promise.all([
+        referralService.getMyAppCodes(),
         referralService.getMyCommissions(),
       ]);
-      if (codeRes.success) {
-        setCode(codeRes.code);
+      if (codesRes.success) {
+        setAppCodes(codesRes.codes || []);
       }
       if (commRes.success) {
         setCommissions(commRes.commissions);
@@ -52,19 +51,6 @@ export function ReferralsPage() {
     loadData();
   }, []);
 
-  const createCode = async () => {
-    setGenerating(true);
-    try {
-      const res = await referralService.createCode();
-      setCode(res);
-      setSnackbar({ message: `Referral code created: ${res.code}`, severity: 'success' });
-    } catch {
-      setSnackbar({ message: 'Failed to create referral code', severity: 'error' });
-    } finally {
-      setGenerating(false);
-    }
-  };
-
   const copyToClipboard = (text: string, label = 'Copied!') => {
     navigator.clipboard.writeText(text);
     setSnackbar({ message: label, severity: 'success' });
@@ -78,10 +64,6 @@ export function ReferralsPage() {
     );
   }
 
-  // Referral links MUST point at videosync.ink (not content-machine) so the
-  // public GET /ref/{code} route redirects to the landing page with ?ref={code}.
-  const refUrl = code ? `https://videosync.ink/ref/${code.code}` : null;
-
   return (
     <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
       <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>
@@ -92,55 +74,56 @@ export function ReferralsPage() {
         Share your referral link to earn 40% commission on the first month of any deal you refer.
       </Typography>
 
-      {/* Referral Code Card */}
+      {/* App Links Card — one per campaign app */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
-            Your Referral Link
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
+            Your Referral Links
           </Typography>
-          {code && refUrl ? (
-            <Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  p: 1.5,
-                  bgcolor: 'action.hover',
-                  borderRadius: 1,
-                  mb: 1,
-                }}
-              >
-                <LinkIcon color="primary" />
-                <Typography
-                  variant="body2"
-                  sx={{ fontFamily: 'monospace', flex: 1, wordBreak: 'break-all' }}
-                >
-                  {refUrl}
-                </Typography>
-                <Tooltip title="Copy link">
-                  <IconButton size="small" onClick={() => copyToClipboard(refUrl, 'Link copied!')}>
-                    <ContentCopyIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-              <Typography variant="caption" color="text.secondary">
-                Code: <strong>{code.code}</strong> &middot; Created {new Date(code.created_at).toLocaleDateString()}
-              </Typography>
-            </Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            One link per app — share the right one. You earn 40% of each referred
+            customer's first month.
+          </Typography>
+          {appCodes.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              No links yet — reload in a moment.
+            </Typography>
           ) : (
-            <Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                You haven't created a referral code yet.
-              </Typography>
-              <Button
-                variant="contained"
-                onClick={createCode}
-                disabled={generating}
-                startIcon={generating ? <CircularProgress size={16} /> : <LinkIcon />}
-              >
-                {generating ? 'Creating...' : 'Generate My Referral Code'}
-              </Button>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              {appCodes.map((c) => (
+                <Box key={c.app}>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    {c.app_name}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      p: 1.5,
+                      bgcolor: 'action.hover',
+                      borderRadius: 1,
+                      mt: 0.5,
+                    }}
+                  >
+                    <LinkIcon color="primary" />
+                    <Typography
+                      variant="body2"
+                      sx={{ fontFamily: 'monospace', flex: 1, wordBreak: 'break-all' }}
+                    >
+                      {c.landing_url}
+                    </Typography>
+                    <Tooltip title="Copy link">
+                      <IconButton size="small" onClick={() => copyToClipboard(c.landing_url, `${c.app_name} link copied!`)}>
+                        <ContentCopyIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                  <Typography variant="caption" color="text.secondary">
+                    Code: <strong>{c.code}</strong>
+                  </Typography>
+                </Box>
+              ))}
             </Box>
           )}
         </CardContent>
