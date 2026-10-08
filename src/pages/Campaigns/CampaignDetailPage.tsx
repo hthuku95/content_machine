@@ -151,9 +151,9 @@ export default function CampaignDetailPage() {
                     {p.caption || '-'}
                   </TableCell>
                   <TableCell align="right">
-                    {p.media_r2_url && (
+                    {(p.media_url || p.media_r2_url) && (
                       <Tooltip title="Open media">
-                        <IconButton size="small" href={p.media_r2_url} target="_blank"><OpenInNew fontSize="small" /></IconButton>
+                        <IconButton size="small" href={(p.media_url || p.media_r2_url) as string} target="_blank"><OpenInNew fontSize="small" /></IconButton>
                       </Tooltip>
                     )}
                   </TableCell>
