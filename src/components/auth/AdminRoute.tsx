@@ -30,33 +30,5 @@ export function AdminRoute({ children }: AdminRouteProps) {
     return <Navigate to={PATHS.LOGIN} replace />;
   }
 
-  if (!user?.is_staff && !user?.is_superuser) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '70vh',
-          gap: 1.5,
-          textAlign: 'center',
-          px: 2,
-        }}
-      >
-        <LockIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
-        <Typography variant="h6" sx={{ color: 'text.secondary' }}>
-          Admin access required
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          This area is restricted to staff and superuser accounts.
-        </Typography>
-        <Button variant="outlined" component="a" href={PATHS.DASHBOARD} sx={{ mt: 1 }}>
-          Back to dashboard
-        </Button>
-      </Box>
-    );
-  }
-
   return <>{children}</>;
 }

@@ -207,6 +207,13 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             collapsed={isCollapsed}
           />
           <NavItem
+            icon={<PeopleIcon />}
+            label="Prospects"
+            active={isActive(PATHS.ADMIN.PROSPECTS)}
+            onClick={() => handleNavigation(PATHS.ADMIN.PROSPECTS)}
+            collapsed={isCollapsed}
+          />
+          <NavItem
             icon={<ReferralIcon />}
             label="Referrals"
             active={isActive(PATHS.REFERRALS)}
@@ -260,13 +267,6 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
               label="Deliveries"
               active={isActive(PATHS.ADMIN.DELIVERIES)}
               onClick={() => handleNavigation(PATHS.ADMIN.DELIVERIES)}
-              collapsed={isCollapsed}
-            />
-            <NavItem
-              icon={<PeopleIcon />}
-              label="Prospects"
-              active={isActive(PATHS.ADMIN.PROSPECTS)}
-              onClick={() => handleNavigation(PATHS.ADMIN.PROSPECTS)}
               collapsed={isCollapsed}
             />
             <NavItem

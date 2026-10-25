@@ -387,7 +387,7 @@ export function InstagramLeadsPage() {
   const isStaffViewer = !!(staffUser?.is_staff || staffUser?.is_superuser);
   useEffect(() => {
     if (!isStaffViewer) return;
-    adminService.listUsers({}).then(us => setTeamUsers(us.map(u => ({ id: u.id, email: u.email })))).catch(() => {});
+    adminService.listUsers({ whitelisted: true }).then(us => setTeamUsers(us.map(u => ({ id: u.id, email: u.email })))).catch(() => {});
   }, [isStaffViewer]);
 
   // Leads state
@@ -732,14 +732,14 @@ export function InstagramLeadsPage() {
                     onChange={e => setNiche(e.target.value)}
                   >
                     {NICHE_GROUPS.filter(group => isEnabled(group.service)).map(group => (
-                      <div key={group.service}>
+                      <>
                         <ListSubheader sx={{ color: 'primary.main', fontWeight: 700, bgcolor: 'transparent', fontSize: 12, lineHeight: '32px' }}>
                           {group.label}
                         </ListSubheader>
                         {group.niches.map(n => (
                           <MenuItem key={n.value} value={n.value} sx={{ pl: 4 }}>{n.label}</MenuItem>
                         ))}
-                      </div>
+                      </>
                     ))}
                   </Select>
                 </FormControl>
