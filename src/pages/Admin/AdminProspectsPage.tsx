@@ -143,7 +143,9 @@ export function AdminProspectsPage() {
     setDialog((d) => ({ ...d, text: 'Generating…' }));
     try {
       const res = await adminService.generateOutreach(p.id, {
-        delivery_url: `https://videosync.ink${p.sample_delivery_url}`,
+        delivery_url: p.sample_delivery_url?.startsWith('http')
+          ? p.sample_delivery_url
+          : `https://videosync.ink${p.sample_delivery_url}`,
       });
       if (res.success) {
         refreshRow(p.id, { x_dm_script: res.x_dm, email_script: res.email_script });
@@ -164,8 +166,17 @@ export function AdminProspectsPage() {
     try {
       const res = await adminService.generateSamplePack(prospect.id, {});
       if (res.success && res.delivery_id) {
-        refreshRow(prospect.id, { sample_delivery_id: res.delivery_id, sample_delivery_url: `/delivery/${res.delivery_id}` });
+        const deliveryUrl = res.delivery_url || `https://videosync.ink/delivery/${res.delivery_id}`;
+        refreshRow(prospect.id, { sample_delivery_id: res.delivery_id, sample_delivery_url: deliveryUrl });
         showSnack('Sample pack queued — rendering started. Link is shareable.', 'success');
+        // Auto-generate outreach (DM + email) with the sample link, like the admin dashboard.
+        try {
+          const out = await adminService.generateOutreach(prospect.id, { delivery_url: deliveryUrl });
+          if (out.success) {
+            refreshRow(prospect.id, { x_dm_script: out.x_dm, email_script: out.email_script });
+            showSnack('Outreach generated (DM + email)');
+          }
+        } catch { /* non-fatal */ }
       } else {
         showSnack(res.error ?? 'Sample generation failed', 'error');
       }
@@ -369,7 +380,7 @@ export function AdminProspectsPage() {
                     {p.sample_delivery_id ? (
                       <Chip
                         component="a"
-                        href={`https://videosync.ink${p.sample_delivery_url}`}
+                        href={p.sample_delivery_url?.startsWith('http') ? p.sample_delivery_url : `https://videosync.ink${p.sample_delivery_url}`}
                         target="_blank"
                         rel="noopener"
                         label="Sample ✓"
