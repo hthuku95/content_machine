@@ -49,6 +49,7 @@ export function AdminProspectsPage() {
   const [freshOnly, setFreshOnly] = useState(true);
 
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [bulkSending, setBulkSending] = useState(false);
   const [dialog, setDialog] = useState<{ open: boolean; prospect: Prospect | null; mode: 'dm' | 'outreach' | 'sample'; text: string }>({
     open: false, prospect: null, mode: 'dm', text: '',
   });
@@ -187,6 +188,23 @@ export function AdminProspectsPage() {
     }
   };
 
+  const handleBulkSendEmail = async () => {
+    if (!window.confirm('Send emails to all prospects with emails + outreach scripts? Skips already-contacted.')) return;
+    setBulkSending(true);
+    try {
+      const res = await adminService.bulkSendEmail({ limit: 100 });
+      if (res.success) {
+        showSnack(res.message ?? `Queued ${res.queued} emails`);
+      } else {
+        showSnack(res.error ?? 'Bulk send failed', 'error');
+      }
+    } catch (err) {
+      showSnack(getErrorMessage(err, 'Bulk send failed'), 'error');
+    } finally {
+      setBulkSending(false);
+    }
+  };
+
   const handleSendEmail = async (prospect: Prospect) => {
     if (!prospect.business_email) {
       showSnack('No business email on this prospect', 'info');
@@ -242,6 +260,15 @@ export function AdminProspectsPage() {
           AI-scored prospects across all platforms. Sort by revenue priority, generate DM/outreach,
           queue a free sample pack, and send the email. This is the core of the Website-URL→Video
           and Managed Campaign outreach engine.
+        </Typography>
+      </Box>
+
+      <Box sx={{ mb: 2, display: 'flex', gap: 1, alignItems: 'center' }}>
+        <Button size="small" variant="contained" color="primary" onClick={handleBulkSendEmail} disabled={bulkSending}>
+          {bulkSending ? <CircularProgress size={14} /> : '📧 Bulk Send Emails'}
+        </Button>
+        <Typography variant="caption" color="text.secondary">
+          Sends to prospects with emails + outreach scripts. Skips already-contacted.
         </Typography>
       </Box>
 

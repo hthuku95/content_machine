@@ -97,6 +97,11 @@ export const adminService = {
     return data;
   },
 
+  bulkSendEmail: async (req: { service_type?: string; contact_status?: string; fresh_days?: number; include_contacted?: boolean; limit?: number } = {}): Promise<{ success: boolean; queued: number; skipped_no_script?: number; message?: string; error?: string }> => {
+    const { data } = await api.post(`/api/admin/prospects/bulk-send-email`, req);
+    return data;
+  },
+
   listCampaigns: async (): Promise<Campaign[]> => {
     const { data } = await api.get<{ success: boolean; campaigns: Campaign[]; error?: string }>('/api/admin/campaigns');
     if (!data.success) throw new Error(data.error || 'Failed to load campaigns');
