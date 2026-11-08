@@ -8,6 +8,7 @@ import { serviceFlagsService, type ServiceFlag } from '@/services/serviceFlags.s
 const GROUP_LABELS: Record<string, string> = {
   clipping: 'Clipping (Twitch/YouTube → Zernio)',
   kick_auto_clipper: 'Kick Auto-Clipper (Kick VODs → Zernio)',
+  campaigns: '📅 Campaigns (monthly subscriptions app-wide — coming-soon + outreach copy)',
   prospecting: 'Prospect discovery + scoring',
   outreach: 'DM/email generation',
   sample_packs: 'Sample pack renders',
