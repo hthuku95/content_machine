@@ -297,46 +297,15 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
       >
         <SectionLabel label="Tools" collapsed={isCollapsed} />
         <List disablePadding>
-          {/* Clipping section */}
-          {isCollapsed ? (
-            <NavItem
-              icon={<ClippingIcon />}
-              label="YouTube Clipping"
-              active={isClippingActive()}
-              onClick={() => handleNavigation(PATHS.CLIPPING.OVERVIEW)}
-              collapsed
-            />
-          ) : (
-            <>
-              <ListItem disablePadding>
-                <ListItemButton
-                  selected={isClippingActive()}
-                  onClick={() => setClippingOpen(!clippingOpen)}
-                  sx={{
-                    borderLeft: isClippingActive() ? '2px solid' : '2px solid transparent',
-                    borderColor: isClippingActive() ? 'primary.main' : 'transparent',
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36, color: isClippingActive() ? 'primary.main' : 'text.secondary' }}>
-                    <ClippingIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="YouTube Clipping" />
-                  {clippingOpen ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-              </ListItem>
-
-              <Collapse in={clippingOpen} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  <NavItem icon={<DashboardIcon fontSize="small" />} label="Overview" active={isActive(PATHS.CLIPPING.OVERVIEW)} onClick={() => handleNavigation(PATHS.CLIPPING.OVERVIEW)} indent />
-                  <NavItem icon={<VideoLibraryIcon fontSize="small" />} label="Source Channels" active={isActive(PATHS.CLIPPING.SOURCE_CHANNELS)} onClick={() => handleNavigation(PATHS.CLIPPING.SOURCE_CHANNELS)} indent />
-                  <NavItem icon={<LinkIcon fontSize="small" />} label="Linkages" active={isActive(PATHS.CLIPPING.LINKAGES)} onClick={() => handleNavigation(PATHS.CLIPPING.LINKAGES)} indent />
-                  <NavItem icon={<JobIcon fontSize="small" />} label="Jobs" active={isActive(PATHS.CLIPPING.JOBS)} onClick={() => handleNavigation(PATHS.CLIPPING.JOBS)} indent />
-                  <NavItem icon={<MovieIcon fontSize="small" />} label="Clips Gallery" active={isActive(PATHS.CLIPPING.CLIPS)} onClick={() => handleNavigation(PATHS.CLIPPING.CLIPS)} indent />
-                  <NavItem icon={<TwitchIcon fontSize="small" />} label="Twitch Mappings" active={isActive(PATHS.CLIPPING.TWITCH_MAPPINGS)} onClick={() => handleNavigation(PATHS.CLIPPING.TWITCH_MAPPINGS)} indent />
-                </List>
-              </Collapse>
-            </>
-          )}
+          {/* Educational Videos section (Nov 13 2026: legacy clipping deprecated;
+              the YouTube-API system now posts AI-generated educational videos) */}
+          <NavItem
+            icon={<ClippingIcon />}
+            label="Educational Videos"
+            active={isActive(PATHS.CHANNELS.CONNECTED)}
+            onClick={() => handleNavigation(PATHS.CHANNELS.CONNECTED)}
+            collapsed={isCollapsed}
+          />
 
           {/* YouTube section */}
           {isCollapsed ? (
@@ -381,27 +350,9 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
             </>
           )}
 
-          <NavItem
-            icon={<VideoToolsIcon />}
-            label="Video Tools"
-            active={isActive(PATHS.VIDEO_TOOLS)}
-            onClick={() => handleNavigation(PATHS.VIDEO_TOOLS)}
-            collapsed={isCollapsed}
-          />
-          <NavItem
-            icon={<GigIcon />}
-            label="Gig Templates"
-            active={isActive(PATHS.GIG_TEMPLATES)}
-            onClick={() => handleNavigation(PATHS.GIG_TEMPLATES)}
-            collapsed={isCollapsed}
-          />
-          <NavItem
-            icon={<ClipIcon />}
-            label="Manual Clipping"
-            active={isActive(PATHS.MANUAL_CLIPPING)}
-            onClick={() => handleNavigation(PATHS.MANUAL_CLIPPING)}
-            collapsed={isCollapsed}
-          />
+          {/* Video Tools removed Nov 13 2026 (deprecated; no longer part of the product) */}
+          {/* Gig Templates removed Nov 13 2026 (deprecated; no longer part of the product) */}
+          {/* Manual Clipping removed Nov 13 2026 (deprecated; no longer part of the product) */}
         </List>
       </motion.div>
 

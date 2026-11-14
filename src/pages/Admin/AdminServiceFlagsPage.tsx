@@ -13,7 +13,7 @@ const GROUP_LABELS: Record<string, string> = {
   outreach: 'DM/email generation',
   sample_packs: 'Sample pack renders',
   admin_tests: 'Admin test renders',
-  legacy_youtube_clipping: 'Legacy YouTube auto/manual clipping',
+  legacy_youtube_clipping: 'Legacy YouTube-API system (converted Nov 13 2026 → education-posting only; this flag is retired and stays OFF)',
   chat_agents: 'Chat agents (WS + campaign chats + TG bot)',
 };
 
