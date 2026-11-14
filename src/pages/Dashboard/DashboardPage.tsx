@@ -46,7 +46,7 @@ export function DashboardPage() {
       title: 'Clip Campaigns',
       description: 'Daily short-form clips from Kick, Twitch, and YouTube sources — captioned, branded, auto-posted',
       iconColor: 'brand.main',
-      link: PATHS.CLIPPING.OVERVIEW,
+      link: PATHS.CAMPAIGNS.ROOT,
       benefits: [
         'Kick streamer VODs → viral highlights',
         'Twitch streams → daily short-form clips',
@@ -91,14 +91,14 @@ export function DashboardPage() {
     },
     {
       step: 2,
-      title: 'Set Up Source Channels',
-      description: 'Add YouTube channels to monitor for new content. Our AI will watch for viral moments.',
+      title: 'Pick Educational Topics',
+      description: 'Choose what your channels post — History by default, or pick any niche (or type your own).',
       icon: <VideoLibraryIcon />,
     },
     {
       step: 3,
-      title: 'Create Clipping Linkages',
-      description: 'Link source channels to your destination channels. Define clipping rules and schedules.',
+      title: 'Education Linkages',
+      description: 'Each channel is linked to a topic — AI-generated lessons post automatically on schedule.',
       icon: <ContentCutIcon />,
     },
     {
@@ -168,10 +168,11 @@ export function DashboardPage() {
             What We Do
           </Typography>
           <Typography variant="body1" paragraph>
-            Content Machine runs daily clip campaigns for clipping businesses: our AI watches Kick
-            and Twitch streams, finds viral moments, edits them with captions and branding, and
-            posts them to connected social accounts — plus full YouTube channel management and
-            analytics in the same workspace.
+            Content Machine runs your media operations: daily clip campaigns for clipping
+            businesses (our AI watches Kick and Twitch streams, finds viral moments, edits them
+            with captions and branding, and posts to connected social accounts), AI-generated
+            educational lessons posted to your YouTube channels on schedule, and full YouTube
+            channel management and analytics in the same workspace.
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 3 }}>
             <Chip icon={<AutoAwesomeIcon />} label="AI-Powered" sx={{ bgcolor: 'action.selected', color: 'text.primary' }} />
@@ -335,10 +336,10 @@ export function DashboardPage() {
                 fullWidth
                 variant="outlined"
                 component={RouterLink}
-                to={PATHS.CLIPPING.LINKAGES}
+                to={PATHS.EDUCATION}
                 startIcon={<ContentCutIcon />}
               >
-                Clipping Linkages
+                Educational Videos
               </Button>
               <Button
                 fullWidth
@@ -353,10 +354,10 @@ export function DashboardPage() {
                 fullWidth
                 variant="outlined"
                 component={RouterLink}
-                to={PATHS.CLIPPING.CLIPS}
+                to={PATHS.CAMPAIGNS.ROOT}
                 startIcon={<VideoLibraryIcon />}
               >
-                Browse Clips
+                View Campaigns
               </Button>
           </ResponsiveGrid>
         </Paper>

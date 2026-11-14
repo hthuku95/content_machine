@@ -24,7 +24,8 @@ export const PATHS = {
 
   // Channels routes
   CHANNELS: {
-    ROOT: '/channels',
+    EDUCATION: '/education',
+  ROOT: '/channels',
     CONNECTED: '/channels/connected',
   },
 

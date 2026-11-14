@@ -15,8 +15,6 @@ import {
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUIStore, getEffectiveTheme } from '@/stores/uiStore';
-import { ClippingSettingsPanel } from '@/components/clipping/ClippingSettingsPanel';
-import { useClippingAccess } from '@/hooks/useClippingAccess';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -37,7 +35,6 @@ export function SettingsPage() {
   const [tabValue, setTabValue] = useState(0);
   const { user, logout } = useAuth();
   const { themeMode, setThemeMode } = useUIStore();
-  const { hasAccess } = useClippingAccess();
   const effectiveTheme = getEffectiveTheme(themeMode);
 
   return (
@@ -53,7 +50,6 @@ export function SettingsPage() {
         <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)}>
           <Tab label="Profile" />
           <Tab label="Appearance" />
-          {hasAccess && <Tab label="Clipping" />}
           <Tab label="Account" />
         </Tabs>
         <Divider />
@@ -100,16 +96,7 @@ export function SettingsPage() {
           </Typography>
         </TabPanel>
 
-        {hasAccess && (
-          <TabPanel value={tabValue} index={2}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-              YouTube Clipping Settings
-            </Typography>
-            <ClippingSettingsPanel />
-          </TabPanel>
-        )}
-
-        <TabPanel value={tabValue} index={hasAccess ? 3 : 2}>
+        <TabPanel value={tabValue} index={2}>
           <Typography variant="h6" gutterBottom>
             Account Actions
           </Typography>

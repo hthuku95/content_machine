@@ -133,7 +133,6 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
   const { sidebarCollapsed, toggleSidebarCollapsed } = useUIStore();
   const user = useAuthStore((s) => s.user);
   const isAdmin = user?.is_staff || user?.is_superuser;
-  const [clippingOpen, setClippingOpen] = useState(true);
   const [youtubeOpen, setYoutubeOpen] = useState(true);
 
   // In temporary (mobile) mode, never apply mini/collapsed rendering
@@ -148,7 +147,6 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
   };
 
   const isActive = (path: string) => location.pathname === path;
-  const isClippingActive = () => location.pathname.startsWith('/clipping');
   const isYoutubeActive = () => location.pathname.startsWith('/youtube');
 
   return (
@@ -302,8 +300,8 @@ export function Sidebar({ open, onClose, variant = 'permanent' }: SidebarProps) 
           <NavItem
             icon={<ClippingIcon />}
             label="Educational Videos"
-            active={isActive(PATHS.CHANNELS.CONNECTED)}
-            onClick={() => handleNavigation(PATHS.CHANNELS.CONNECTED)}
+            active={isActive(PATHS.EDUCATION)}
+            onClick={() => handleNavigation(PATHS.EDUCATION)}
             collapsed={isCollapsed}
           />
 

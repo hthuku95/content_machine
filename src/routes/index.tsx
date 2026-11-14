@@ -9,15 +9,8 @@ import { DashboardPage } from '@/pages/Dashboard/DashboardPage';
 import { LoginPage } from '@/pages/Auth/LoginPage';
 import { RegisterPage } from '@/pages/Auth/RegisterPage';
 import { OAuthCallbackPage } from '@/pages/Auth/OAuthCallbackPage';
-import { ClippingDashboard } from '@/pages/Clipping/ClippingDashboard';
-import { SourceChannelsPage } from '@/pages/Clipping/SourceChannelsPage';
-import { LinkagesPage } from '@/pages/Clipping/LinkagesPage';
-import { JobsPage } from '@/pages/Clipping/JobsPage';
-import { JobDetailPage } from '@/pages/Clipping/JobDetailPage';
-import { ClipsGalleryPage } from '@/pages/Clipping/ClipsGalleryPage';
-import { ClipDetailPage } from '@/pages/Clipping/ClipDetailPage';
-import { TwitchMappingsPage } from '@/pages/Clipping/TwitchMappingsPage';
 import { ConnectedChannelsPage } from '@/pages/Channels/ConnectedChannelsPage';
+import { EducationPostingsPage } from '@/pages/Education/EducationPostingsPage';
 import { SettingsPage } from '@/pages/Settings/SettingsPage';
 import { NotFoundPage } from '@/pages/NotFound/NotFoundPage';
 import { UploadPage } from '@/pages/YouTube/UploadPage';
@@ -27,10 +20,7 @@ import { AnalyticsDashboard } from '@/pages/YouTube/AnalyticsDashboard';
 import { SearchPage } from '@/pages/YouTube/SearchPage';
 import { CommentModerationPage } from '@/pages/YouTube/CommentModerationPage';
 import { CaptionsPage } from '@/pages/YouTube/CaptionsPage';
-import { VideoToolsPage } from '@/pages/VideoTools/VideoToolsPage';
 import { AgentChatPage } from '@/pages/AgentChat/AgentChatPage';
-import { GigTemplatesPage } from '@/pages/GigTemplates/GigTemplatesPage';
-import ManualClippingPage from '@/pages/ManualClipping/ManualClippingPage';
 import { InstagramLeadsPage } from '@/pages/InstagramLeads/InstagramLeadsPage';
 import { PortfolioSamplesPage } from '@/pages/PortfolioSamples/PortfolioSamplesPage';
 import { ReferralsPage } from '@/pages/Referrals/ReferralsPage';
@@ -77,42 +67,23 @@ export const router = createBrowserRouter([
         element: <DashboardPage />,
       },
       // Clipping routes
-      {
-        path: PATHS.CLIPPING.OVERVIEW,
-        element: <ErrorBoundary><ClippingDashboard /></ErrorBoundary>,
-      },
-      {
-        path: PATHS.CLIPPING.SOURCE_CHANNELS,
-        element: <ErrorBoundary><SourceChannelsPage /></ErrorBoundary>,
-      },
-      {
-        path: PATHS.CLIPPING.LINKAGES,
-        element: <ErrorBoundary><LinkagesPage /></ErrorBoundary>,
-      },
-      {
-        path: PATHS.CLIPPING.JOBS,
-        element: <ErrorBoundary><JobsPage /></ErrorBoundary>,
-      },
-      {
-        path: '/clipping/jobs/:id',
-        element: <ErrorBoundary><JobDetailPage /></ErrorBoundary>,
-      },
-      {
-        path: PATHS.CLIPPING.CLIPS,
-        element: <ErrorBoundary><ClipsGalleryPage /></ErrorBoundary>,
-      },
-      {
-        path: '/clipping/clips/:id',
-        element: <ErrorBoundary><ClipDetailPage /></ErrorBoundary>,
-      },
-      {
-        path: PATHS.CLIPPING.TWITCH_MAPPINGS,
-        element: <ErrorBoundary><TwitchMappingsPage /></ErrorBoundary>,
-      },
+      ,
+      ,
+      ,
+      ,
+      ,
+      ,
+      ,
+      ,
       // Channels routes
       {
         path: PATHS.CHANNELS.CONNECTED,
         element: <ConnectedChannelsPage />,
+      },
+      // Education-posting routes (owner directive Nov 13-14 2026)
+      {
+        path: PATHS.EDUCATION,
+        element: <EducationPostingsPage />,
       },
       // YouTube routes
       {
@@ -172,14 +143,7 @@ export const router = createBrowserRouter([
         ),
       },
       // Video Tools route
-      {
-        path: PATHS.VIDEO_TOOLS,
-        element: (
-          <ErrorBoundary>
-            <VideoToolsPage />
-          </ErrorBoundary>
-        ),
-      },
+      ,
       // AI Agent Chat route
       {
         path: PATHS.AGENT_CHAT,
@@ -190,23 +154,9 @@ export const router = createBrowserRouter([
         ),
       },
       // Gig Templates route
-      {
-        path: PATHS.GIG_TEMPLATES,
-        element: (
-          <ErrorBoundary>
-            <GigTemplatesPage />
-          </ErrorBoundary>
-        ),
-      },
+      ,
       // Manual Clipping route
-      {
-        path: PATHS.MANUAL_CLIPPING,
-        element: (
-          <ErrorBoundary>
-            <ManualClippingPage />
-          </ErrorBoundary>
-        ),
-      },
+      ,
       // Instagram Lead Finder route
       {
         path: PATHS.INSTAGRAM_LEADS,
