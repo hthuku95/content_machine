@@ -292,11 +292,11 @@ export const router = createBrowserRouter([
       {
         path: PATHS.ADMIN.PROSPECTS,
         element: (
-          <AdminRoute>
+          <ProtectedRoute>
             <ErrorBoundary>
               <AdminProspectsPage />
             </ErrorBoundary>
-          </AdminRoute>
+          </ProtectedRoute>
         ),
       },
       {
