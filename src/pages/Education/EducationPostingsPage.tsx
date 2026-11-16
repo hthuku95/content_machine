@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { educationService, type EducationLinkage, type EducationJob } from '@/services/education.service';
+import api from '@/services/api';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
