@@ -43,6 +43,14 @@ export const educationService = {
     return response.data.topics ?? ['History'];
   },
 
+  async generateNow(channelDbId: number): Promise<{ job_id: string; message: string }> {
+    const response = await api.post<{ success: boolean; job_id: string; message: string }>(
+      '/api/education/generate-now',
+      { channel_db_id: channelDbId }
+    );
+    return response.data;
+  },
+
   async listJobs(limit = 50): Promise<EducationJob[]> {
     const response = await api.get<{ success: boolean; jobs: EducationJob[] }>(
       `/api/education/jobs?limit=${limit}`

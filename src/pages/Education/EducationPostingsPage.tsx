@@ -6,6 +6,8 @@ import {
 } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { educationService, type EducationLinkage, type EducationJob } from '@/services/education.service';
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 const STATUS_COLOR: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
   completed: 'success',
@@ -24,6 +26,13 @@ export function EducationPostingsPage() {
   const [topics, setTopics] = useState<string[]>(['History']);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<number | null>(null);
+  const [connecting, setConnecting] = useState(false);
+  const [generating, setGenerating] = useState<number | null>(null);
+  const [snack, setSnack] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -84,6 +93,32 @@ export function EducationPostingsPage() {
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
+      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+        <Button
+          variant="contained"
+          startIcon={<YouTubeIcon />}
+          disabled={connecting}
+          onClick={async () => {
+            setConnecting(true);
+            try {
+              const callbackUrl = `${window.location.origin}/education`;
+              const params = new URLSearchParams({ redirect_to: callbackUrl });
+              const response = await api.get(`/api/youtube/connect?${params.toString()}`);
+              if (response.data?.success && response.data?.auth_url) {
+                window.location.href = response.data.auth_url;
+                return;
+              }
+              throw new Error(response.data?.message || 'Failed to start the connection');
+            } catch (err: any) {
+              setError(err?.message ?? 'Failed to start the channel connection');
+              setConnecting(false);
+            }
+          }}
+        >
+          {connecting ? 'Opening Google…' : 'Connect a New Channel'}
+        </Button>
+      </Box>
+
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
@@ -95,6 +130,7 @@ export function EducationPostingsPage() {
                 <TableCell>Channel</TableCell>
                 <TableCell sx={{ width: 340 }}>Educational Topic</TableCell>
                 <TableCell>Source</TableCell>
+                <TableCell align="right">Generate &amp; Post Now</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -119,6 +155,29 @@ export function EducationPostingsPage() {
                       label={l.is_default_topic ? 'default (History)' : 'custom'}
                       color={l.is_default_topic ? 'default' : 'primary'}
                     />
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<RocketLaunchIcon />}
+                      disabled={generating === l.channel_db_id}
+                      onClick={async () => {
+                        setGenerating(l.channel_db_id);
+                        try {
+                          const res = await educationService.generateNow(l.channel_db_id);
+                          setSnack({ open: true, message: res.message, severity: 'success' });
+                          await load();
+                        } catch (err: any) {
+                          const msg = err?.response?.data?.message || err?.message || 'Failed to queue';
+                          setSnack({ open: true, message: msg, severity: 'error' });
+                        } finally {
+                          setGenerating(null);
+                        }
+                      }}
+                    >
+                      {generating === l.channel_db_id ? 'Queuing…' : 'Generate & Post'}
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -188,6 +247,17 @@ export function EducationPostingsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={5000}
+        onClose={() => setSnack({ ...snack, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity={snack.severity} sx={{ width: '100%' }}>
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
