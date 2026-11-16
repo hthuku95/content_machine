@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   Box, Typography, Card, CardContent, Chip, Table, TableBody, TableCell,
   TableHead, TableRow, TextField, Autocomplete, Button, CircularProgress,
-  Alert, Link,
+  Alert, Snackbar, Link,
 } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { educationService, type EducationLinkage, type EducationJob } from '@/services/education.service';
