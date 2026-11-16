@@ -50,3 +50,24 @@ export const educationService = {
     return response.data.jobs ?? [];
   },
 };
+
+export interface EducationSchedule {
+  per_channel_per_day: number;
+  cadence_label?: string;
+}
+
+export const educationAdminService = {
+  async getSchedule(): Promise<EducationSchedule> {
+    const response = await api.get<{ success: boolean; per_channel_per_day: number; cadence_label?: string }>(
+      '/api/admin/education-schedule'
+    );
+    return response.data;
+  },
+
+  async setSchedule(perChannelPerDay: number): Promise<EducationSchedule> {
+    const response = await api.post<EducationSchedule>('/api/admin/education-schedule', {
+      per_channel_per_day: perChannelPerDay,
+    });
+    return response.data;
+  },
+};
