@@ -22,10 +22,11 @@ export const PATHS = {
     TWITCH_MAPPINGS: '/clipping/twitch-mappings',
   },
 
+  EDUCATION: '/education',
+
   // Channels routes
   CHANNELS: {
-    EDUCATION: '/education',
-  ROOT: '/channels',
+    ROOT: '/channels',
     CONNECTED: '/channels/connected',
   },
 
