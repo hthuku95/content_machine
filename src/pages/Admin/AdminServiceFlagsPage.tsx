@@ -21,6 +21,7 @@ const GROUP_LABELS: Record<string, string> = {
 export function AdminServiceFlagsPage() {
   const [flags, setFlags] = useState<ServiceFlag[]>([]);
   const [scheduleValue, setScheduleValue] = useState('0.5');
+  const [budgetValue, setBudgetValue] = useState('6');
   const [scheduleLabel, setScheduleLabel] = useState('');
   const [loading, setLoading] = useState(true);
   const [snack, setSnack] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
@@ -34,7 +35,11 @@ export function AdminServiceFlagsPage() {
       try {
         const sched = await educationAdminService.getSchedule();
         setScheduleValue(String(sched.per_channel_per_day));
-        setScheduleLabel(sched.cadence_label ?? '');
+        if (sched.daily_upload_budget) setBudgetValue(String(sched.daily_upload_budget));
+        setScheduleLabel(
+          sched.effective_distribution ??
+            `~${(sched.daily_upload_budget ?? 6) / Math.max(1, sched.active_channels ?? 1)} videos/channel/day`
+        );
       } catch { /* schedule endpoint optional */ }
     } catch (err: any) {
       setSnack({ open: true, message: err?.message ?? 'Failed to load flags', severity: 'error' });
@@ -71,9 +76,10 @@ export function AdminServiceFlagsPage() {
             🎓 Education Posting Schedule
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Videos generated + posted per connected channel per day. Current YouTube API quota
-            allows only a handful of uploads per day until a quota increase is approved — keep
-            this low (0.5 = 1 video every 2 days per channel).
+            Videos generated + posted per connected channel per day. The DAILY UPLOAD BUDGET
+            caps uploads project-wide (YouTube API quota: 10,000 units/day, 1,600 per upload →
+            ~6/day until a quota increase is approved). Channels rotate FAIRLY: the scheduler
+            picks the least-recently-posted channels first, so every channel gets its turn.
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
             <TextField
@@ -85,15 +91,27 @@ export function AdminServiceFlagsPage() {
               onChange={e => setScheduleValue(e.target.value)}
               sx={{ width: 220 }}
             />
+            <TextField
+              label="Daily upload budget (quota)"
+              size="small"
+              type="number"
+              inputProps={{ min: 1, max: 100 }}
+              value={budgetValue}
+              onChange={e => setBudgetValue(e.target.value)}
+              sx={{ width: 230 }}
+            />
             <Button
               variant="contained"
               size="small"
               onClick={async () => {
                 try {
-                  const updated = await educationAdminService.setSchedule(parseFloat(scheduleValue));
+                  const updated = await educationAdminService.setSchedule(
+                    parseFloat(scheduleValue),
+                    parseInt(budgetValue, 10)
+                  );
                   setSnack({
                     open: true,
-                    message: `Education schedule → ${updated.per_channel_per_day}/channel/day`,
+                    message: `Education schedule → ${updated.per_channel_per_day}/channel/day, budget ${updated.daily_upload_budget}/day`,
                     severity: 'success',
                   });
                 } catch (err: any) {

@@ -53,6 +53,9 @@ export const educationService = {
 
 export interface EducationSchedule {
   per_channel_per_day: number;
+  daily_upload_budget?: number;
+  active_channels?: number;
+  effective_distribution?: string;
   cadence_label?: string;
 }
 
@@ -64,9 +67,10 @@ export const educationAdminService = {
     return response.data;
   },
 
-  async setSchedule(perChannelPerDay: number): Promise<EducationSchedule> {
+  async setSchedule(perChannelPerDay: number, dailyUploadBudget?: number): Promise<EducationSchedule> {
     const response = await api.post<EducationSchedule>('/api/admin/education-schedule', {
       per_channel_per_day: perChannelPerDay,
+      daily_upload_budget: dailyUploadBudget,
     });
     return response.data;
   },
